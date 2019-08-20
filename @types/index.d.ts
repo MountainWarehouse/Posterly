@@ -1,0 +1,10 @@
+declare module "react-navigation";
+declare module "react-native-datawedge-intents";
+declare module "native-base";
+declare module "mock-async-storage";
+declare module "react-native-config";
+declare module "react-native-search-filter";
+declare module "react-native-fullwidth-image";
+declare module "react-navigation-material-bottom-tabs";
+declare module "react-native-public-ip";
+declare module "react-native-autocomplete-input";
