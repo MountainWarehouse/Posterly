@@ -1,0 +1,226 @@
+-- Merging decision tree log ---
+manifest
+ADDED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\main\AndroidManifest.xml:1:1-26:12
+INJECTED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\main\AndroidManifest.xml:1:1-26:12
+INJECTED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\main\AndroidManifest.xml:1:1-26:12
+INJECTED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\main\AndroidManifest.xml:1:1-26:12
+MERGED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\main\AndroidManifest.xml:1:1-26:12
+MERGED from [:react-native-datawedge-intents] C:\Users\tariq.hall\Documents\parcelproj\project-package\node_modules\react-native-datawedge-intents\android\build\intermediates\library_manifest\debug\AndroidManifest.xml:2:1-11:12
+MERGED from [:react-native-sqlite-storage] C:\Users\tariq.hall\Documents\parcelproj\project-package\node_modules\react-native-sqlite-storage\src\android\build\intermediates\library_manifest\debug\AndroidManifest.xml:2:1-11:12
+MERGED from [com.facebook.react:react-native:0.60.3] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\9c13b3cf54eddce0040013488d4a7f41\AndroidManifest.xml:2:1-13:12
+MERGED from [org.webkit:android-jsc:r245459] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\1bef86eab7f45910bd51ff74af905769\AndroidManifest.xml:2:1-11:12
+MERGED from [androidx.appcompat:appcompat:1.0.2] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\98c27f02527181701e68b1e9af236fa2\AndroidManifest.xml:17:1-22:12
+MERGED from [com.facebook.fresco:fresco:2.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\68a4398c631456b9904965d9e881ba62\AndroidManifest.xml:2:1-9:12
+MERGED from [com.facebook.fresco:imagepipeline-okhttp3:2.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\46c3c191727aead2ffa10e2e9ec85022\AndroidManifest.xml:2:1-9:12
+MERGED from [com.facebook.fresco:drawee:2.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\816dfa8214e320466c44ecc632b5be67\AndroidManifest.xml:2:1-9:12
+MERGED from [com.facebook.fresco:nativeimagefilters:2.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\230478a41c12dd88db562db7ca1524c1\AndroidManifest.xml:2:1-9:12
+MERGED from [com.facebook.fresco:imagepipeline:2.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\4a6bf5d95245e292d4e4f8f0b3e1de55\AndroidManifest.xml:2:1-9:12
+MERGED from [com.facebook.fresco:nativeimagetranscoder:2.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\c5f42b16f067d8f6de722c984cf5981f\AndroidManifest.xml:2:1-9:12
+MERGED from [com.facebook.fresco:imagepipeline-base:2.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\0fa7b885e56ab870fe6d6fce7de8b2a0\AndroidManifest.xml:2:1-9:12
+MERGED from [com.facebook.soloader:soloader:0.6.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\bf3a37de1609da389870510270359542\AndroidManifest.xml:2:1-13:12
+MERGED from [androidx.fragment:fragment:1.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\75beccd31500303ea23b515782e78b97\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.vectordrawable:vectordrawable-animated:1.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\91fe321daa781b7acc509648cbfc91b1\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.legacy:legacy-support-core-ui:1.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\a2d606f9d6a3e99b66c1f63d9355501b\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.legacy:legacy-support-core-utils:1.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\32c76ac38176228846ae047a283c9661\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.vectordrawable:vectordrawable:1.0.1] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\a9529ac2985f98dc4daee3603a910169\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.loader:loader:1.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\e0030b03e8aa7e4cfadf46925fd33f30\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.viewpager:viewpager:1.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\cd2928fddbf85f7e8c0693079617b432\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.coordinatorlayout:coordinatorlayout:1.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\431927bb33b6c61e233c0e65d92661bd\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.drawerlayout:drawerlayout:1.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\196b167eae8d21f814a9d5f105106ccc\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.slidingpanelayout:slidingpanelayout:1.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\0e5e043efd9dd4e4fa87f03d0034c675\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.customview:customview:1.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\f255ee50ec42b75622d6ac5571a09cb1\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.swiperefreshlayout:swiperefreshlayout:1.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\25d49de25ed65d7e05f482fbbc6d6e46\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.asynclayoutinflater:asynclayoutinflater:1.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\84c080efbaed081bea3cbd4afb290755\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.core:core:1.0.1] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\ec356ee8a566db1ee3a7f52f9eab4b60\AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\c80f91dfb4be19619ef6bfc338ce0c1e\AndroidManifest.xml:17:1-25:12
+MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\4c73b22739a6d3472aabc748442e9593\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-runtime:2.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\cd53195b42a0c158e3a092bbcf95c85d\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.documentfile:documentfile:1.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\32743c6092de37ef6d4246a1dfd174d2\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.localbroadcastmanager:localbroadcastmanager:1.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\1c1baa4be275b40a2a18cec037d7a17a\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.print:print:1.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\701eb728a08c88c9b18a6fc1eb87f28f\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\eaffdcb1c4fc582412daee8da16ed454\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-livedata:2.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\abd86a28654f512ce9559d1375218f76\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\a39b54107fb90a8d33579ec57eb07d6e\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.arch.core:core-runtime:2.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\6cd3f737e6d8384a809b1e344a6b3955\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.interpolator:interpolator:1.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\f22d500a6bb260e39cd29706529018e1\AndroidManifest.xml:17:1-22:12
+MERGED from [com.facebook.fresco:fbcore:2.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\584e96076a4fd6902a8ed32d6ce48231\AndroidManifest.xml:2:1-9:12
+INJECTED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\debug\AndroidManifest.xml:2:1-8:12
+INJECTED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\debug\AndroidManifest.xml:2:1-8:12
+INJECTED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\debug\AndroidManifest.xml:2:1-8:12
+	package
+		ADDED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\main\AndroidManifest.xml:2:3-23
+		INJECTED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\main\AndroidManifest.xml
+		ADDED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\main\AndroidManifest.xml:2:3-23
+		INJECTED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\debug\AndroidManifest.xml
+	android:versionName
+		INJECTED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\main\AndroidManifest.xml
+		ADDED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\main\AndroidManifest.xml:1:1-26:12
+		INJECTED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\debug\AndroidManifest.xml
+	xmlns:tools
+		ADDED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\debug\AndroidManifest.xml:3:5-51
+	android:versionCode
+		INJECTED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\main\AndroidManifest.xml
+		ADDED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\main\AndroidManifest.xml:1:1-26:12
+		INJECTED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\debug\AndroidManifest.xml
+	xmlns:android
+		ADDED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\main\AndroidManifest.xml:1:11-69
+uses-permission#android.permission.INTERNET
+ADDED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\main\AndroidManifest.xml:4:5-67
+	android:name
+		ADDED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\main\AndroidManifest.xml:4:22-64
+application
+ADDED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\main\AndroidManifest.xml:6:5-24:19
+MERGED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\main\AndroidManifest.xml:6:5-24:19
+MERGED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\main\AndroidManifest.xml:6:5-24:19
+MERGED from [com.facebook.react:react-native:0.60.3] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\9c13b3cf54eddce0040013488d4a7f41\AndroidManifest.xml:11:5-20
+MERGED from [com.facebook.react:react-native:0.60.3] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\9c13b3cf54eddce0040013488d4a7f41\AndroidManifest.xml:11:5-20
+MERGED from [com.facebook.soloader:soloader:0.6.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\bf3a37de1609da389870510270359542\AndroidManifest.xml:11:5-20
+MERGED from [com.facebook.soloader:soloader:0.6.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\bf3a37de1609da389870510270359542\AndroidManifest.xml:11:5-20
+MERGED from [androidx.core:core:1.0.1] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\ec356ee8a566db1ee3a7f52f9eab4b60\AndroidManifest.xml:22:5-89
+MERGED from [androidx.core:core:1.0.1] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\ec356ee8a566db1ee3a7f52f9eab4b60\AndroidManifest.xml:22:5-89
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\c80f91dfb4be19619ef6bfc338ce0c1e\AndroidManifest.xml:22:5-23:19
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\c80f91dfb4be19619ef6bfc338ce0c1e\AndroidManifest.xml:22:5-23:19
+	android:appComponentFactory
+		ADDED from [androidx.core:core:1.0.1] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\ec356ee8a566db1ee3a7f52f9eab4b60\AndroidManifest.xml:22:18-86
+	android:label
+		ADDED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\main\AndroidManifest.xml:8:7-39
+		ADDED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\main\AndroidManifest.xml:8:7-39
+	tools:ignore
+		ADDED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\debug\AndroidManifest.xml:7:75-114
+	android:roundIcon
+		ADDED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\main\AndroidManifest.xml:10:7-52
+		ADDED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\main\AndroidManifest.xml:10:7-52
+	tools:targetApi
+		ADDED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\debug\AndroidManifest.xml:7:54-74
+	android:icon
+		ADDED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\main\AndroidManifest.xml:9:7-41
+		ADDED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\main\AndroidManifest.xml:9:7-41
+	android:allowBackup
+		ADDED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\main\AndroidManifest.xml:11:7-34
+		ADDED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\main\AndroidManifest.xml:11:7-34
+	android:theme
+		ADDED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\main\AndroidManifest.xml:12:7-38
+		ADDED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\main\AndroidManifest.xml:12:7-38
+	android:usesCleartextTraffic
+		ADDED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\debug\AndroidManifest.xml:7:18-53
+	android:name
+		ADDED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\main\AndroidManifest.xml:7:7-38
+		ADDED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\main\AndroidManifest.xml:7:7-38
+activity#com.peepee.MainActivity
+ADDED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\main\AndroidManifest.xml:13:7-22:18
+	android:label
+		ADDED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\main\AndroidManifest.xml:15:9-41
+	android:windowSoftInputMode
+		ADDED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\main\AndroidManifest.xml:17:9-51
+	android:configChanges
+		ADDED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\main\AndroidManifest.xml:16:9-79
+	android:name
+		ADDED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\main\AndroidManifest.xml:14:9-37
+intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
+ADDED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\main\AndroidManifest.xml:18:9-21:25
+action#android.intent.action.MAIN
+ADDED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\main\AndroidManifest.xml:19:13-65
+	android:name
+		ADDED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\main\AndroidManifest.xml:19:21-62
+category#android.intent.category.LAUNCHER
+ADDED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\main\AndroidManifest.xml:20:13-73
+	android:name
+		ADDED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\main\AndroidManifest.xml:20:23-70
+activity#com.facebook.react.devsupport.DevSettingsActivity
+ADDED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\main\AndroidManifest.xml:23:7-84
+	android:name
+		ADDED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\main\AndroidManifest.xml:23:17-81
+uses-sdk
+INJECTED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\main\AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\main\AndroidManifest.xml
+INJECTED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\main\AndroidManifest.xml
+MERGED from [:react-native-datawedge-intents] C:\Users\tariq.hall\Documents\parcelproj\project-package\node_modules\react-native-datawedge-intents\android\build\intermediates\library_manifest\debug\AndroidManifest.xml:7:5-9:41
+MERGED from [:react-native-datawedge-intents] C:\Users\tariq.hall\Documents\parcelproj\project-package\node_modules\react-native-datawedge-intents\android\build\intermediates\library_manifest\debug\AndroidManifest.xml:7:5-9:41
+MERGED from [:react-native-sqlite-storage] C:\Users\tariq.hall\Documents\parcelproj\project-package\node_modules\react-native-sqlite-storage\src\android\build\intermediates\library_manifest\debug\AndroidManifest.xml:7:5-9:41
+MERGED from [:react-native-sqlite-storage] C:\Users\tariq.hall\Documents\parcelproj\project-package\node_modules\react-native-sqlite-storage\src\android\build\intermediates\library_manifest\debug\AndroidManifest.xml:7:5-9:41
+MERGED from [com.facebook.react:react-native:0.60.3] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\9c13b3cf54eddce0040013488d4a7f41\AndroidManifest.xml:7:5-9:41
+MERGED from [com.facebook.react:react-native:0.60.3] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\9c13b3cf54eddce0040013488d4a7f41\AndroidManifest.xml:7:5-9:41
+MERGED from [org.webkit:android-jsc:r245459] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\1bef86eab7f45910bd51ff74af905769\AndroidManifest.xml:7:5-9:41
+MERGED from [org.webkit:android-jsc:r245459] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\1bef86eab7f45910bd51ff74af905769\AndroidManifest.xml:7:5-9:41
+MERGED from [androidx.appcompat:appcompat:1.0.2] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\98c27f02527181701e68b1e9af236fa2\AndroidManifest.xml:20:5-44
+MERGED from [androidx.appcompat:appcompat:1.0.2] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\98c27f02527181701e68b1e9af236fa2\AndroidManifest.xml:20:5-44
+MERGED from [com.facebook.fresco:fresco:2.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\68a4398c631456b9904965d9e881ba62\AndroidManifest.xml:5:5-7:41
+MERGED from [com.facebook.fresco:fresco:2.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\68a4398c631456b9904965d9e881ba62\AndroidManifest.xml:5:5-7:41
+MERGED from [com.facebook.fresco:imagepipeline-okhttp3:2.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\46c3c191727aead2ffa10e2e9ec85022\AndroidManifest.xml:5:5-7:41
+MERGED from [com.facebook.fresco:imagepipeline-okhttp3:2.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\46c3c191727aead2ffa10e2e9ec85022\AndroidManifest.xml:5:5-7:41
+MERGED from [com.facebook.fresco:drawee:2.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\816dfa8214e320466c44ecc632b5be67\AndroidManifest.xml:5:5-7:41
+MERGED from [com.facebook.fresco:drawee:2.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\816dfa8214e320466c44ecc632b5be67\AndroidManifest.xml:5:5-7:41
+MERGED from [com.facebook.fresco:nativeimagefilters:2.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\230478a41c12dd88db562db7ca1524c1\AndroidManifest.xml:5:5-7:41
+MERGED from [com.facebook.fresco:nativeimagefilters:2.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\230478a41c12dd88db562db7ca1524c1\AndroidManifest.xml:5:5-7:41
+MERGED from [com.facebook.fresco:imagepipeline:2.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\4a6bf5d95245e292d4e4f8f0b3e1de55\AndroidManifest.xml:5:5-7:41
+MERGED from [com.facebook.fresco:imagepipeline:2.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\4a6bf5d95245e292d4e4f8f0b3e1de55\AndroidManifest.xml:5:5-7:41
+MERGED from [com.facebook.fresco:nativeimagetranscoder:2.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\c5f42b16f067d8f6de722c984cf5981f\AndroidManifest.xml:5:5-7:41
+MERGED from [com.facebook.fresco:nativeimagetranscoder:2.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\c5f42b16f067d8f6de722c984cf5981f\AndroidManifest.xml:5:5-7:41
+MERGED from [com.facebook.fresco:imagepipeline-base:2.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\0fa7b885e56ab870fe6d6fce7de8b2a0\AndroidManifest.xml:5:5-7:41
+MERGED from [com.facebook.fresco:imagepipeline-base:2.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\0fa7b885e56ab870fe6d6fce7de8b2a0\AndroidManifest.xml:5:5-7:41
+MERGED from [com.facebook.soloader:soloader:0.6.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\bf3a37de1609da389870510270359542\AndroidManifest.xml:7:5-9:41
+MERGED from [com.facebook.soloader:soloader:0.6.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\bf3a37de1609da389870510270359542\AndroidManifest.xml:7:5-9:41
+MERGED from [androidx.fragment:fragment:1.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\75beccd31500303ea23b515782e78b97\AndroidManifest.xml:20:5-44
+MERGED from [androidx.fragment:fragment:1.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\75beccd31500303ea23b515782e78b97\AndroidManifest.xml:20:5-44
+MERGED from [androidx.vectordrawable:vectordrawable-animated:1.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\91fe321daa781b7acc509648cbfc91b1\AndroidManifest.xml:20:5-44
+MERGED from [androidx.vectordrawable:vectordrawable-animated:1.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\91fe321daa781b7acc509648cbfc91b1\AndroidManifest.xml:20:5-44
+MERGED from [androidx.legacy:legacy-support-core-ui:1.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\a2d606f9d6a3e99b66c1f63d9355501b\AndroidManifest.xml:20:5-44
+MERGED from [androidx.legacy:legacy-support-core-ui:1.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\a2d606f9d6a3e99b66c1f63d9355501b\AndroidManifest.xml:20:5-44
+MERGED from [androidx.legacy:legacy-support-core-utils:1.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\32c76ac38176228846ae047a283c9661\AndroidManifest.xml:20:5-44
+MERGED from [androidx.legacy:legacy-support-core-utils:1.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\32c76ac38176228846ae047a283c9661\AndroidManifest.xml:20:5-44
+MERGED from [androidx.vectordrawable:vectordrawable:1.0.1] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\a9529ac2985f98dc4daee3603a910169\AndroidManifest.xml:20:5-44
+MERGED from [androidx.vectordrawable:vectordrawable:1.0.1] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\a9529ac2985f98dc4daee3603a910169\AndroidManifest.xml:20:5-44
+MERGED from [androidx.loader:loader:1.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\e0030b03e8aa7e4cfadf46925fd33f30\AndroidManifest.xml:20:5-44
+MERGED from [androidx.loader:loader:1.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\e0030b03e8aa7e4cfadf46925fd33f30\AndroidManifest.xml:20:5-44
+MERGED from [androidx.viewpager:viewpager:1.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\cd2928fddbf85f7e8c0693079617b432\AndroidManifest.xml:20:5-44
+MERGED from [androidx.viewpager:viewpager:1.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\cd2928fddbf85f7e8c0693079617b432\AndroidManifest.xml:20:5-44
+MERGED from [androidx.coordinatorlayout:coordinatorlayout:1.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\431927bb33b6c61e233c0e65d92661bd\AndroidManifest.xml:20:5-44
+MERGED from [androidx.coordinatorlayout:coordinatorlayout:1.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\431927bb33b6c61e233c0e65d92661bd\AndroidManifest.xml:20:5-44
+MERGED from [androidx.drawerlayout:drawerlayout:1.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\196b167eae8d21f814a9d5f105106ccc\AndroidManifest.xml:20:5-44
+MERGED from [androidx.drawerlayout:drawerlayout:1.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\196b167eae8d21f814a9d5f105106ccc\AndroidManifest.xml:20:5-44
+MERGED from [androidx.slidingpanelayout:slidingpanelayout:1.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\0e5e043efd9dd4e4fa87f03d0034c675\AndroidManifest.xml:20:5-44
+MERGED from [androidx.slidingpanelayout:slidingpanelayout:1.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\0e5e043efd9dd4e4fa87f03d0034c675\AndroidManifest.xml:20:5-44
+MERGED from [androidx.customview:customview:1.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\f255ee50ec42b75622d6ac5571a09cb1\AndroidManifest.xml:20:5-44
+MERGED from [androidx.customview:customview:1.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\f255ee50ec42b75622d6ac5571a09cb1\AndroidManifest.xml:20:5-44
+MERGED from [androidx.swiperefreshlayout:swiperefreshlayout:1.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\25d49de25ed65d7e05f482fbbc6d6e46\AndroidManifest.xml:20:5-44
+MERGED from [androidx.swiperefreshlayout:swiperefreshlayout:1.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\25d49de25ed65d7e05f482fbbc6d6e46\AndroidManifest.xml:20:5-44
+MERGED from [androidx.asynclayoutinflater:asynclayoutinflater:1.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\84c080efbaed081bea3cbd4afb290755\AndroidManifest.xml:20:5-44
+MERGED from [androidx.asynclayoutinflater:asynclayoutinflater:1.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\84c080efbaed081bea3cbd4afb290755\AndroidManifest.xml:20:5-44
+MERGED from [androidx.core:core:1.0.1] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\ec356ee8a566db1ee3a7f52f9eab4b60\AndroidManifest.xml:20:5-44
+MERGED from [androidx.core:core:1.0.1] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\ec356ee8a566db1ee3a7f52f9eab4b60\AndroidManifest.xml:20:5-44
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\c80f91dfb4be19619ef6bfc338ce0c1e\AndroidManifest.xml:20:5-44
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\c80f91dfb4be19619ef6bfc338ce0c1e\AndroidManifest.xml:20:5-44
+MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\4c73b22739a6d3472aabc748442e9593\AndroidManifest.xml:20:5-44
+MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\4c73b22739a6d3472aabc748442e9593\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime:2.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\cd53195b42a0c158e3a092bbcf95c85d\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime:2.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\cd53195b42a0c158e3a092bbcf95c85d\AndroidManifest.xml:20:5-44
+MERGED from [androidx.documentfile:documentfile:1.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\32743c6092de37ef6d4246a1dfd174d2\AndroidManifest.xml:20:5-44
+MERGED from [androidx.documentfile:documentfile:1.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\32743c6092de37ef6d4246a1dfd174d2\AndroidManifest.xml:20:5-44
+MERGED from [androidx.localbroadcastmanager:localbroadcastmanager:1.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\1c1baa4be275b40a2a18cec037d7a17a\AndroidManifest.xml:20:5-44
+MERGED from [androidx.localbroadcastmanager:localbroadcastmanager:1.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\1c1baa4be275b40a2a18cec037d7a17a\AndroidManifest.xml:20:5-44
+MERGED from [androidx.print:print:1.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\701eb728a08c88c9b18a6fc1eb87f28f\AndroidManifest.xml:20:5-44
+MERGED from [androidx.print:print:1.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\701eb728a08c88c9b18a6fc1eb87f28f\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\eaffdcb1c4fc582412daee8da16ed454\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\eaffdcb1c4fc582412daee8da16ed454\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata:2.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\abd86a28654f512ce9559d1375218f76\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata:2.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\abd86a28654f512ce9559d1375218f76\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\a39b54107fb90a8d33579ec57eb07d6e\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\a39b54107fb90a8d33579ec57eb07d6e\AndroidManifest.xml:20:5-44
+MERGED from [androidx.arch.core:core-runtime:2.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\6cd3f737e6d8384a809b1e344a6b3955\AndroidManifest.xml:20:5-44
+MERGED from [androidx.arch.core:core-runtime:2.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\6cd3f737e6d8384a809b1e344a6b3955\AndroidManifest.xml:20:5-44
+MERGED from [androidx.interpolator:interpolator:1.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\f22d500a6bb260e39cd29706529018e1\AndroidManifest.xml:20:5-44
+MERGED from [androidx.interpolator:interpolator:1.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\f22d500a6bb260e39cd29706529018e1\AndroidManifest.xml:20:5-44
+MERGED from [com.facebook.fresco:fbcore:2.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\584e96076a4fd6902a8ed32d6ce48231\AndroidManifest.xml:5:5-7:41
+MERGED from [com.facebook.fresco:fbcore:2.0.0] C:\Users\tariq.hall\.gradle\caches\transforms-2\files-2.1\584e96076a4fd6902a8ed32d6ce48231\AndroidManifest.xml:5:5-7:41
+INJECTED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\debug\AndroidManifest.xml
+INJECTED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\debug\AndroidManifest.xml
+	android:targetSdkVersion
+		INJECTED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\debug\AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\debug\AndroidManifest.xml
+uses-permission#android.permission.SYSTEM_ALERT_WINDOW
+ADDED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\debug\AndroidManifest.xml:5:5-77
+	android:name
+		ADDED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\debug\AndroidManifest.xml:5:22-75

@@ -1,0 +1,4 @@
+#Thu Jul 18 09:52:12 BST 2019
+base.0=C\:\\Users\\tariq.hall\\Documents\\parcelproj\\project-package\\android\\app\\build\\intermediates\\transforms\\dexMerger\\debug\\0
+path.0=classes.dex
+renamed.0=classes.dex
