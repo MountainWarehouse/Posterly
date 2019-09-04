@@ -59,7 +59,7 @@ export default class Scanner extends React.Component<ScannerProps> {
                     <Header transparent style={{ backgroundColor: "#204132" }}>
                         <Right>
                             <Body>
-                                <Title>Pee Pee</Title>
+                                <Title>Posterly</Title>
                             </Body>
                         </Right>
                     </Header>
@@ -68,7 +68,7 @@ export default class Scanner extends React.Component<ScannerProps> {
                             <Title>{this.props.prompt}</Title>
                             <CardItem style={styles.card}>
                                 <Button full style={styles.scanButton} onPress={this.handleMockBarcode}>
-                                    <Text>Scan</Text>
+                                    <Text>Tan</Text>
                                 </Button>
                             </CardItem>
                         </Card>

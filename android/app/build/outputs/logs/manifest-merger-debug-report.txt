@@ -106,7 +106,7 @@ MERGED from [androidx.versionedparcelable:versionedparcelable:1.0.0] C:\Users\ta
 	android:name
 		ADDED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\main\AndroidManifest.xml:7:7-38
 		ADDED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\main\AndroidManifest.xml:7:7-38
-activity#com.peepee.MainActivity
+activity#com.posterly.MainActivity
 ADDED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\main\AndroidManifest.xml:13:7-22:18
 	android:label
 		ADDED from C:\Users\tariq.hall\Documents\parcelproj\project-package\android\app\src\main\AndroidManifest.xml:15:9-41

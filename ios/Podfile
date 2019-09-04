@@ -1,8 +1,8 @@
 platform :ios, '9.0'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
-target 'PeePee' do
-  # Pods for PeePee
+target 'Posterly' do
+  # Pods for Posterly
   pod 'React', :path => '../node_modules/react-native/'
   pod 'React-Core', :path => '../node_modules/react-native/React'
   pod 'React-DevSupport', :path => '../node_modules/react-native/React'
@@ -28,7 +28,7 @@ target 'PeePee' do
   pod 'glog', :podspec => '../node_modules/react-native/third-party-podspecs/glog.podspec'
   pod 'Folly', :podspec => '../node_modules/react-native/third-party-podspecs/Folly.podspec'
 
-  target 'PeePeeTests' do
+  target 'PosterlyTests' do
     inherit! :search_paths
     # Pods for testing
   end
@@ -36,10 +36,10 @@ target 'PeePee' do
   use_native_modules!
 end
 
-target 'PeePee-tvOS' do
-  # Pods for PeePee-tvOS
+target 'Posterly-tvOS' do
+  # Pods for Posterly-tvOS
 
-  target 'PeePee-tvOSTests' do
+  target 'Posterly-tvOSTests' do
     inherit! :search_paths
     # Pods for testing
   end

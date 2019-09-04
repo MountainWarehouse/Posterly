@@ -1,4 +1,4 @@
-package com.peepee;
+package com.posterly;
 
 import android.app.Application;
 import android.util.Log;

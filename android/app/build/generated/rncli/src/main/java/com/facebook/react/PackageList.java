@@ -10,8 +10,8 @@ import com.facebook.react.shell.MainReactPackage;
 import java.util.Arrays;
 import java.util.ArrayList;
 
-import com.peepee.BuildConfig;
-import com.peepee.R;
+import com.posterly.BuildConfig;
+import com.posterly.R;
 
 // react-native-datawedge-intents
 import com.darryncampbell.rndatawedgeintents.RNDataWedgeIntentsPackage;
