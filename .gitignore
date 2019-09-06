@@ -63,3 +63,6 @@ buck-out/
 /ios/Pods/
 
 .vs/
+
+android/app/build
+android/build
