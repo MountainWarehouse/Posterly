@@ -4,7 +4,7 @@
 
 # Xcode
 #
-build/
+
 *.pbxuser
 !default.pbxuser
 *.mode1v3
@@ -24,7 +24,7 @@ project.xcworkspace
 
 # Android/IntelliJ
 #
-build/
+
 .idea
 .gradle
 local.properties
@@ -61,3 +61,8 @@ buck-out/
 
 # CocoaPods
 /ios/Pods/
+
+.vs/
+
+android/app/build
+android/build
