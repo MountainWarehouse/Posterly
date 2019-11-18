@@ -45,13 +45,6 @@ export default class Scanner extends React.Component<ScannerProps> {
         }
     };
 
-    //TODO: For demo purposes only, remove if not necessary
-    handleMockBarcode = () => {
-        const barcodes = ["0705632441947", "977123456703", "416000336108", "416000336123423408", "41600033610342348"];
-        const barcode: string = barcodes[Math.floor(Math.random() * barcodes.length)];
-        this.props.onScan(barcode);
-    };
-    
     render() {
         return (
             <StyleProvider style={getTheme(commonColor)}>
