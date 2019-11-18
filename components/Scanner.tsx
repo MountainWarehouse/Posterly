@@ -39,19 +39,19 @@ export default class Scanner extends React.Component<ScannerProps> {
         if (!intent.hasOwnProperty("RESULT_INFO")) {
             const scannedData = intent["com.symbol.datawedge.data_string"];
             if (scannedData) {
+                DeviceEventEmitter.removeAllListeners();
                 this.props.onScan(scannedData);
             }
         }
     };
 
+    //TODO: For demo purposes only, remove if not necessary
     handleMockBarcode = () => {
-        var barcodes = ["0705632441947", "977123456703", "416000336108", "416000336123423408", "41600033610342348"];
-        var barcode: string = barcodes[Math.floor(Math.random() * barcodes.length)];
+        const barcodes = ["0705632441947", "977123456703", "416000336108", "416000336123423408", "41600033610342348"];
+        const barcode: string = barcodes[Math.floor(Math.random() * barcodes.length)];
         this.props.onScan(barcode);
     };
-
-    // dataWedgeService.sendScanButtonPressed
-
+    
     render() {
         return (
             <StyleProvider style={getTheme(commonColor)}>
@@ -67,8 +67,8 @@ export default class Scanner extends React.Component<ScannerProps> {
                         <Card transparent style={styles.maincard}>
                             <Title>{this.props.prompt}</Title>
                             <CardItem style={styles.card}>
-                                <Button full style={styles.scanButton} onPress={this.handleMockBarcode}>
-                                    <Text>Tan</Text>
+                                <Button full style={styles.scanButton} onPress={dataWedgeService.sendScanButtonPressed}>
+                                    <Text>Scan</Text>
                                 </Button>
                             </CardItem>
                         </Card>
