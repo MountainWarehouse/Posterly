@@ -6,9 +6,11 @@ import {
     Card, 
     Button, 
     Header, 
+    Item,
+    Input,
     CardItem, 
     Body, 
-    Title, 
+    Title,
     Right, 
     StyleProvider, 
     Left 
@@ -79,12 +81,17 @@ export default class Summary extends React.Component<SummaryProps, SummaryState>
                         </CardItem>
                         {showSignature && (
                             <CardItem>
-                                <Text>Parcel Recipient: </Text>
-                                <TextInput 
-                                    multiline
-                                    onChangeText={text => this.setState({ signature: text })}
-                                    value={signature}
-                                />
+                                <Content>
+                                        <Text>Parcel Recipient: </Text>
+                                    <Item>
+                                        <Input
+                                            onChangeText={text => this.setState({ signature: text })}
+                                            value={signature}
+                                            placeholder="Type recipient name"
+                                            placeholderTextColor="grey"
+                                        />
+                                    </Item>
+                                </Content>
                             </CardItem>
                         )}
                         <CardItem />
