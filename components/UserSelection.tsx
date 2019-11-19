@@ -129,7 +129,13 @@ export default class UserSelection extends Component<UserSelectionProps, UserSel
                         )}
                     />
                 </View>
-                <Button info full onPress={this.handleSubmit} disabled={!this.isValid()}>
+                <Button 
+                    info={this.isValid() && !this.isNewUser()}
+                    success={this.isValid() &&this.isNewUser()}
+                    full
+                    onPress={this.handleSubmit}
+                    disabled={!this.isValid()}
+                >
                     <Text>{this.isNewUser() ? 'Create' : 'Select'}</Text>
                 </Button>
                 <Text style={styles.tip}>Create a new user or select an existing one to notify about incoming parcel.</Text>

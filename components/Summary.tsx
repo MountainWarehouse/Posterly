@@ -51,6 +51,7 @@ export default class Summary extends React.Component<SummaryProps, SummaryState>
     render() {
         const { parcel, user, onCancel, showSignature, confirmText, title, tip } = this.props;
         const { signature } = this.state;
+        const confirmDisabled = showSignature && !signature;
         return (
             <Content padder>
                 <Header>
@@ -88,7 +89,13 @@ export default class Summary extends React.Component<SummaryProps, SummaryState>
                         )}
                         <CardItem />
                         <CardItem>
-                            <Button style={styles.button} full success onPress={() => this.handleConfirm(signature)}>
+                            <Button 
+                                style={styles.button}
+                                disabled={confirmDisabled}
+                                full
+                                success={!confirmDisabled}
+                                onPress={() => this.handleConfirm(signature)}
+                            >
                                 <Text>{confirmText}</Text>
                             </Button>
                         </CardItem>
