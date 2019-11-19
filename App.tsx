@@ -169,7 +169,7 @@ class App extends Component<object, State> {
 
     private  sendEmail() {
         const subject = "Your package is waiting for you!"
-        const body = "Hello " + this.state.user.UserName + "\n" +
+        const body = "Hello " + this.state.user.UserName + ",\n" +
             "Your package nr: " + this.state.parcel.ParcelId + " is waiting in reception\n" +
             "Look it by the shelf nr: " + this.state.parcel.ShelfBarcode + "\n";
 
