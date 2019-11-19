@@ -112,7 +112,11 @@ class App extends Component<object, State> {
             case Screen.Parcel:
                 return (
                     <Root>
-                        <Scanner prompt="Scan Parcel..." onScan={this.handleScanParcel} />
+                        <Scanner 
+                            prompt="Scan Parcel..."
+                            tip="Scan barcode of an incoming parcel."
+                            onScan={this.handleScanParcel} 
+                        />
                     </Root>
                 );
             case Screen.User:
@@ -124,7 +128,11 @@ class App extends Component<object, State> {
             case Screen.Shelf:
                 return (
                     <Root>
-                        <Scanner prompt="Scan Shelf..." onScan={this.handleScanShelf} />
+                        <Scanner
+                            prompt="Scan Shelf..."
+                            tip="Place the parcel on a shelf and scan shelf barcode."
+                            onScan={this.handleScanShelf}
+                        />
                     </Root>
                 );
             case Screen.Summary:
@@ -137,6 +145,7 @@ class App extends Component<object, State> {
                             onCancel={() => this.setState({ screen: Screen.Parcel })}
                             confirmText="Notify"
                             title="Check In Summary"
+                            tip="When 'Notify' is pressed the email for the parcel receiver will be generated."
                         />
                     </Root>
                 );
@@ -151,6 +160,7 @@ class App extends Component<object, State> {
                             onCancel={() => this.setState({ screen: Screen.Parcel })}
                             confirmText="Check Out"
                             title="Check Out Parcel"
+                            tip="By pressing 'Check Out' you confirm that the provided person received the parcel."
                         />
                     </Root>
                 );

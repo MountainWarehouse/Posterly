@@ -132,6 +132,7 @@ export default class UserSelection extends Component<UserSelectionProps, UserSel
                 <Button info full onPress={this.handleSubmit} disabled={!this.isValid()}>
                     <Text>{this.isNewUser() ? 'Create' : 'Select'}</Text>
                 </Button>
+                <Text style={styles.tip}>Create a new user or select an existing one to notify about incoming parcel.</Text>
             </View>
         );
     }
@@ -168,5 +169,9 @@ const styles = StyleSheet.create({
     },
     autoCompleteListItem: {
         zIndex: 100
+    },
+    tip: {
+        color: "grey",
+        fontStyle: "italic"
     }
 });

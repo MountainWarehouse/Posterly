@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, Dimensions, StyleSheet, TextInput, BackHandler } from "react-native";
+import { View, Text, Dimensions, StyleSheet, TextInput, BackHandler, TouchableOpacity } from "react-native";
 import { 
     Container, 
     Content, 
@@ -24,6 +24,7 @@ export interface SummaryProps {
     showSignature?: boolean;
     title: string;
     confirmText: string;
+    tip?: string;
 }
 
 export interface SummaryState {
@@ -48,7 +49,7 @@ export default class Summary extends React.Component<SummaryProps, SummaryState>
     };
 
     render() {
-        const { parcel, user, onCancel, showSignature, confirmText, title } = this.props;
+        const { parcel, user, onCancel, showSignature, confirmText, title, tip } = this.props;
         const { signature } = this.state;
         return (
             <Content padder>
@@ -77,7 +78,7 @@ export default class Summary extends React.Component<SummaryProps, SummaryState>
                         </CardItem>
                         {showSignature && (
                             <CardItem>
-                                <Text>Sign Here: </Text>
+                                <Text>Parcel Recipient: </Text>
                                 <TextInput 
                                     multiline
                                     onChangeText={text => this.setState({ signature: text })}
@@ -98,6 +99,7 @@ export default class Summary extends React.Component<SummaryProps, SummaryState>
                         </CardItem>
                     </Card>
                 </Content>
+                {tip && <Text style={styles.tip}>{tip}</Text>}
             </Content>
         );
     }
@@ -115,5 +117,9 @@ const styles = StyleSheet.create({
     button: {
         flex: 1,
         borderRadius: 10
+    },
+    tip: {
+        color: "grey",
+        fontStyle: "italic"
     }
 });
