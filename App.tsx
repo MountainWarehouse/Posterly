@@ -5,7 +5,7 @@ import Summary from "./components/Summary";
 import UserSelection from "./components/UserSelection";
 import { database } from "./database/database";
 import { Package } from "./models/package";
-import { Root } from "native-base";
+import { Root, Toast } from "native-base";
 import { User } from "./models/user";
 
 export interface State {
@@ -84,8 +84,11 @@ class App extends Component<object, State> {
         this.setState({ screen: Screen.Parcel });
     };
 
-    handleCheckOut = async () => {
-        // TODO:
+    handleCheckOut = async (signature: string) => {
+        const parcel = { ...this.state.parcel };
+        await database.updatePackage(parcel.ParcelBarcode, signature);
+        Toast.show({text: "Package has been checked out."})
+        this.setState({ screen: Screen.Parcel });
     };
 
     public componentDidMount() {
@@ -107,7 +110,15 @@ class App extends Component<object, State> {
 
         switch (screen) {
             case Screen.Parcel:
-                return <Scanner prompt='Scan Parcel...' onScan={this.handleScanParcel} />;
+                return (
+                    <Root>
+                        <Scanner 
+                            prompt="Scan Parcel..."
+                            tip="Scan barcode of an incoming parcel."
+                            onScan={this.handleScanParcel} 
+                        />
+                    </Root>
+                );
             case Screen.User:
                 return (
                     <Root>
@@ -115,46 +126,54 @@ class App extends Component<object, State> {
                     </Root>
                 );
             case Screen.Shelf:
-                return <Scanner prompt='Scan Shelf...' onScan={this.handleScanShelf} />;
+                return (
+                    <Root>
+                        <Scanner
+                            prompt="Scan Shelf..."
+                            tip="Place the parcel on a shelf and scan shelf barcode."
+                            onScan={this.handleScanShelf}
+                        />
+                    </Root>
+                );
             case Screen.Summary:
                 return (
-                    <Summary
-                        parcel={parcel}
-                        user={user}
-                        onConfirm={this.handleCheckIn}
-                        onCancel={() => this.setState({ screen: Screen.Parcel })}
-                    />
+                    <Root>
+                        <Summary
+                            parcel={parcel}
+                            user={user}
+                            onConfirm={this.handleCheckIn}
+                            onCancel={() => this.setState({ screen: Screen.Parcel })}
+                            confirmText="Notify"
+                            title="Check In Summary"
+                            tip="When 'Notify' is pressed the email for the parcel receiver will be generated."
+                        />
+                    </Root>
                 );
             case Screen.CheckOut:
                 return (
-                    <Summary
-                        showSignature
-                        parcel={parcel}
-                        user={user}
-                        onConfirm={this.handleCheckOut}
-                        onCancel={() => this.setState({ screen: Screen.Parcel })}
-                    />
+                    <Root>
+                        <Summary
+                            showSignature
+                            parcel={parcel}
+                            user={user}
+                            onConfirm={this.handleCheckOut}
+                            onCancel={() => this.setState({ screen: Screen.Parcel })}
+                            confirmText="Check Out"
+                            title="Check Out Parcel"
+                            tip="By pressing 'Check Out' you confirm that the provided person received the parcel."
+                        />
+                    </Root>
                 );
         }
     }
 
-    private sendEmail() {
-        const subject = "Your package is waiting for you!";
-        const body =
-            "Hello " +
-            this.state.user.UserName +
-            "\n" +
-            "Your package nr: " +
-            this.state.parcel.ParcelId +
-            " is waiting in reception\n" +
-            "Look it by the shelf nr: " +
-            this.state.parcel.ShelfBarcode +
-            "\n";
+    private  sendEmail() {
+        const subject = "Your package is waiting for you!"
+        const body = "Hello " + this.state.user.UserName + "\n" +
+            "Your package nr: " + this.state.parcel.ParcelId + " is waiting in reception\n" +
+            "Look it by the shelf nr: " + this.state.parcel.ShelfBarcode + "\n";
 
-        const bccAddress =
-            "sara.pinto@mountainwarehouse.com;michal.delura@mountainwarehouse.com;michal.dudelo@mountainwarehouse.com;Tariq.Hall@mountainwarehouse.com";
-        let url =
-            "mailto:" + this.state.user.UserEmail + "?bcc=" + bccAddress + "&subject=" + subject + "&body=" + body;
+        let url  = `mailto:${this.state.user.UserEmail}?subject=${subject}&body=${body}`;
         // check if we can use this link
         const canOpen = Linking.canOpenURL(url);
 

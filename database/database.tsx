@@ -161,7 +161,7 @@ class DatabaseImpl implements Database {
         return this.getDatabase()
             .then(db =>
                 db.executeSql(
-                    `UPDATE PACKAGE SET checkoutPerson = ?,  WHERE packageBarcode = ?;`,
+                    `UPDATE PACKAGE SET checkoutPerson = ? WHERE packageBarcode = ?;`,
                     [checkoutPerson, packageBarcode]
                 )
             ).then(() => { return })
