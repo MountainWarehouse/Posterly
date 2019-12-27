@@ -1,22 +1,22 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, Dimensions, StyleSheet, TextInput, BackHandler, TouchableOpacity } from "react-native";
-import { 
-    Container, 
-    Content, 
-    Card, 
-    Button, 
-    Header, 
+import React, { useState, useEffect } from 'react';
+import { View, Text, Dimensions, StyleSheet, TextInput, BackHandler, TouchableOpacity } from 'react-native';
+import {
+    Container,
+    Content,
+    Card,
+    Button,
+    Header,
     Item,
     Input,
-    CardItem, 
-    Body, 
+    CardItem,
+    Body,
     Title,
-    Right, 
-    StyleProvider, 
-    Left 
-} from "native-base";
-import { Package } from "../models/package";
-import { User } from "../models/user";
+    Right,
+    StyleProvider,
+    Left
+} from 'native-base';
+import { Package } from '../models/package';
+import { User } from '../models/user';
 
 export interface SummaryProps {
     parcel: Package;
@@ -24,7 +24,6 @@ export interface SummaryProps {
     onConfirm: (signature: string) => void;
     onCancel: () => void;
     showSignature?: boolean;
-    title: string;
     confirmText: string;
     tip?: string;
 }
@@ -38,7 +37,7 @@ export default class Summary extends React.Component<SummaryProps, SummaryState>
         super(props);
 
         this.state = {
-            signature: ""
+            signature: ''
         };
     }
 
@@ -51,16 +50,11 @@ export default class Summary extends React.Component<SummaryProps, SummaryState>
     };
 
     render() {
-        const { parcel, user, onCancel, showSignature, confirmText, title, tip } = this.props;
+        const { parcel, user, onCancel, showSignature, confirmText, tip } = this.props;
         const { signature } = this.state;
         const confirmDisabled = showSignature && !signature;
         return (
             <Content padder>
-                <Header>
-                    <Body>
-                        <Title>{title}</Title>
-                    </Body>
-                </Header>
                 <Content>
                     <Card>
                         <CardItem>
@@ -82,7 +76,7 @@ export default class Summary extends React.Component<SummaryProps, SummaryState>
                         {showSignature && (
                             <CardItem>
                                 <Content>
-                                        <Text>Parcel Recipient: </Text>
+                                    <Text>Parcel Recipient: </Text>
                                     <Item>
                                         <Input
                                             onChangeText={text => this.setState({ signature: text })}
@@ -96,7 +90,7 @@ export default class Summary extends React.Component<SummaryProps, SummaryState>
                         )}
                         <CardItem />
                         <CardItem>
-                            <Button 
+                            <Button
                                 style={styles.button}
                                 disabled={confirmDisabled}
                                 full
@@ -121,9 +115,9 @@ export default class Summary extends React.Component<SummaryProps, SummaryState>
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "center"
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center'
     },
     buttonContainer: {
         flex: 1
@@ -133,7 +127,7 @@ const styles = StyleSheet.create({
         borderRadius: 10
     },
     tip: {
-        color: "grey",
-        fontStyle: "italic"
+        color: 'grey',
+        fontStyle: 'italic'
     }
 });

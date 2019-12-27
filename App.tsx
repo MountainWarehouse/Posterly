@@ -1,13 +1,13 @@
 import 'react-native-gesture-handler';
-import React, { Component } from "react";
-import { AppState, Linking } from "react-native";
-import Scanner from "./components/Scanner";
-import Summary from "./components/Summary";
-import UserSelection from "./components/UserSelection";
-import { database } from "./database/database";
-import { Package } from "./models/package";
-import { Root, Toast } from "native-base";
-import { User } from "./models/user";
+import React, { Component } from 'react';
+import { AppState, Linking } from 'react-native';
+import Scanner from './components/Scanner';
+import Summary from './components/Summary';
+import UserSelection from './components/UserSelection';
+import { database } from './database/database';
+import { Package } from './models/package';
+import { Root, Toast } from 'native-base';
+import { User } from './models/user';
 import { createAppContainer, NavigationContainerComponent, NavigationActions } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 
@@ -20,11 +20,11 @@ export interface State {
 }
 
 enum Screen {
-    Parcel = "Parcel",
-    User = "User",
-    Shelf = "Shelf",
-    Summary = "Summary",
-    CheckOut = "CheckOut"
+    Parcel = 'Parcel',
+    User = 'User',
+    Shelf = 'Shelf',
+    Summary = 'Summary',
+    CheckOut = 'CheckOut'
 }
 
 class App extends Component<object, State> {
@@ -43,50 +43,54 @@ class App extends Component<object, State> {
 
     appNavigator = createStackNavigator(
         {
-            [Screen.Parcel]: { screen: () => (
-                <Scanner 
-                    prompt="Scan Parcel..." 
-                    tip="Scan barcode of an incoming parcel."
-                    onScan={this.handleScanParcel} 
-                />
-            )},
-            [Screen.User]: { screen: () => <UserSelection onSelectUser={this.handleSelectUser} /> },
-            [Screen.Shelf]: { screen: () => (
-                <Scanner 
-                    prompt="Scan Shelf..." 
-                    tip="Place the parcel on a shelf and scan shelf barcode."
-                    onScan={this.handleScanShelf} 
-                />
-            )},
-            [Screen.Summary]: { screen: () => (
-                <Summary
-                    parcel={this.state.parcel}
-                    user={this.state.user}
-                    onConfirm={this.handleCheckIn}
-                    onCancel={() => this.navigateTo(Screen.Parcel)}
-                    confirmText="Notify"
-                    title="Check In Summary"
-                    tip="When 'Notify' is pressed the email for the parcel receiver will be generated."
-                />
-            )},
-            [Screen.CheckOut]: { screen: () => (
-                <Summary
-                    showSignature
-                    parcel={this.state.parcel}
-                    user={this.state.user}
-                    onConfirm={this.handleCheckOut}
-                    onCancel={() => this.navigateTo(Screen.Parcel)}
-                    confirmText="Check Out"
-                    title="Check Out Parcel"
-                    tip="By pressing 'Check Out' you confirm that the provided person received the parcel."
-                />
-            )}
+            [Screen.Parcel]: {
+                screen: () => (
+                    <Scanner tip="Scan barcode of a parcel to check in or out" onScan={this.handleScanParcel} />
+                ),
+                navigationOptions: { title: 'Scan Parcel' }
+            },
+            [Screen.User]: {
+                screen: () => <UserSelection onSelectUser={this.handleSelectUser} />,
+                navigationOptions: { title: 'Logging a new parcel' }
+            },
+            [Screen.Shelf]: {
+                screen: () => (
+                    <Scanner tip="Place the parcel on a shelf and scan shelf barcode" onScan={this.handleScanShelf} />
+                ),
+                navigationOptions: { title: 'Scan Shelf' }
+            },
+            [Screen.Summary]: {
+                screen: () => (
+                    <Summary
+                        parcel={this.state.parcel}
+                        user={this.state.user}
+                        onConfirm={this.handleCheckIn}
+                        onCancel={() => this.navigateTo(Screen.Parcel)}
+                        confirmText="Notify"
+                        tip="When 'Notify' is pressed the email for the parcel receiver will be generated"
+                    />
+                ),
+                navigationOptions: { title: 'Check In Summary' }
+            },
+            [Screen.CheckOut]: {
+                screen: () => (
+                    <Summary
+                        showSignature
+                        parcel={this.state.parcel}
+                        user={this.state.user}
+                        onConfirm={this.handleCheckOut}
+                        onCancel={() => this.navigateTo(Screen.Parcel)}
+                        confirmText="Check Out"
+                        tip="By pressing 'Check Out' you confirm that the provided person received the parcel"
+                    />
+                ),
+                navigationOptions: { title: 'Check Out Parcel' }
+            }
         },
         {
             initialRouteName: Screen.Parcel
         }
     );
-
 
     AppNavigationContainer = createAppContainer(this.appNavigator);
 
@@ -97,31 +101,41 @@ class App extends Component<object, State> {
         //goto CheckIN
         if (!result || result.length === 0) {
             const newParcel = new Package(code, this.state.countParcels + 1);
-            return this.setState({
-                parcel: newParcel,
-                countParcels: this.state.countParcels + 1,
-                appState: 'active'
-            }, () => this.navigateTo(Screen.User));
+            return this.setState(
+                {
+                    parcel: newParcel,
+                    countParcels: this.state.countParcels + 1,
+                    appState: 'active'
+                },
+                () => this.navigateTo(Screen.User)
+            );
         }
 
         // goto CheckOUT
         const parcel = result[0];
         const user = (await database.getUserByUserId(parcel.User_Id))[0];
-        this.setState({
-            parcel,
-            user
-        }, () => this.navigateTo(Screen.CheckOut));
+        this.setState(
+            {
+                parcel,
+                user
+            },
+            () => this.navigateTo(Screen.CheckOut)
+        );
     };
 
-    navigateTo = (screen: Screen) => this.navigator && this.navigator.dispatch(NavigationActions.navigate({ routeName: screen }))
+    navigateTo = (screen: Screen) =>
+        this.navigator && this.navigator.dispatch(NavigationActions.navigate({ routeName: screen }));
 
     handleSelectUser = (user: User) => {
         const parcel = { ...this.state.parcel };
         parcel.User_Id = user.UserId;
-        this.setState({
-            parcel,
-            user
-        }, () => this.navigateTo(Screen.Shelf));
+        this.setState(
+            {
+                parcel,
+                user
+            },
+            () => this.navigateTo(Screen.Shelf)
+        );
     };
 
     handleScanShelf = (code: string) => {
@@ -157,11 +171,12 @@ class App extends Component<object, State> {
         // Remove app state change listener
         AppState.removeEventListener('change', this.handleAppStateChange);
     }
-    
+
     render = () => (
-    <Root>
-        <this.AppNavigationContainer ref={nav => this.navigator = nav} />
-    </Root>);
+        <Root>
+            <this.AppNavigationContainer ref={nav => (this.navigator = nav)} />
+        </Root>
+    );
 
     private sendEmail() {
         const subject = 'Your package is waiting for you!';
