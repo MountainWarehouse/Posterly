@@ -1,5 +1,5 @@
-import React from 'react';
-import { Button, Content, H3, Text, List, ListItem, Icon, Body } from 'native-base';
+import React, { useState } from 'react';
+import { Button, Content, H3, Text, List, ListItem, Icon, Body, Item, Input } from 'native-base';
 import { User } from '../models/user';
 import styles from '../_shared/styles';
 
@@ -10,6 +10,14 @@ export interface UserSelectionProps {
 }
 
 const UserSelection: React.SFC<UserSelectionProps> = ({ users, onCreateUser, onSelectUser }) => {
+    const [search, setSearch] = useState('');
+
+    const filteredUsers = users.filter(
+        u =>
+            u.UserName.toLowerCase().includes(search.toLowerCase()) ||
+            u.UserEmail.toLowerCase().includes(search.toLowerCase())
+    );
+
     return (
         <Content padder>
             <H3>Who is this parcel for?</H3>
@@ -18,8 +26,13 @@ const UserSelection: React.SFC<UserSelectionProps> = ({ users, onCreateUser, onS
                 <Icon name="md-person-add" />
                 <Text>Create New Recipient </Text>
             </Button>
+            <Item style={{ marginVertical: 5 }}>
+                <Icon name="md-search" />
+                <Input placeholder="Search" onChangeText={setSearch} />
+                <Icon name="md-people" />
+            </Item>
             <List
-                dataArray={users}
+                dataArray={filteredUsers}
                 keyExtractor={(user: User) => user.UserId.toString()}
                 renderRow={(user: User) => (
                     <ListItem onPress={() => onSelectUser(user)}>
