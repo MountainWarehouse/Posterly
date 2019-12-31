@@ -4,12 +4,14 @@ import { AppState, Linking } from 'react-native';
 import Scanner from './components/Scanner';
 import Summary from './components/Summary';
 import UserSelection from './components/UserSelection';
+import UserForm from './components/UserForm';
 import { database } from './database/database';
 import { Package } from './models/package';
 import { Root, Toast } from 'native-base';
 import { User } from './models/user';
 import { createAppContainer, NavigationContainerComponent, NavigationActions } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
+import Screen from './_shared/Screen';
 
 export interface State {
     appState: string;
@@ -17,14 +19,7 @@ export interface State {
     countParcels: number;
     parcel: Package;
     user: User;
-}
-
-enum Screen {
-    Parcel = 'Parcel',
-    User = 'User',
-    Shelf = 'Shelf',
-    Summary = 'Summary',
-    CheckOut = 'CheckOut'
+    users: User[];
 }
 
 class App extends Component<object, State> {
@@ -35,6 +30,7 @@ class App extends Component<object, State> {
             databaseIsReady: false,
             countParcels: 0,
             user: { UserId: -1, UserName: '', UserEmail: '' },
+            users: [],
             parcel: {} as Package
         };
 
@@ -49,9 +45,19 @@ class App extends Component<object, State> {
                 ),
                 navigationOptions: { title: 'Scan Parcel' }
             },
-            [Screen.User]: {
-                screen: () => <UserSelection onSelectUser={this.handleSelectUser} />,
+            [Screen.UserSelection]: {
+                screen: () => (
+                    <UserSelection
+                        onSelectUser={this.handleSelectUser}
+                        onCreateUser={() => this.navigateTo(Screen.UserCreation)}
+                        users={this.state.users}
+                    />
+                ),
                 navigationOptions: { title: 'Logging a new parcel' }
+            },
+            [Screen.UserCreation]: {
+                screen: () => <UserForm onUserCreated={this.handleUserCreated} users={this.state.users} />,
+                navigationOptions: { title: 'Create New Recipient' }
             },
             [Screen.Shelf]: {
                 screen: () => (
@@ -107,7 +113,7 @@ class App extends Component<object, State> {
                     countParcels: this.state.countParcels + 1,
                     appState: 'active'
                 },
-                () => this.navigateTo(Screen.User)
+                () => this.navigateTo(Screen.UserSelection)
             );
         }
 
@@ -125,6 +131,13 @@ class App extends Component<object, State> {
 
     navigateTo = (screen: Screen) =>
         this.navigator && this.navigator.dispatch(NavigationActions.navigate({ routeName: screen }));
+
+    handleUserCreated = (user: User) => {
+        const users = [...this.state.users];
+        users.push(user);
+        this.setState({ users });
+        this.handleSelectUser(user);
+    };
 
     handleSelectUser = (user: User) => {
         const parcel = { ...this.state.parcel };
@@ -158,11 +171,13 @@ class App extends Component<object, State> {
         this.navigateTo(Screen.Parcel);
     };
 
-    public componentDidMount() {
+    public async componentDidMount() {
         // App is starting up
-        this.appIsNowRunningInForeground();
+        await this.appIsNowRunningInForeground();
+        const users = await database.getAllUsers();
         this.setState({
-            appState: 'active'
+            appState: 'active',
+            users
         });
         // Listen for app state changes
         AppState.addEventListener('change', this.handleAppStateChange);
