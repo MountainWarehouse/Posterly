@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { Button, Content, Form, Item, Input, Label, Text, Toast } from 'native-base';
+import { Button, Content, Form, Text, Toast } from 'native-base';
 import { User } from '../models/user';
 import { database } from '../database/database';
+import { OutlinedTextField } from 'react-native-material-textfield';
 import styles from '../_shared/styles';
 
 export interface UserFormProps {
@@ -42,17 +43,15 @@ export default class UserForm extends Component<UserFormProps, UserFormState> {
         return (
             <Content padder>
                 <Form>
-                    <Item stackedLabel>
-                        <Label>Name</Label>
-                        <Input value={name} onChangeText={(text: string) => this.setState({ name: text })} />
-                    </Item>
-                    <Item stackedLabel>
-                        <Label>Email</Label>
-                        <Label style={{ fontStyle: 'italic' }}>
-                            Can be a distribution list if you want to inform multiple people
-                        </Label>
-                        <Input value={email} onChangeText={(text: string) => this.setState({ email: text })} />
-                    </Item>
+                    <OutlinedTextField label="Name" value={name} onChangeText={text => this.setState({ name: text })} />
+                    <OutlinedTextField
+                        label="Email"
+                        value={email}
+                        onChangeText={text => this.setState({ email: text })}
+                    />
+                    <Text style={{ fontStyle: 'italic', color: 'grey', fontSize: 14 }}>
+                        Can be a distribution list if you want to inform multiple people
+                    </Text>
                     <Button block success disabled={!this.isValid()} onPress={this.handleSubmit} style={styles.button}>
                         <Text>Create</Text>
                     </Button>
