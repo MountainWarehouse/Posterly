@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Content, H3, Text, List, ListItem, Left, Right, Icon } from 'native-base';
+import { Button, Content, H3, Text, List, ListItem, Icon, Body } from 'native-base';
 import { User } from '../models/user';
 import styles from '../_shared/styles';
 
@@ -15,16 +15,20 @@ const UserSelection: React.SFC<UserSelectionProps> = ({ users, onCreateUser, onS
             <H3>Who is this parcel for?</H3>
             <Text>Select parcel recipient or create a new one</Text>
             <Button block bordered style={styles.button} onPress={onCreateUser}>
-                <Text>Create New Recipient</Text>
+                <Icon name="md-person-add" />
+                <Text>Create New Recipient </Text>
             </Button>
             <List
                 dataArray={users}
+                keyExtractor={(user: User) => user.UserId.toString()}
                 renderRow={(user: User) => (
-                    <ListItem button onPress={() => onSelectUser(user)}>
-                        <Text>{user.UserName}</Text>
+                    <ListItem onPress={() => onSelectUser(user)}>
+                        <Body>
+                            <Text>{user.UserName}</Text>
+                            <Text style={{ fontSize: 12, fontStyle: 'italic' }}>{user.UserEmail}</Text>
+                        </Body>
                     </ListItem>
                 )}
-                keyExtractor={(user: User) => user.UserId.toString()}
             />
         </Content>
     );
