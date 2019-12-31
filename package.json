@@ -8,7 +8,9 @@
         "lint": "eslint ."
     },
     "dependencies": {
+        "@types/joi": "^14.3.4",
         "@types/react-native-material-textfield": "^0.16.2",
+        "joi-react-native": "^3.0.0",
         "native-base": "^2.13.8",
         "react": "16.9.0",
         "react-native": "0.61.5",
@@ -29,6 +31,7 @@
         "@types/react-native-sqlite-storage": "^3.3.1",
         "@types/react-test-renderer": "16.8.2",
         "babel-jest": "24.8.0",
+        "babel-plugin-rewrite-require": "^1.14.5",
         "eslint": "6.0.1",
         "jest": "24.8.0",
         "metro-react-native-babel-preset": "0.54.1",
