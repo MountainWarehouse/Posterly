@@ -12,7 +12,7 @@ export interface UserFormProps {
 }
 
 const UserForm: React.SFC<UserFormProps> = ({ onUserCreated, users }) => {
-    const [data, setData]: [any, (errors: any) => void] = useState({
+    const [data, setData]: [any, (data: any) => void] = useState({
         name: '',
         email: ''
     });
@@ -21,10 +21,26 @@ const UserForm: React.SFC<UserFormProps> = ({ onUserCreated, users }) => {
     const schema: any = {
         name: Joi.string()
             .required()
+            .invalid(users.map(user => user.UserName))
+            .insensitive()
+            .error(ers =>
+                ers.map(e => {
+                    if (e.type === 'any.invalid') e.message = 'This name already exists';
+                    return e;
+                })
+            )
             .label('Name'),
         email: Joi.string()
             .email({ minDomainAtoms: 2 })
             .required()
+            .invalid(users.map(user => user.UserEmail))
+            .insensitive()
+            .error(ers =>
+                ers.map(e => {
+                    if (e.type === 'any.invalid') e.message = 'This email already exists';
+                    return e;
+                })
+            )
             .label('Email')
     };
 
