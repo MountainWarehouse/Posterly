@@ -15,55 +15,44 @@ export interface SummaryProps {
     tip?: string;
 }
 
-export interface SummaryState {
-    signature: string;
-}
+const Summary: React.SFC<SummaryProps> = props => {
+    const [signature, setSignature] = useState('');
+    const { parcel, user, onConfirm, onCancel, showSignature, confirmText, tip } = props;
 
-export default class Summary extends React.Component<SummaryProps, SummaryState> {
-    constructor(props: SummaryProps) {
-        super(props);
-
-        this.state = {
-            signature: ''
-        };
-    }
-
-    handleConfirm = (signature: string) => {
-        this.props.onConfirm(signature);
+    const handleConfirm = (signature: string) => {
+        onConfirm(signature);
     };
 
-    render() {
-        const { parcel, user, onCancel, showSignature, confirmText, tip } = this.props;
-        const { signature } = this.state;
-        const confirmDisabled = showSignature && !signature;
-        return (
-            <Content padder>
-                <TextField label="Parcel No" value={parcel.ParcelBarcode} editable={false} />
-                <TextField label="Recipient Name" value={user.UserName} editable={false} />
-                <TextField label="Recipient Email" value={user.UserEmail} editable={false} />
-                <TextField label="Shelf No" value={parcel.ShelfBarcode} editable={false} />
-                {showSignature && (
-                    <TextField
-                        label="Person collecting parcel"
-                        onChangeText={text => this.setState({ signature: text })}
-                        value={signature}
-                        placeholder="Type name of the person"
-                    />
-                )}
-                {tip && <Text style={styles.tip}>{tip}</Text>}
-                <Button
-                    style={styles.button}
-                    disabled={confirmDisabled}
-                    block
-                    success={!confirmDisabled}
-                    onPress={() => this.handleConfirm(signature)}
-                >
-                    <Text>{confirmText}</Text>
-                </Button>
-                <Button style={styles.button} bordered block danger onPress={onCancel}>
-                    <Text>Cancel</Text>
-                </Button>
-            </Content>
-        );
-    }
-}
+    const confirmDisabled = showSignature && !signature;
+    return (
+        <Content padder>
+            <TextField label="Parcel No" value={parcel.ParcelBarcode} editable={false} />
+            <TextField label="Recipient Name" value={user.UserName} editable={false} />
+            <TextField label="Recipient Email" value={user.UserEmail} editable={false} />
+            <TextField label="Shelf No" value={parcel.ShelfBarcode} editable={false} />
+            {showSignature && (
+                <TextField
+                    label="Person collecting parcel"
+                    onChangeText={setSignature}
+                    value={signature}
+                    placeholder="Type name of the person"
+                />
+            )}
+            {tip && <Text style={styles.tip}>{tip}</Text>}
+            <Button
+                style={styles.button}
+                disabled={confirmDisabled}
+                block
+                success={!confirmDisabled}
+                onPress={() => handleConfirm(signature)}
+            >
+                <Text>{confirmText}</Text>
+            </Button>
+            <Button style={styles.button} bordered block danger onPress={onCancel}>
+                <Text>Cancel</Text>
+            </Button>
+        </Content>
+    );
+};
+
+export default Summary;
