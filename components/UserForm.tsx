@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import { Button, Content, Form, Text, Toast } from 'native-base';
 import { User } from '../models/user';
 import { database } from '../database/database';
@@ -11,27 +11,14 @@ export interface UserFormProps {
     users: User[];
 }
 
-export interface UserFormState {
-    data: {
-        name: string;
-        email: string;
-    };
-    errors: any;
-}
+const UserForm: React.SFC<UserFormProps> = ({ onUserCreated, users }) => {
+    const [data, setData]: [any, (errors: any) => void] = useState({
+        name: '',
+        email: ''
+    });
+    const [errors, setErrors]: [any, (errors: any) => void] = useState({});
 
-export default class UserForm extends Component<UserFormProps, UserFormState> {
-    constructor(props: UserFormProps) {
-        super(props);
-        this.state = {
-            data: {
-                name: '',
-                email: ''
-            },
-            errors: {}
-        };
-    }
-
-    schema: any = {
+    const schema: any = {
         name: Joi.string()
             .required()
             .label('Name'),
@@ -41,30 +28,28 @@ export default class UserForm extends Component<UserFormProps, UserFormState> {
             .label('Email')
     };
 
-    handleChange = (name: string, text: string) => {
-        const errors = { ...this.state.errors };
-        const errorMessage = this.validateProperty(name, text);
-        errors[name] = errorMessage;
-
-        const data: any = { ...this.state.data };
-        data[name] = text;
-        this.setState({ data, errors });
+    const handleChange = (name: string, text: string) => {
+        const newErrors = { ...errors };
+        const newData = { ...data };
+        const errorMessage = validateProperty(name, text);
+        newErrors[name] = errorMessage;
+        newData[name] = text;
+        setData(newData);
+        setErrors(newErrors);
     };
 
-    handleSubmit = async () => {
-        const errors = this.validate();
+    const handleSubmit = async () => {
+        const errors = validate();
 
-        if (errors) {
-            return this.setState({ errors });
-        }
-        const { name, email } = this.state.data;
-        const user = await database.createUser(name, email);
-        Toast.show({ text: `Recipient ${name} created!` });
-        this.props.onUserCreated(user);
+        if (errors) return setErrors(errors);
+
+        const user = await database.createUser(data.name, data.email);
+        Toast.show({ text: `Recipient ${data.name} created!` });
+        onUserCreated(user);
     };
 
-    validate = () => {
-        const { error } = Joi.validate(this.state.data, this.schema, { abortEarly: false, stripUnknown: true });
+    const validate = () => {
+        const { error } = Joi.validate(data, schema, { abortEarly: false, stripUnknown: true });
 
         if (!error) return null;
 
@@ -77,45 +62,43 @@ export default class UserForm extends Component<UserFormProps, UserFormState> {
         return errors;
     };
 
-    validateProperty = (name: string, value: string) => {
+    const validateProperty = (name: string, value: string) => {
         const obj = { [name]: value };
-        const schema = { [name]: this.schema[name] };
+        const propertySchema = { [name]: schema[name] };
 
-        const { error } = Joi.validate(obj, schema);
+        const { error } = Joi.validate(obj, propertySchema);
 
         return error ? error.details[0].message : null;
     };
 
-    render() {
-        const { name, email } = this.state.data;
-        const { errors } = this.state;
-        const isChanged = name || email ? true : false;
-        const isValid = !this.validate();
-        const disabled = !isChanged || !isValid;
+    const isChanged = data.name || data.email ? true : false;
+    const isValid = !validate();
+    const disabled = !isChanged || !isValid;
 
-        return (
-            <Content padder>
-                <Form>
-                    <OutlinedTextField
-                        label="Name"
-                        value={name}
-                        onChangeText={text => this.handleChange('name', text)}
-                        error={errors.name}
-                    />
-                    <OutlinedTextField
-                        label="Email"
-                        value={email}
-                        onChangeText={text => this.handleChange('email', text)}
-                        error={errors.email}
-                    />
-                    <Text style={{ fontStyle: 'italic', color: 'grey', fontSize: 14 }}>
-                        Can be a distribution list if you want to inform multiple people
-                    </Text>
-                    <Button block success disabled={disabled} onPress={this.handleSubmit} style={styles.button}>
-                        <Text>Create</Text>
-                    </Button>
-                </Form>
-            </Content>
-        );
-    }
-}
+    return (
+        <Content padder>
+            <Form>
+                <OutlinedTextField
+                    label="Name"
+                    value={data.name}
+                    onChangeText={text => handleChange('name', text)}
+                    error={errors.name}
+                />
+                <OutlinedTextField
+                    label="Email"
+                    value={data.email}
+                    onChangeText={text => handleChange('email', text)}
+                    error={errors.email}
+                />
+                <Text style={{ fontStyle: 'italic', color: 'grey', fontSize: 14 }}>
+                    Can be a distribution list if you want to inform multiple people
+                </Text>
+                <Button block success disabled={disabled} onPress={handleSubmit} style={styles.button}>
+                    <Text>Create</Text>
+                </Button>
+            </Form>
+        </Content>
+    );
+};
+
+export default UserForm;
