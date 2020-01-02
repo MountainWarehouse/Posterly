@@ -200,8 +200,8 @@ class App extends Component<object, State> {
             this.state.user.UserName +
             ',\n' +
             'Your package nr: ' +
-            this.state.parcel.ParcelId +
-            ' is waiting in reception\n' +
+            this.state.parcel.ParcelBarcode +
+            ' is waiting in reception.\n' +
             'Look it by the shelf nr: ' +
             this.state.parcel.ShelfBarcode +
             '\n';
