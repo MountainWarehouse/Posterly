@@ -7,11 +7,12 @@ import UserSelection from './components/UserSelection';
 import UserForm from './components/UserForm';
 import { database } from './database/database';
 import { Package } from './models/package';
-import { Root, Toast } from 'native-base';
+import { Root, Toast, Button, Icon, Text } from 'native-base';
 import { User } from './models/user';
 import { createAppContainer, NavigationContainerComponent, NavigationActions } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 import Screen from './_shared/Screen';
+import CheckOut from './components/CheckOut';
 
 export interface State {
     appState: string;
@@ -20,6 +21,7 @@ export interface State {
     parcel: Package;
     user: User;
     users: User[];
+    checkoutPerson: string;
 }
 
 class App extends Component<object, State> {
@@ -31,11 +33,48 @@ class App extends Component<object, State> {
             countParcels: 0,
             user: { UserId: -1, UserName: '', UserEmail: '' },
             users: [],
-            parcel: {} as Package
+            parcel: {} as Package,
+            checkoutPerson: ''
         };
 
         this.handleAppStateChange = this.handleAppStateChange.bind(this);
     }
+
+    handleCheckIn = async () => {
+        const { ParcelBarcode, ShelfBarcode } = this.state.parcel;
+        await database.createPackage(ParcelBarcode, ShelfBarcode, this.state.user, '');
+        this.sendEmail();
+        this.navigateTo(Screen.Parcel);
+    };
+
+    handleCheckOut = async () => {
+        const { parcel, checkoutPerson } = this.state;
+        await database.updatePackage(parcel.ParcelBarcode, checkoutPerson);
+        Toast.show({ text: 'Package has been checked out.' });
+        this.navigateTo(Screen.Parcel);
+    };
+
+    public async componentDidMount() {
+        // App is starting up
+        await this.appIsNowRunningInForeground();
+        const users = await database.getAllUsers();
+        this.setState({
+            appState: 'active',
+            users
+        });
+        // Listen for app state changes
+        AppState.addEventListener('change', this.handleAppStateChange);
+    }
+    public componentWillUnmount() {
+        // Remove app state change listener
+        AppState.removeEventListener('change', this.handleAppStateChange);
+    }
+
+    cancelHeaderButton = (
+        <Button transparent onPress={() => this.navigateTo(Screen.Parcel)}>
+            <Icon name="md-close" />
+        </Button>
+    );
 
     appNavigator = createStackNavigator(
         {
@@ -70,27 +109,41 @@ class App extends Component<object, State> {
                     <Summary
                         parcel={this.state.parcel}
                         user={this.state.user}
-                        onConfirm={this.handleCheckIn}
-                        onCancel={() => this.navigateTo(Screen.Parcel)}
-                        confirmText="Notify"
                         tip="When 'Notify' is pressed the email for the parcel receiver will be generated"
                     />
                 ),
-                navigationOptions: { title: 'Check In Summary' }
+                navigationOptions: {
+                    headerLeft: this.cancelHeaderButton,
+                    headerTitle: <Text>Check In Summary</Text>,
+                    headerRight: () => (
+                        <Button hasText transparent onPress={this.handleCheckIn}>
+                            <Text>Notify</Text>
+                        </Button>
+                    )
+                }
             },
             [Screen.CheckOut]: {
                 screen: () => (
-                    <Summary
-                        showSignature
+                    <CheckOut
                         parcel={this.state.parcel}
                         user={this.state.user}
-                        onConfirm={this.handleCheckOut}
-                        onCancel={() => this.navigateTo(Screen.Parcel)}
-                        confirmText="Check Out"
-                        tip="By pressing 'Check Out' you confirm that the has collected the parcel"
+                        onChangeCheckoutPerson={checkoutPerson => this.setState({ checkoutPerson })}
+                        tip="By pressing 'Check Out' you confirm that the person has collected the parcel"
                     />
                 ),
-                navigationOptions: { title: 'Check Out Parcel' }
+                navigationOptions: {
+                    headerLeft: (
+                        <Button transparent onPress={() => this.navigateTo(Screen.Parcel)}>
+                            <Icon name="md-close" />
+                        </Button>
+                    ),
+                    headerTitle: <Text>Check Out Parcel</Text>,
+                    headerRight: () => (
+                        <Button hasText transparent onPress={this.handleCheckOut} disabled={!this.state.checkoutPerson}>
+                            <Text>Check Out</Text>
+                        </Button>
+                    )
+                }
             }
         },
         {
@@ -156,36 +209,6 @@ class App extends Component<object, State> {
         parcel.ShelfBarcode = code;
         this.setState({ parcel }, () => this.navigateTo(Screen.Summary));
     };
-
-    handleCheckIn = async () => {
-        const { ParcelBarcode, ShelfBarcode } = this.state.parcel;
-        await database.createPackage(ParcelBarcode, ShelfBarcode, this.state.user, '');
-        this.sendEmail();
-        this.navigateTo(Screen.Parcel);
-    };
-
-    handleCheckOut = async (signature: string) => {
-        const parcel = { ...this.state.parcel };
-        await database.updatePackage(parcel.ParcelBarcode, signature);
-        Toast.show({ text: 'Package has been checked out.' });
-        this.navigateTo(Screen.Parcel);
-    };
-
-    public async componentDidMount() {
-        // App is starting up
-        await this.appIsNowRunningInForeground();
-        const users = await database.getAllUsers();
-        this.setState({
-            appState: 'active',
-            users
-        });
-        // Listen for app state changes
-        AppState.addEventListener('change', this.handleAppStateChange);
-    }
-    public componentWillUnmount() {
-        // Remove app state change listener
-        AppState.removeEventListener('change', this.handleAppStateChange);
-    }
 
     render = () => (
         <Root>
