@@ -1,22 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, Dimensions, StyleSheet, TextInput, BackHandler, TouchableOpacity } from 'react-native';
-import {
-    Container,
-    Content,
-    Card,
-    Button,
-    Header,
-    Item,
-    Input,
-    CardItem,
-    Body,
-    Title,
-    Right,
-    StyleProvider,
-    Left
-} from 'native-base';
+import React, { useState } from 'react';
+import { Content, Button, Text } from 'native-base';
 import { Package } from '../models/package';
 import { User } from '../models/user';
+import { TextField } from 'react-native-material-textfield';
+import styles from '../_shared/styles';
 
 export interface SummaryProps {
     parcel: Package;
@@ -43,10 +30,6 @@ export default class Summary extends React.Component<SummaryProps, SummaryState>
 
     handleConfirm = (signature: string) => {
         this.props.onConfirm(signature);
-        //TODO:
-        // this.setState({
-        //     signature: signaText
-        // });
     };
 
     render() {
@@ -55,79 +38,32 @@ export default class Summary extends React.Component<SummaryProps, SummaryState>
         const confirmDisabled = showSignature && !signature;
         return (
             <Content padder>
-                <Content>
-                    <Card>
-                        <CardItem>
-                            <Text>Parcel No: </Text>
-                            <Text>{parcel.ParcelBarcode}</Text>
-                        </CardItem>
-                        <CardItem>
-                            <Text>Name: </Text>
-                            <Text>{user.UserName}</Text>
-                        </CardItem>
-                        <CardItem>
-                            <Text>E-Mail: </Text>
-                            <Text>{user.UserEmail}</Text>
-                        </CardItem>
-                        <CardItem>
-                            <Text>Shelf No: </Text>
-                            <Text>{parcel.ShelfBarcode}</Text>
-                        </CardItem>
-                        {showSignature && (
-                            <CardItem>
-                                <Content>
-                                    <Text>Parcel Recipient: </Text>
-                                    <Item>
-                                        <Input
-                                            onChangeText={text => this.setState({ signature: text })}
-                                            value={signature}
-                                            placeholder="Type recipient name"
-                                            placeholderTextColor="grey"
-                                        />
-                                    </Item>
-                                </Content>
-                            </CardItem>
-                        )}
-                        <CardItem />
-                        <CardItem>
-                            <Button
-                                style={styles.button}
-                                disabled={confirmDisabled}
-                                full
-                                success={!confirmDisabled}
-                                onPress={() => this.handleConfirm(signature)}
-                            >
-                                <Text>{confirmText}</Text>
-                            </Button>
-                        </CardItem>
-                        <CardItem>
-                            <Button style={styles.button} full danger onPress={onCancel}>
-                                <Text>Cancel</Text>
-                            </Button>
-                        </CardItem>
-                    </Card>
-                </Content>
+                <TextField label="Parcel No" value={parcel.ParcelBarcode} editable={false} />
+                <TextField label="Recipient Name" value={user.UserName} editable={false} />
+                <TextField label="Recipient Email" value={user.UserEmail} editable={false} />
+                <TextField label="Shelf No" value={parcel.ShelfBarcode} editable={false} />
+                {showSignature && (
+                    <TextField
+                        label="Person collecting parcel"
+                        onChangeText={text => this.setState({ signature: text })}
+                        value={signature}
+                        placeholder="Type name of the person"
+                    />
+                )}
                 {tip && <Text style={styles.tip}>{tip}</Text>}
+                <Button
+                    style={styles.button}
+                    disabled={confirmDisabled}
+                    block
+                    success={!confirmDisabled}
+                    onPress={() => this.handleConfirm(signature)}
+                >
+                    <Text>{confirmText}</Text>
+                </Button>
+                <Button style={styles.button} bordered block danger onPress={onCancel}>
+                    <Text>Cancel</Text>
+                </Button>
             </Content>
         );
     }
 }
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center'
-    },
-    buttonContainer: {
-        flex: 1
-    },
-    button: {
-        flex: 1,
-        borderRadius: 10
-    },
-    tip: {
-        color: 'grey',
-        fontStyle: 'italic'
-    }
-});
