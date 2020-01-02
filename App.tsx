@@ -87,7 +87,7 @@ class App extends Component<object, State> {
                         onConfirm={this.handleCheckOut}
                         onCancel={() => this.navigateTo(Screen.Parcel)}
                         confirmText="Check Out"
-                        tip="By pressing 'Check Out' you confirm that the provided person received the parcel"
+                        tip="By pressing 'Check Out' you confirm that the has collected the parcel"
                     />
                 ),
                 navigationOptions: { title: 'Check Out Parcel' }

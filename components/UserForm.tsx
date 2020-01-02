@@ -105,8 +105,8 @@ const UserForm: React.SFC<UserFormProps> = ({ onUserCreated, users }) => {
                     value={data.email}
                     onChangeText={text => handleChange('email', text)}
                     error={errors.email}
+                    title="Can be a distribution list if you want to inform multiple people"
                 />
-                <Text style={styles.tip}>Can be a distribution list if you want to inform multiple people</Text>
                 <Button block success disabled={disabled} onPress={handleSubmit} style={styles.button}>
                     <Text>Create</Text>
                 </Button>
