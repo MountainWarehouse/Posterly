@@ -1,6 +1,6 @@
 import 'react-native-gesture-handler';
 import React, { Component } from 'react';
-import { AppState, Linking } from 'react-native';
+import { AppState, Linking, Alert } from 'react-native';
 import Scanner from './components/Scanner';
 import Summary from './components/Summary';
 import UserSelection from './components/UserSelection';
@@ -13,6 +13,7 @@ import { createAppContainer, NavigationContainerComponent, NavigationActions } f
 import { createStackNavigator } from 'react-navigation-stack';
 import Screen from './_shared/Screen';
 import CheckOut from './components/CheckOut';
+import * as emailService from './services/EmailService';
 
 export interface State {
     appState: string;
@@ -41,19 +42,58 @@ class App extends Component<object, State> {
     }
 
     handleCheckIn = async () => {
-        const { ParcelBarcode, ShelfBarcode } = this.state.parcel;
-        await database.createPackage(ParcelBarcode, ShelfBarcode, this.state.user, '');
-        this.sendEmail();
+        const { parcel, user } = this.state;
+        await database.createPackage(parcel.ParcelBarcode, parcel.ShelfBarcode, user, '');
+
+        const body =
+            `Hello ${user.UserName},\n` +
+            `Your package no: ${parcel.ParcelBarcode} is waiting in reception.\n` +
+            `Look it by the shelf no: ${parcel.ShelfBarcode}.\n\n`;
+        emailService.sendEmail(user.UserEmail, 'Your package is waiting for you!', body);
         this.navigateTo(Screen.Parcel);
     };
 
     handleCheckOut = async () => {
-        const { parcel, checkoutPerson } = this.state;
-        await database.updatePackage(parcel.ParcelBarcode, checkoutPerson);
-        Toast.show({ text: 'Package has been checked out.' });
-        this.navigateTo(Screen.Parcel);
+        const { user, parcel, checkoutPerson } = this.state;
+
+        if (checkoutPerson === user.UserName) return this.checkOutPackage();
+
+        Alert.alert(
+            'Notify?',
+            'Person collecting parcel is different than the parcel recipient.\n' +
+                'Do you want to notify the original recipient that the parcel has been received?',
+            [
+                {
+                    text: 'Cancel',
+                    onPress: () => console.log('Cancel Pressed'),
+                    style: 'cancel'
+                },
+                {
+                    text: 'No',
+                    onPress: this.checkOutPackage
+                },
+                {
+                    text: 'Yes',
+                    onPress: () => {
+                        const body =
+                            `Hello ${user.UserName},\n` +
+                            `Your package no: ${parcel.ParcelBarcode} has been checked out by ${checkoutPerson}.\n\n` +
+                            'Have a great day!';
+                        emailService.sendEmail(user.UserEmail, 'Your package has been checked out', body);
+                        this.checkOutPackage();
+                    }
+                }
+            ],
+            { cancelable: false }
+        );
     };
 
+    checkOutPackage = async () => {
+        const { parcel, checkoutPerson } = this.state;
+        await database.updatePackage(parcel.ParcelBarcode, checkoutPerson);
+        Toast.show({ text: 'Parcel has been checked out.' });
+        this.navigateTo(Screen.Parcel);
+    };
     public async componentDidMount() {
         // App is starting up
         await this.appIsNowRunningInForeground();
@@ -215,30 +255,6 @@ class App extends Component<object, State> {
             <this.AppNavigationContainer ref={nav => (this.navigator = nav)} />
         </Root>
     );
-
-    private sendEmail() {
-        const subject = 'Your package is waiting for you!';
-        const body =
-            'Hello ' +
-            this.state.user.UserName +
-            ',\n' +
-            'Your package nr: ' +
-            this.state.parcel.ParcelBarcode +
-            ' is waiting in reception.\n' +
-            'Look it by the shelf nr: ' +
-            this.state.parcel.ShelfBarcode +
-            '\n';
-
-        let url = `mailto:${this.state.user.UserEmail}?subject=${subject}&body=${body}`;
-        // check if we can use this link
-        const canOpen = Linking.canOpenURL(url);
-
-        if (!canOpen) {
-            throw new Error('Provided URL can not be handled');
-        }
-
-        Linking.openURL(url);
-    }
 
     // Handle the app going from foreground to background, and vice versa.
     private handleAppStateChange(nextAppState: string) {
