@@ -1,6 +1,6 @@
 import 'react-native-gesture-handler';
 import React, { Component } from 'react';
-import { AppState, Linking, Alert } from 'react-native';
+import { AppState, Alert } from 'react-native';
 import Scanner from './components/Scanner';
 import Summary from './components/Summary';
 import UserSelection from './components/UserSelection';
@@ -14,15 +14,19 @@ import { createStackNavigator } from 'react-navigation-stack';
 import Screen from './_shared/Screen';
 import CheckOut from './components/CheckOut';
 import * as emailService from './services/EmailService';
+import Preferences from './components/Preferences';
+import IPreferences from './_shared/IPreferences';
+import PreferenceService from './services/PreferenceService';
+import { MenuProvider, Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
 
 export interface State {
     appState: string;
-    databaseIsReady: boolean;
     countParcels: number;
     parcel: Package;
     user: User;
     users: User[];
     checkoutPerson: string;
+    preferences: IPreferences;
 }
 
 class App extends Component<object, State> {
@@ -30,25 +34,42 @@ class App extends Component<object, State> {
         super(props);
         this.state = {
             appState: AppState.currentState,
-            databaseIsReady: false,
             countParcels: 0,
             user: { UserId: -1, UserName: '', UserEmail: '' },
             users: [],
             parcel: {} as Package,
-            checkoutPerson: ''
+            checkoutPerson: '',
+            preferences: {} as IPreferences
         };
+    }
 
-        this.handleAppStateChange = this.handleAppStateChange.bind(this);
+    public async componentDidMount() {
+        await database.open();
+        const [users, preferences] = await Promise.all([database.getAllUsers(), PreferenceService.getAll()]);
+        this.setState({
+            appState: 'active',
+            users,
+            preferences
+        });
+
+        // Listen for app state changes
+        AppState.addEventListener('change', this.handleAppStateChange);
+    }
+    public componentWillUnmount() {
+        // Remove app state change listener
+        AppState.removeEventListener('change', this.handleAppStateChange);
     }
 
     handleCheckIn = async () => {
         const { parcel, user } = this.state;
         await database.createPackage(parcel.ParcelBarcode, parcel.ShelfBarcode, user, '');
 
+        const shelfInfo = parcel.ShelfBarcode !== '0' ? `Look it by the shelf no: ${parcel.ShelfBarcode}.\n` : '';
         const body =
             `Hello ${user.UserName},\n` +
             `Your package no: ${parcel.ParcelBarcode} is waiting in reception.\n` +
-            `Look it by the shelf no: ${parcel.ShelfBarcode}.\n\n`;
+            shelfInfo +
+            '\nHave a great day!';
         emailService.sendEmail(user.UserEmail, 'Your package is waiting for you!', body);
         this.navigateTo(Screen.Parcel);
     };
@@ -65,7 +86,6 @@ class App extends Component<object, State> {
             [
                 {
                     text: 'Cancel',
-                    onPress: () => console.log('Cancel Pressed'),
                     style: 'cancel'
                 },
                 {
@@ -94,21 +114,6 @@ class App extends Component<object, State> {
         Toast.show({ text: 'Parcel has been checked out.' });
         this.navigateTo(Screen.Parcel);
     };
-    public async componentDidMount() {
-        // App is starting up
-        await this.appIsNowRunningInForeground();
-        const users = await database.getAllUsers();
-        this.setState({
-            appState: 'active',
-            users
-        });
-        // Listen for app state changes
-        AppState.addEventListener('change', this.handleAppStateChange);
-    }
-    public componentWillUnmount() {
-        // Remove app state change listener
-        AppState.removeEventListener('change', this.handleAppStateChange);
-    }
 
     cancelHeaderButton = (
         <Button transparent onPress={() => this.navigateTo(Screen.Parcel)}>
@@ -184,10 +189,33 @@ class App extends Component<object, State> {
                         </Button>
                     )
                 }
+            },
+            [Screen.Preferences]: {
+                screen: () => (
+                    <Preferences
+                        preferences={this.state.preferences}
+                        onPreferencesChanged={this.handlePreferencesChanged}
+                    />
+                ),
+                navigationOptions: { title: 'Settings', headerRight: null }
             }
         },
         {
-            initialRouteName: Screen.Parcel
+            initialRouteName: Screen.Parcel,
+            defaultNavigationOptions: {
+                headerRight: (
+                    <Button dark transparent>
+                        <Menu>
+                            <MenuTrigger>
+                                <Icon name="md-more" />
+                            </MenuTrigger>
+                            <MenuOptions>
+                                <MenuOption onSelect={() => this.navigateTo(Screen.Preferences)} text="Settings" />
+                            </MenuOptions>
+                        </Menu>
+                    </Button>
+                )
+            }
         }
     );
 
@@ -235,12 +263,13 @@ class App extends Component<object, State> {
     handleSelectUser = (user: User) => {
         const parcel = { ...this.state.parcel };
         parcel.User_Id = user.UserId;
+        const nextScreen = this.state.preferences.useShelf ? Screen.Shelf : Screen.Summary;
         this.setState(
             {
                 parcel,
                 user
             },
-            () => this.navigateTo(Screen.Shelf)
+            () => this.navigateTo(nextScreen)
         );
     };
 
@@ -250,39 +279,33 @@ class App extends Component<object, State> {
         this.setState({ parcel }, () => this.navigateTo(Screen.Summary));
     };
 
+    handlePreferencesChanged = async (preferences: IPreferences) => {
+        const currentPreferences = { ...this.state.preferences };
+
+        PreferenceService.setAll(preferences)
+            .then(() => this.setState({ preferences }))
+            .catch(() => this.setState({ preferences: currentPreferences }));
+    };
+
     render = () => (
-        <Root>
-            <this.AppNavigationContainer ref={nav => (this.navigator = nav)} />
-        </Root>
+        <MenuProvider>
+            <Root>
+                <this.AppNavigationContainer ref={nav => (this.navigator = nav)} />
+            </Root>
+        </MenuProvider>
     );
 
     // Handle the app going from foreground to background, and vice versa.
-    private handleAppStateChange(nextAppState: string) {
+    handleAppStateChange = (nextAppState: string) => {
         if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
             // App has moved from the background (or inactive) into the foreground
-            this.appIsNowRunningInForeground();
+            database.open();
         } else if (this.state.appState === 'active' && nextAppState.match(/inactive|background/)) {
             // App has moved from the foreground into the background (or become inactive)
-            this.appHasGoneToTheBackground();
+            database.close();
         }
         this.setState({ appState: nextAppState });
-    }
-
-    // Code to run when app is brought to the foreground
-    private appIsNowRunningInForeground() {
-        console.log('App is now running in the foreground!');
-        return database.open().then(() =>
-            this.setState({
-                databaseIsReady: true
-            })
-        );
-    }
-
-    // Code to run when app is sent to the background
-    private appHasGoneToTheBackground() {
-        console.log('App has gone to the background.');
-        database.close();
-    }
+    };
 }
 
 export default App;
