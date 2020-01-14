@@ -17,7 +17,7 @@ const Summary: React.SFC<SummaryProps> = ({ parcel, user, tip }) => {
             <TextField label="Parcel No" value={parcel.ParcelBarcode} editable={false} />
             <TextField label="Recipient Name" value={user.UserName} editable={false} />
             <TextField label="Recipient Email" value={user.UserEmail} editable={false} />
-            <TextField label="Shelf No" value={parcel.ShelfBarcode} editable={false} />
+            {parcel.ShelfBarcode !== '0' && <TextField label="Shelf No" value={parcel.ShelfBarcode} editable={false} />}
             {tip && <Text style={styles.tip}>{tip}</Text>}
         </Content>
     );
