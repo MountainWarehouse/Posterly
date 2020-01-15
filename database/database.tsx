@@ -1,20 +1,25 @@
 import SQLite from 'react-native-sqlite-storage';
 
 import { Parcel } from '../models/parcel';
-import { User } from '../models/user';
+import { Recipient } from '../models/recipient';
 import { DatabaseInitialization } from './databaseInitialization';
 
 export interface Database {
     open(): Promise<SQLite.SQLiteDatabase>;
     close(): Promise<void>;
-    createUser(userName: string, userEmail: string): Promise<User>;
-    getUserByUserId(userId: number): Promise<User[]>;
-    getAllUsers(): Promise<User[]>;
-    createParcel(parcelBarcode: string, shelfBarcode: string, user: User, checkoutPerson: string): Promise<Parcel>;
+    createRecipient(name: string, email: string): Promise<Recipient>;
+    getRecipientById(id: number): Promise<Recipient[]>;
+    getAllRecipients(): Promise<Recipient[]>;
+    createParcel(
+        parcelBarcode: string,
+        shelfBarcode: string,
+        recipient: Recipient,
+        checkoutPerson: string
+    ): Promise<Parcel>;
     getParcelByBarcode(barcode: string): Promise<Parcel[]>;
     getAllParcels(): Promise<Parcel[]>;
     updateParcel(barcode: string, checkoutPerson: string): Promise<void>;
-    //todo getPackageByUser
+    //todo getPackageByRecipient
 }
 
 class DatabaseImpl implements Database {
@@ -33,7 +38,6 @@ class DatabaseImpl implements Database {
         })
             .then(db => {
                 databaseInstance = db;
-                console.log('[db] Database open!');
 
                 // Perform any database initialization or updates, if needed
                 const databaseInitialization = new DatabaseInitialization();
@@ -51,64 +55,60 @@ class DatabaseImpl implements Database {
             return Promise.reject('[db] Database was not open; unable to close.');
         }
         return this.database.close().then(status => {
-            console.log('[db] Database closed.');
             this.database = undefined;
         });
     }
 
     // Insert a new list into the database
-    public createUser(userName: string, userEmail: string): Promise<User> {
+    public createRecipient(name: string, email: string): Promise<Recipient> {
         return this.getDatabase()
-            .then(db => db.executeSql('INSERT INTO User (userName,userEmail) VALUES (?,?);', [userName, userEmail]))
+            .then(db => db.executeSql('INSERT INTO User (userName,userEmail) VALUES (?,?);', [name, email]))
             .then(([results]) => {
                 const { insertId } = results;
-                console.log(`[db] Added User with name: "${userName}"! InsertId: ${insertId}`);
-                return new User(userName, userEmail, insertId);
+                return new Recipient(name, email, insertId);
             });
     }
 
-    public getUserByUserId(userId: number): Promise<User[]> {
-        console.log('[db] Fetching lists from the db...');
+    public getRecipientById(id: number): Promise<Recipient[]> {
         return this.getDatabase()
             .then(db =>
                 // Get all the lists, ordered by newest lists first
-                db.executeSql('SELECT user_id as id, userName,UserEmail FROM User WHERE id = ?;', [userId])
+                db.executeSql('SELECT user_id as id, userName as name, UserEmail as email FROM User WHERE id = ?;', [
+                    id
+                ])
             )
             .then(([results]) => {
                 if (results === undefined) {
                     return [];
                 }
                 const count = results.rows.length;
-                const users: User[] = [];
+                const users: Recipient[] = [];
                 for (let i = 0; i < count; i++) {
                     const row = results.rows.item(i);
-                    const { userName, userEmail, userId } = row;
-                    console.log(`[db] UserName : ${userName}, id: ${userId}`);
-                    users.push(new User(userName, userEmail, userId));
+                    const { name, email } = row;
+                    users.push(new Recipient(name, email, id));
                 }
                 return users;
             });
     }
 
     // Get an array of all the lists in the database
-    public getAllUsers(): Promise<User[]> {
-        console.log('[db] Fetching lists from the db...');
+    public getAllRecipients(): Promise<Recipient[]> {
         return this.getDatabase()
             .then(db =>
                 // Get all the lists, ordered by newest lists first
-                db.executeSql('SELECT user_id as id, userName,UserEmail FROM User ORDER BY id DESC;')
+                db.executeSql('SELECT user_id as id, userName as name, UserEmail as email FROM User ORDER BY id DESC;')
             )
             .then(([results]) => {
                 if (results === undefined) {
                     return [];
                 }
                 const count = results.rows.length;
-                const users: User[] = [];
+                const users: Recipient[] = [];
                 for (let i = 0; i < count; i++) {
                     const row = results.rows.item(i);
-                    const { userName, userEmail, id } = row;
-                    console.log(`[db] UserName : ${userName}, id: ${id}`);
-                    users.push(new User(userName, userEmail, id));
+                    const { name, email, id } = row;
+                    users.push(new Recipient(name, email, id));
                 }
                 return users;
             });
@@ -117,18 +117,18 @@ class DatabaseImpl implements Database {
     public createParcel(
         packageBarcode: string,
         shelfBarcode: string,
-        user: User,
+        recipient: Recipient,
         checkoutPerson: string
     ): Promise<Parcel> {
         return this.getDatabase()
             .then(db =>
                 db.executeSql(
                     'INSERT INTO package (packageBarcode,shelfBarcode,checkoutPerson, user_id) VALUES (?, ?, ?, ?);',
-                    [packageBarcode, shelfBarcode, checkoutPerson, user.UserId]
+                    [packageBarcode, shelfBarcode, checkoutPerson, recipient.id]
                 )
             )
             .then(([results]) => {
-                return new Parcel(packageBarcode, results.insertId, shelfBarcode, user.UserId);
+                return new Parcel(packageBarcode, results.insertId, shelfBarcode, recipient.id);
             });
     }
 
@@ -196,8 +196,7 @@ class DatabaseImpl implements Database {
             )
           )
           .then(([results]) => {
-            console.log(`[db] List item with id: ${listItem.id} updated.`);
-          });
+                      });
       }
     
       public deleteList(list: List): Promise<void> {
@@ -215,8 +214,7 @@ class DatabaseImpl implements Database {
             db.executeSql("DELETE FROM List WHERE list_id = ?;", [list.id])
           )
           .then(() => {
-            console.log(`[db] Deleted list titled: "${list.title}"!`);
-            return;
+                        return;
           });
       } */
 

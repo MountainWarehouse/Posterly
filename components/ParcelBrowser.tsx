@@ -18,8 +18,8 @@ const ParcelBrowser: React.SFC<ParcelBrowserProps> = ({ ...rest }) => {
     const filteredParcels = parcels.filter(
         parcel =>
             (parcel.ParcelBarcode && parcel.ParcelBarcode.toLowerCase().includes(lowerSearch)) ||
-            //TODO: Change to user name when available
-            parcel.User_Id.toString().includes(lowerSearch)
+            //TODO: Change to recipient name when available
+            parcel.recipientId.toString().includes(lowerSearch)
     );
 
     return (
@@ -36,7 +36,7 @@ const ParcelBrowser: React.SFC<ParcelBrowserProps> = ({ ...rest }) => {
                         <Body>
                             <Text>{parcel.ParcelId}</Text>
                             <Text>{parcel.ParcelBarcode}</Text>
-                            <Text>{parcel.User_Id}</Text>
+                            <Text>{parcel.recipientId}</Text>
                             <Text>{parcel.ShelfBarcode}</Text>
                             <Text>Status: //TODO</Text>
                         </Body>

@@ -1,15 +1,15 @@
 import 'react-native-gesture-handler';
 import React, { Component } from 'react';
-import { AppState, Alert, View } from 'react-native';
+import { AppState, Alert } from 'react-native';
 import Home from './components/Home';
 import Scanner from './components/Scanner';
 import Summary from './components/Summary';
-import UserSelection from './components/UserSelection';
-import UserForm from './components/UserForm';
+import RecipientSelection from './components/RecipientSelection';
+import RecipientForm from './components/RecipientForm';
 import { database } from './database/database';
 import { Parcel } from './models/parcel';
-import { Root, Toast, Button, Icon, Text, Container, Content } from 'native-base';
-import { User } from './models/user';
+import { Root, Toast, Button, Icon, Text } from 'native-base';
+import { Recipient } from './models/recipient';
 import { createAppContainer, NavigationContainerComponent, NavigationActions } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 import Screen from './_shared/Screen';
@@ -25,8 +25,8 @@ export interface State {
     appState: string;
     countParcels: number;
     parcel: Parcel;
-    user: User;
-    users: User[];
+    recipient: Recipient;
+    recipients: Recipient[];
     checkoutPerson: string;
     preferences: IPreferences;
 }
@@ -37,8 +37,8 @@ class App extends Component<object, State> {
         this.state = {
             appState: AppState.currentState,
             countParcels: 0,
-            user: { UserId: -1, UserName: '', UserEmail: '' },
-            users: [],
+            recipient: { id: -1, name: '', email: '' },
+            recipients: [],
             parcel: {} as Parcel,
             checkoutPerson: '',
             preferences: {} as IPreferences
@@ -47,10 +47,10 @@ class App extends Component<object, State> {
 
     public async componentDidMount() {
         await database.open();
-        const [users, preferences] = await Promise.all([database.getAllUsers(), PreferenceService.getAll()]);
+        const [recipients, preferences] = await Promise.all([database.getAllRecipients(), PreferenceService.getAll()]);
         this.setState({
             appState: 'active',
-            users,
+            recipients,
             preferences
         });
 
@@ -63,23 +63,23 @@ class App extends Component<object, State> {
     }
 
     handleCheckIn = async () => {
-        const { parcel, user } = this.state;
-        await database.createParcel(parcel.ParcelBarcode, parcel.ShelfBarcode, user, '');
+        const { parcel, recipient } = this.state;
+        await database.createParcel(parcel.ParcelBarcode, parcel.ShelfBarcode, recipient, '');
 
         const shelfInfo = parcel.ShelfBarcode !== '0' ? `Look it by the shelf no: ${parcel.ShelfBarcode}.\n` : '';
         const body =
-            `Hello ${user.UserName},\n` +
+            `Hello ${recipient.name},\n` +
             `Your package no: ${parcel.ParcelBarcode} is waiting in reception.\n` +
             shelfInfo +
             '\nHave a great day!';
-        emailService.sendEmail(user.UserEmail, 'Your package is waiting for you!', body);
+        emailService.sendEmail(recipient.email, 'Your package is waiting for you!', body);
         this.navigateTo(Screen.Home);
     };
 
     handleCheckOut = async () => {
-        const { user, parcel, checkoutPerson } = this.state;
+        const { recipient, parcel, checkoutPerson } = this.state;
 
-        if (checkoutPerson === user.UserName) return this.checkOutPackage();
+        if (checkoutPerson === recipient.name) return this.checkOutPackage();
 
         Alert.alert(
             'Notify?',
@@ -98,10 +98,10 @@ class App extends Component<object, State> {
                     text: 'Yes',
                     onPress: () => {
                         const body =
-                            `Hello ${user.UserName},\n` +
+                            `Hello ${recipient.name},\n` +
                             `Your package no: ${parcel.ParcelBarcode} has been checked out by ${checkoutPerson}.\n\n` +
                             'Have a great day!';
-                        emailService.sendEmail(user.UserEmail, 'Your package has been checked out', body);
+                        emailService.sendEmail(recipient.email, 'Your package has been checked out', body);
                         this.checkOutPackage();
                     }
                 }
@@ -135,19 +135,25 @@ class App extends Component<object, State> {
                 ),
                 navigationOptions: { title: 'Scan Parcel' }
             },
-            [Screen.UserSelection]: {
+            [Screen.RecipientSelection]: {
                 screen: () => (
-                    <UserSelection
+                    <RecipientSelection
                         padder
-                        onSelectUser={this.handleSelectUser}
-                        onCreateUser={() => this.navigateTo(Screen.UserCreation)}
-                        users={this.state.users}
+                        onSelectRecipient={this.handleSelectRecipient}
+                        onCreateRecipient={() => this.navigateTo(Screen.RecipientCreation)}
+                        recipients={this.state.recipients}
                     />
                 ),
                 navigationOptions: { title: 'Logging a new parcel' }
             },
-            [Screen.UserCreation]: {
-                screen: () => <UserForm padder onUserCreated={this.handleUserCreated} users={this.state.users} />,
+            [Screen.RecipientCreation]: {
+                screen: () => (
+                    <RecipientForm
+                        padder
+                        onRecipientCreated={this.handleRecipientCreated}
+                        recipients={this.state.recipients}
+                    />
+                ),
                 navigationOptions: { title: 'Create New Recipient' }
             },
             [Screen.Shelf]: {
@@ -165,7 +171,7 @@ class App extends Component<object, State> {
                     <Summary
                         padder
                         parcel={this.state.parcel}
-                        user={this.state.user}
+                        recipient={this.state.recipient}
                         tip="When 'Notify' is pressed the email for the parcel receiver will be generated"
                     />
                 ),
@@ -184,7 +190,7 @@ class App extends Component<object, State> {
                     <CheckOut
                         padder
                         parcel={this.state.parcel}
-                        user={this.state.user}
+                        recipient={this.state.recipient}
                         onChangeCheckoutPerson={checkoutPerson => this.setState({ checkoutPerson })}
                         tip="By pressing 'Check Out' you confirm that the person has collected the parcel"
                     />
@@ -251,17 +257,17 @@ class App extends Component<object, State> {
                     countParcels: this.state.countParcels + 1,
                     appState: 'active'
                 },
-                () => this.navigateTo(Screen.UserSelection)
+                () => this.navigateTo(Screen.RecipientSelection)
             );
         }
 
         // goto CheckOUT
         const parcel = result[0];
-        const user = (await database.getUserByUserId(parcel.User_Id))[0];
+        const recipient = (await database.getRecipientById(parcel.recipientId))[0];
         this.setState(
             {
                 parcel,
-                user
+                recipient
             },
             () => this.navigateTo(Screen.CheckOut)
         );
@@ -270,21 +276,21 @@ class App extends Component<object, State> {
     navigateTo = (screen: Screen) =>
         this.navigator && this.navigator.dispatch(NavigationActions.navigate({ routeName: screen }));
 
-    handleUserCreated = (user: User) => {
-        const users = [...this.state.users];
-        users.push(user);
-        this.setState({ users });
-        this.handleSelectUser(user);
+    handleRecipientCreated = (recipient: Recipient) => {
+        const recipients = [...this.state.recipients];
+        recipients.push(recipient);
+        this.setState({ recipients });
+        this.handleSelectRecipient(recipient);
     };
 
-    handleSelectUser = (user: User) => {
+    handleSelectRecipient = (recipient: Recipient) => {
         const parcel = { ...this.state.parcel };
-        parcel.User_Id = user.UserId;
+        parcel.recipientId = recipient.id;
         const nextScreen = this.state.preferences.useShelf ? Screen.Shelf : Screen.Summary;
         this.setState(
             {
                 parcel,
-                user
+                recipient
             },
             () => this.navigateTo(nextScreen)
         );

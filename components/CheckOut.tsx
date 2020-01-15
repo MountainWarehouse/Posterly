@@ -8,10 +8,10 @@ export interface CheckOutProps extends SummaryProps, NativeBase.Content {
     onChangeCheckoutPerson: (checkoutPerson: string) => void;
 }
 
-const CheckOut: React.SFC<CheckOutProps> = ({ parcel, user, tip, onChangeCheckoutPerson, ...rest }) => {
+const CheckOut: React.SFC<CheckOutProps> = ({ parcel, recipient, tip, onChangeCheckoutPerson, ...rest }) => {
     return (
         <Content {...rest}>
-            <Summary parcel={parcel} user={user} />
+            <Summary parcel={parcel} recipient={recipient} />
             <TextField
                 label="Person collecting parcel"
                 onChangeText={onChangeCheckoutPerson}
