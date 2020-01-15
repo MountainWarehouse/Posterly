@@ -1,9 +1,9 @@
 import React from 'react';
 import { Content, Text, NativeBase } from 'native-base';
-import { Parcel } from '../models/parcel';
-import { Recipient } from '../models/recipient';
+import { Parcel } from '../models/Parcel';
+import { Recipient } from '../models/Recipient';
 import { TextField } from 'react-native-material-textfield';
-import styles from '../_shared/styles';
+import styles from '../_shared/Styles';
 
 export interface SummaryProps extends NativeBase.Content {
     parcel: Parcel;

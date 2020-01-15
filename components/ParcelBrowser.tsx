@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Content, Text, List, ListItem, Icon, Body, Item, Input, NativeBase } from 'native-base';
-import { Parcel } from '../models/parcel';
-import { database } from '../database/database';
+import { Parcel } from '../models/Parcel';
+import { database } from '../database/Database';
 
 export interface ParcelBrowserProps extends NativeBase.Content {}
 

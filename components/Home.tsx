@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Scanner from './Scanner';
 import { Content, Button, Text, NativeBase, Icon, Item, Input } from 'native-base';
-import styles from '../_shared/styles';
+import styles from '../_shared/Styles';
 
 export interface HomeProps extends NativeBase.Content {
     onScan: (code: string) => void;

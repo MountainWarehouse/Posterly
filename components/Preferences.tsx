@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Content, ListItem, CheckBox, Body, Text, NativeBase } from 'native-base';
-import styles from '../_shared/styles';
+import styles from '../_shared/Styles';
 import IPreferences from '../_shared/IPreferences';
 
 export interface PreferencesProps extends NativeBase.Content {

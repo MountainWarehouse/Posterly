@@ -2,7 +2,7 @@ import React from 'react';
 import Summary, { SummaryProps } from './Summary';
 import { Content, Text, NativeBase } from 'native-base';
 import { TextField } from 'react-native-material-textfield';
-import styles from '../_shared/styles';
+import styles from '../_shared/Styles';
 
 export interface CheckOutProps extends SummaryProps, NativeBase.Content {
     onChangeCheckoutPerson: (checkoutPerson: string) => void;

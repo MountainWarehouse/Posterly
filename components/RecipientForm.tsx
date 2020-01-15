@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Button, Content, Form, Text, Toast, NativeBase } from 'native-base';
-import { Recipient } from '../models/recipient';
-import { database } from '../database/database';
+import { Recipient } from '../models/Recipient';
+import { database } from '../database/Database';
 import { OutlinedTextField } from 'react-native-material-textfield';
 import Joi from 'joi';
-import styles from '../_shared/styles';
+import styles from '../_shared/Styles';
 
 export interface RecipientFormProps extends NativeBase.Content {
     onRecipientCreated: (recipient: Recipient) => void;

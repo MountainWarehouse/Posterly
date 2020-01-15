@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
 import { DeviceEventEmitter } from 'react-native';
 import { Content, Button, Text, NativeBase } from 'native-base';
-import { IIntent } from '../models/dwproperties';
+import { IDataWedgeIntent } from '../DataWedge/DataWedgeProperties';
 import dataWedgeService from '../services/DataWedgeService';
-import styles from '../_shared/styles';
+import styles from '../_shared/Styles';
 
 export interface ScannerProps extends NativeBase.Content {
     tip: string;
@@ -11,7 +11,7 @@ export interface ScannerProps extends NativeBase.Content {
 }
 
 const Scanner: React.SFC<ScannerProps> = ({ tip, onScan, ...rest }) => {
-    const handleBarcodeScanned = (intent: IIntent) => {
+    const handleBarcodeScanned = (intent: IDataWedgeIntent) => {
         if (!intent.hasOwnProperty('RESULT_INFO')) {
             const scannedData = intent['com.symbol.datawedge.data_string'];
             if (scannedData) {
