@@ -1,6 +1,6 @@
 import { User } from "./user";
 
-export class Package {
+export class Parcel {
     ParcelBarcode: string;
     ParcelId: number;
     User_Id: number;

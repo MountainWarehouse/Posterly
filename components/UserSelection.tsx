@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
-import { Button, Content, H3, Text, List, ListItem, Icon, Body, Item, Input } from 'native-base';
+import { Button, Content, H3, Text, List, ListItem, Icon, Body, Item, Input, NativeBase } from 'native-base';
 import { User } from '../models/user';
 import styles from '../_shared/styles';
 
-export interface UserSelectionProps {
+export interface UserSelectionProps extends NativeBase.Content {
     onCreateUser: () => void;
     onSelectUser: (user: User) => void;
     users: User[];
 }
 
-const UserSelection: React.SFC<UserSelectionProps> = ({ users, onCreateUser, onSelectUser }) => {
+const UserSelection: React.SFC<UserSelectionProps> = ({ users, onCreateUser, onSelectUser, ...rest }) => {
     const [search, setSearch] = useState('');
 
     const filteredUsers = users.filter(
@@ -19,7 +19,7 @@ const UserSelection: React.SFC<UserSelectionProps> = ({ users, onCreateUser, onS
     );
 
     return (
-        <Content padder>
+        <Content {...rest}>
             <H3>Who is this parcel for?</H3>
             <Text>Select parcel recipient or create a new one</Text>
             <Button block bordered style={styles.button} onPress={onCreateUser}>

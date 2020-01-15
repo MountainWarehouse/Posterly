@@ -1,42 +1,39 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { DeviceEventEmitter } from 'react-native';
-import { Content, Button, Text } from 'native-base';
+import { Content, Button, Text, NativeBase } from 'native-base';
 import { IIntent } from '../models/dwproperties';
 import dataWedgeService from '../services/DataWedgeService';
 import styles from '../_shared/styles';
 
-export interface ScannerProps {
+export interface ScannerProps extends NativeBase.Content {
     tip: string;
     onScan: (code: string) => void;
 }
 
-export default class Scanner extends React.Component<ScannerProps> {
-    constructor(props: ScannerProps) {
-        super(props);
-
-        DeviceEventEmitter.addListener('datawedge_broadcast_intent', this.handleBarcodeScanned);
-        dataWedgeService.setBroadcastReceiver();
-    }
-
-    handleBarcodeScanned = (intent: IIntent) => {
+const Scanner: React.SFC<ScannerProps> = ({ tip, onScan, ...rest }) => {
+    const handleBarcodeScanned = (intent: IIntent) => {
         if (!intent.hasOwnProperty('RESULT_INFO')) {
             const scannedData = intent['com.symbol.datawedge.data_string'];
             if (scannedData) {
                 DeviceEventEmitter.removeAllListeners();
-                this.props.onScan(scannedData);
+                onScan(scannedData);
             }
         }
     };
 
-    render() {
-        const { tip } = this.props;
-        return (
-            <Content padder>
-                <Text>{tip}</Text>
-                <Button block style={styles.button} onPress={dataWedgeService.sendScanButtonPressed}>
-                    <Text>Scan</Text>
-                </Button>
-            </Content>
-        );
-    }
-}
+    useEffect(() => {
+        DeviceEventEmitter.addListener('datawedge_broadcast_intent', handleBarcodeScanned);
+        dataWedgeService.setBroadcastReceiver();
+    }, []);
+
+    return (
+        <Content {...rest}>
+            <Text>{tip}</Text>
+            <Button block style={styles.button} onPress={() => onScan('12343555441567')}>
+                <Text>Scan</Text>
+            </Button>
+        </Content>
+    );
+};
+
+export default Scanner;

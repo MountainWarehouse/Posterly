@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
-import { Button, Content, Form, Text, Toast } from 'native-base';
+import { Button, Content, Form, Text, Toast, NativeBase } from 'native-base';
 import { User } from '../models/user';
 import { database } from '../database/database';
 import { OutlinedTextField } from 'react-native-material-textfield';
 import Joi from 'joi';
 import styles from '../_shared/styles';
 
-export interface UserFormProps {
+export interface UserFormProps extends NativeBase.Content {
     onUserCreated: (user: User) => void;
     users: User[];
 }
 
-const UserForm: React.SFC<UserFormProps> = ({ onUserCreated, users }) => {
+const UserForm: React.SFC<UserFormProps> = ({ onUserCreated, users, ...rest }) => {
     const [data, setData]: [any, (data: any) => void] = useState({
         name: '',
         email: ''
@@ -92,7 +92,7 @@ const UserForm: React.SFC<UserFormProps> = ({ onUserCreated, users }) => {
     const disabled = !isChanged || !isValid;
 
     return (
-        <Content padder>
+        <Content {...rest}>
             <Form>
                 <OutlinedTextField
                     label="Name"

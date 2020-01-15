@@ -1,27 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { Content, ListItem, CheckBox, Body, Text } from 'native-base';
+import { Content, ListItem, CheckBox, Body, Text, NativeBase } from 'native-base';
 import styles from '../_shared/styles';
 import IPreferences from '../_shared/IPreferences';
 
-export interface PreferencesProps {
+export interface PreferencesProps extends NativeBase.Content {
     preferences: IPreferences;
     onPreferencesChanged: (preferences: IPreferences) => void;
 }
 
 const Preferences: React.SFC<PreferencesProps> = props => {
-    const [preferences, setPreferences] = useState(props.preferences);
+    const { preferences: propsPreferences, onPreferencesChanged, ...rest } = props;
+    const [preferences, setPreferences] = useState(propsPreferences);
 
-    useEffect(() => setPreferences(() => props.preferences), [props.preferences]);
+    useEffect(() => setPreferences(() => propsPreferences), [propsPreferences]);
 
     const toggleUseShelf = () => {
         const newPreferences = { ...preferences };
         newPreferences.useShelf = !preferences.useShelf;
         setPreferences(newPreferences);
-        props.onPreferencesChanged(newPreferences);
+        onPreferencesChanged(newPreferences);
     };
 
     return (
-        <Content padder>
+        <Content {...rest}>
             <ListItem>
                 <CheckBox checked={preferences.useShelf} onPress={toggleUseShelf} />
                 <Body>
