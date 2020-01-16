@@ -64,7 +64,7 @@ class App extends Component<object, State> {
 
     handleCheckIn = async () => {
         const { parcel, recipient } = this.state;
-        await database.createParcel(parcel.barcode, parcel.shelfBarcode, recipient, '');
+        await database.createParcel(parcel.barcode, recipient, parcel.shelfBarcode);
 
         const shelfInfo = parcel.shelfBarcode !== '0' ? `Look it by the shelf no: ${parcel.shelfBarcode}.\n` : '';
         const body =
@@ -246,11 +246,16 @@ class App extends Component<object, State> {
 
     navigator: NavigationContainerComponent | null = null;
 
-    handleScanParcel = async (code: string) => {
-        const result = await database.getParcelByBarcode(code);
+    handleScanParcel = async (barcode: string) => {
+        const result = await database.getParcelByBarcode(barcode);
         //goto CheckIN
         if (!result || result.length === 0) {
-            const newParcel = new Parcel(code, this.state.countParcels + 1);
+            const newParcel = {
+                barcode,
+                id: 0,
+                checkInDate: new Date(),
+                recipientId: 0
+            };
             return this.setState(
                 {
                     parcel: newParcel,

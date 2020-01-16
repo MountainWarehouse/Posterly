@@ -10,7 +10,7 @@ export interface Database {
     createRecipient(name: string, email: string): Promise<Recipient>;
     getRecipientById(id: number): Promise<Recipient[]>;
     getAllRecipients(): Promise<Recipient[]>;
-    createParcel(parcelBarcode: string, shelfBarcode: string, recipient: Recipient): Promise<Parcel>;
+    createParcel(parcelBarcode: string, recipient: Recipient, shelfBarcode?: string): Promise<Parcel>;
     getParcelByBarcode(barcode: string): Promise<Parcel[]>;
     getAllParcels(): Promise<Parcel[]>;
     updateParcel(barcode: string, checkoutPerson: string): Promise<void>;
@@ -109,7 +109,7 @@ class DatabaseImpl implements Database {
             });
     }
 
-    public createParcel(barcode: string, shelfBarcode: string, recipient: Recipient): Promise<Parcel> {
+    public createParcel(barcode: string, recipient: Recipient, shelfBarcode?: string): Promise<Parcel> {
         return this.getDatabase()
             .then(db =>
                 db.executeSql('INSERT INTO package (packageBarcode, shelfBarcode, user_id) VALUES (?, ?, ?);', [
