@@ -9,7 +9,7 @@ import RecipientForm from './components/RecipientForm';
 import { database } from './database/Database';
 import { Parcel } from './models/Parcel';
 import { Root, Toast, Button, Icon, Text } from 'native-base';
-import { Recipient } from './models/Recipient_';
+import { Recipient } from './models/Recipient';
 import { createAppContainer, NavigationContainerComponent, NavigationActions } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 import Screen from './_shared/Screen';

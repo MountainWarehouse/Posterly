@@ -1,7 +1,7 @@
 import React from 'react';
 import { Content, Text, NativeBase } from 'native-base';
 import { Parcel } from '../models/Parcel';
-import { Recipient } from '../models/Recipient_';
+import { Recipient } from '../models/Recipient';
 import { TextField } from 'react-native-material-textfield';
 import styles from '../_shared/Styles';
 

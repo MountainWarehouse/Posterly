@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button, Content, H3, Text, List, ListItem, Icon, Body, Item, Input, NativeBase } from 'native-base';
-import { Recipient } from '../models/Recipient_';
+import { Recipient } from '../models/Recipient';
 import styles from '../_shared/Styles';
 
 export interface RecipientSelectionProps extends NativeBase.Content {
