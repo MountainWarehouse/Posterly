@@ -29,7 +29,7 @@ const Scanner: React.SFC<ScannerProps> = ({ tip, onScan, ...rest }) => {
     return (
         <Content {...rest}>
             <Text>{tip}</Text>
-            <Button block style={styles.button} onPress={() => onScan('12343555441567')}>
+            <Button block style={styles.button} onPress={dataWedgeService.sendScanButtonPressed}>
                 <Text>Scan</Text>
             </Button>
         </Content>
