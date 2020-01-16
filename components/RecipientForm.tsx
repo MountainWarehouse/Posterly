@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button, Content, Form, Text, Toast, NativeBase } from 'native-base';
-import { Recipient } from '../models/Recipient';
+import { Recipient } from '../models/Recipient_';
 import { database } from '../database/Database';
 import { OutlinedTextField } from 'react-native-material-textfield';
 import Joi from 'joi';

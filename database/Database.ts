@@ -1,7 +1,7 @@
 import SQLite from 'react-native-sqlite-storage';
 
 import { Parcel } from '../models/Parcel';
-import { Recipient } from '../models/Recipient';
+import { Recipient } from '../models/Recipient_';
 import { DatabaseInitialization } from './DatabaseInitialization';
 
 export interface Database {
