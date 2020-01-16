@@ -10,16 +10,11 @@ export interface Database {
     createRecipient(name: string, email: string): Promise<Recipient>;
     getRecipientById(id: number): Promise<Recipient[]>;
     getAllRecipients(): Promise<Recipient[]>;
-    createParcel(
-        parcelBarcode: string,
-        shelfBarcode: string,
-        recipient: Recipient,
-        checkoutPerson: string
-    ): Promise<Parcel>;
+    createParcel(parcelBarcode: string, shelfBarcode: string, recipient: Recipient): Promise<Parcel>;
     getParcelByBarcode(barcode: string): Promise<Parcel[]>;
     getAllParcels(): Promise<Parcel[]>;
     updateParcel(barcode: string, checkoutPerson: string): Promise<void>;
-    //todo getPackageByRecipient
+    //todo getParcelByRecipient
 }
 
 class DatabaseImpl implements Database {
@@ -65,7 +60,7 @@ class DatabaseImpl implements Database {
             .then(db => db.executeSql('INSERT INTO User (userName,userEmail) VALUES (?,?);', [name, email]))
             .then(([results]) => {
                 const { insertId } = results;
-                return new Recipient(name, email, insertId);
+                return { id: insertId, name, email };
             });
     }
 
@@ -86,7 +81,7 @@ class DatabaseImpl implements Database {
                 for (let i = 0; i < count; i++) {
                     const row = results.rows.item(i);
                     const { name, email } = row;
-                    users.push(new Recipient(name, email, id));
+                    users.push({ id, name, email });
                 }
                 return users;
             });
@@ -107,37 +102,39 @@ class DatabaseImpl implements Database {
                 const users: Recipient[] = [];
                 for (let i = 0; i < count; i++) {
                     const row = results.rows.item(i);
-                    const { name, email, id } = row;
-                    users.push(new Recipient(name, email, id));
+                    const { id, name, email } = row;
+                    users.push({ id, name, email });
                 }
                 return users;
             });
     }
 
-    public createParcel(
-        packageBarcode: string,
-        shelfBarcode: string,
-        recipient: Recipient,
-        checkoutPerson: string
-    ): Promise<Parcel> {
+    public createParcel(barcode: string, shelfBarcode: string, recipient: Recipient): Promise<Parcel> {
         return this.getDatabase()
             .then(db =>
-                db.executeSql(
-                    'INSERT INTO package (packageBarcode,shelfBarcode,checkoutPerson, user_id) VALUES (?, ?, ?, ?);',
-                    [packageBarcode, shelfBarcode, checkoutPerson, recipient.id]
-                )
+                db.executeSql('INSERT INTO package (packageBarcode, shelfBarcode, user_id) VALUES (?, ?, ?);', [
+                    barcode,
+                    shelfBarcode,
+                    recipient.id
+                ])
             )
             .then(([results]) => {
-                return new Parcel(packageBarcode, results.insertId, shelfBarcode, recipient.id);
+                return {
+                    id: results.insertId,
+                    barcode: barcode,
+                    shelfBarcode: shelfBarcode,
+                    checkInDate: new Date(),
+                    recipientId: recipient.id
+                };
             });
     }
 
-    public getParcelByBarcode(packageBarcode: string): Promise<Parcel[]> {
+    public getParcelByBarcode(barcode: string): Promise<Parcel[]> {
         return this.getDatabase()
             .then(db =>
                 db.executeSql(
-                    `SELECT package_id as id,packageBarcode,shelfBarcode, user_id FROM Package WHERE packageBarcode = ?;`,
-                    [packageBarcode]
+                    `SELECT package_id as id, packageBarcode as barcode, shelfBarcode, user_id as recipientId FROM Package WHERE packageBarcode = ?;`,
+                    [barcode]
                 )
             )
             .then(([results]) => {
@@ -145,13 +142,20 @@ class DatabaseImpl implements Database {
                     return [];
                 }
                 const count = results.rows.length;
-                const packages: Parcel[] = [];
+                const parcels: Parcel[] = [];
                 for (let i = 0; i < count; i++) {
                     const row = results.rows.item(i);
-                    const { package_id, packageBarcode, shelfBarcode, user_id } = row;
-                    packages.push(new Parcel(packageBarcode, package_id, shelfBarcode, user_id));
+                    const { id, shelfBarcode, recipientId } = row;
+                    parcels.push({
+                        id,
+                        barcode,
+                        shelfBarcode,
+                        recipientId,
+                        //TODO: To be fixed
+                        checkInDate: new Date()
+                    });
                 }
-                return packages;
+                return parcels;
             });
     }
 
@@ -159,18 +163,25 @@ class DatabaseImpl implements Database {
         //TODO: Add checkout person
         const db = await this.getDatabase();
         const [results] = await db.executeSql(
-            'SELECT package_id as id, packageBarcode, shelfBarcode, user_id FROM Package'
+            'SELECT package_id as id, packageBarcode as barcode, shelfBarcode, user_id as recipientId FROM Package'
         );
         if (!results) {
             return [];
         }
-        const packages: Parcel[] = [];
+        const parcels: Parcel[] = [];
         for (let i = 0; i < results.rows.length; i++) {
             const row = results.rows.item(i);
-            const { package_id, packageBarcode, shelfBarcode, user_id } = row;
-            packages.push(new Parcel(packageBarcode, package_id, shelfBarcode, user_id));
+            const { id, barcode, shelfBarcode, recipientId } = row;
+            parcels.push({
+                id,
+                barcode,
+                shelfBarcode,
+                recipientId,
+                //TODO: To be fixed
+                checkInDate: new Date()
+            });
         }
-        return packages;
+        return parcels;
     }
 
     public updateParcel(packageBarcode: string, checkoutPerson: string): Promise<void> {

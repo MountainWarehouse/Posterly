@@ -1,21 +1,9 @@
-export class Parcel {
-    ParcelBarcode: string;
-    ParcelId: number;
+export interface Parcel {
+    id: number;
+    barcode: string;
     recipientId: number;
-    ActionDate: Date;
-    ShelfBarcode: string;
-    CheckoutDate: Date;
-    CheckoutPerson: string;
-
-    public constructor(
-        parcelBarcode: string,
-        parcelId: number = 0,
-        shelfBarcode: string = '0',
-        recipientId: number = 0
-    ) {
-        this.ParcelBarcode = parcelBarcode;
-        this.ParcelId = parcelId;
-        this.ShelfBarcode = shelfBarcode;
-        this.recipientId = recipientId;
-    }
+    checkInDate: Date;
+    shelfBarcode?: string;
+    checkOutDate?: Date;
+    checkOutPerson?: string;
 }

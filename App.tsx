@@ -64,12 +64,12 @@ class App extends Component<object, State> {
 
     handleCheckIn = async () => {
         const { parcel, recipient } = this.state;
-        await database.createParcel(parcel.ParcelBarcode, parcel.ShelfBarcode, recipient, '');
+        await database.createParcel(parcel.barcode, parcel.shelfBarcode, recipient, '');
 
-        const shelfInfo = parcel.ShelfBarcode !== '0' ? `Look it by the shelf no: ${parcel.ShelfBarcode}.\n` : '';
+        const shelfInfo = parcel.shelfBarcode !== '0' ? `Look it by the shelf no: ${parcel.shelfBarcode}.\n` : '';
         const body =
             `Hello ${recipient.name},\n` +
-            `Your package no: ${parcel.ParcelBarcode} is waiting in reception.\n` +
+            `Your package no: ${parcel.barcode} is waiting in reception.\n` +
             shelfInfo +
             '\nHave a great day!';
         emailService.sendEmail(recipient.email, 'Your package is waiting for you!', body);
@@ -99,7 +99,7 @@ class App extends Component<object, State> {
                     onPress: () => {
                         const body =
                             `Hello ${recipient.name},\n` +
-                            `Your package no: ${parcel.ParcelBarcode} has been checked out by ${checkoutPerson}.\n\n` +
+                            `Your package no: ${parcel.barcode} has been checked out by ${checkoutPerson}.\n\n` +
                             'Have a great day!';
                         emailService.sendEmail(recipient.email, 'Your package has been checked out', body);
                         this.checkOutPackage();
@@ -112,7 +112,7 @@ class App extends Component<object, State> {
 
     checkOutPackage = async () => {
         const { parcel, checkoutPerson } = this.state;
-        await database.updateParcel(parcel.ParcelBarcode, checkoutPerson);
+        await database.updateParcel(parcel.barcode, checkoutPerson);
         Toast.show({ text: 'Parcel has been checked out.' });
         this.navigateTo(Screen.Home);
     };
@@ -298,7 +298,7 @@ class App extends Component<object, State> {
 
     handleScanShelf = (code: string) => {
         const parcel = { ...this.state.parcel };
-        parcel.ShelfBarcode = code;
+        parcel.shelfBarcode = code;
         this.setState({ parcel }, () => this.navigateTo(Screen.Summary));
     };
 
