@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Content, Text, List, ListItem, Icon, Body, Item, Input, NativeBase } from 'native-base';
+import { Content, Text, List, ListItem, Icon, Body, Item, Input, NativeBase, Left } from 'native-base';
 import { Parcel } from '../models/Parcel';
 import { database } from '../database/Database';
 
@@ -23,6 +23,7 @@ const ParcelBrowser: React.SFC<ParcelBrowserProps> = ({ ...rest }) => {
     );
 
     return (
+        //TODO: Group by recipient?
         <Content {...rest}>
             <Item style={{ marginVertical: 5 }}>
                 <Icon name="md-search" />
@@ -32,13 +33,20 @@ const ParcelBrowser: React.SFC<ParcelBrowserProps> = ({ ...rest }) => {
                 dataArray={filteredParcels}
                 keyExtractor={(parcel: Parcel) => parcel.id.toString()}
                 renderRow={(parcel: Parcel) => (
-                    <ListItem onPress={() => null}>
+                    <ListItem avatar>
+                        <Left>
+                            <Icon
+                                name={parcel.checkOutPerson ? 'package-up' : 'package-down'}
+                                style={{ color: parcel.checkOutPerson ? 'green' : 'yellow', fontSize: 20 }}
+                                type="MaterialCommunityIcons"
+                            />
+                        </Left>
                         <Body>
-                            <Text>{parcel.id}</Text>
-                            <Text>{parcel.barcode}</Text>
-                            <Text>{parcel.recipientId}</Text>
-                            <Text>{parcel.shelfBarcode}</Text>
-                            <Text>Status: //TODO</Text>
+                            <Text>Barcode: {parcel.barcode}</Text>
+                            <Text>Recipient: {parcel.recipientId}</Text>
+                            <Text note>Shelf: {parcel.shelfBarcode}</Text>
+                            <Text note>Collected by: {parcel.checkOutPerson}</Text>
+                            {/* TODO: Check in/out date */}
                         </Body>
                     </ListItem>
                 )}
