@@ -21,22 +21,19 @@ class DatabaseImpl implements Database {
     private databaseName = 'AppDatabase.db';
     private database: SQLite.SQLiteDatabase | undefined;
 
-    // Open the connection to the database
     public async open(): Promise<SQLite.SQLiteDatabase> {
         SQLite.DEBUG(true);
         SQLite.enablePromise(true);
-        let databaseInstance: SQLite.SQLiteDatabase;
-
         const db = await SQLite.openDatabase({
             name: this.databaseName,
             location: 'default'
         });
-        databaseInstance = db;
+
         // Perform any database initialization or updates, if needed
         const databaseInitialization = new DatabaseInitialization();
-        await databaseInitialization.updateDatabaseTables(databaseInstance);
-        this.database = databaseInstance;
-        return databaseInstance;
+        await databaseInitialization.updateDatabaseTables(db);
+        this.database = db;
+        return db;
     }
 
     // Close the connection to the database
@@ -76,9 +73,8 @@ class DatabaseImpl implements Database {
         }
         const users: Recipient[] = [];
         for (let i = 0; i < resultSet.rows.length; i++) {
-            const row = resultSet.rows.item(i);
-            const { id, name, email } = row;
-            users.push({ id, name, email });
+            const user = resultSet.rows.item(i);
+            users.push(user);
         }
         return users;
     }
@@ -112,29 +108,21 @@ class DatabaseImpl implements Database {
     public async getAllParcels(): Promise<Parcel[]> {
         //TODO: Add checkout person
         const resultSet = await this.executeSql(
-            'SELECT package_id as id, packageBarcode as barcode, shelfBarcode, user_id as recipientId FROM Package'
+            'SELECT package_id as id, packageBarcode as barcode, shelfBarcode, user_id as recipientId, checkoutPerson as checkOutPerson FROM Package'
         );
         if (!resultSet) {
             return [];
         }
         const parcels: Parcel[] = [];
         for (let i = 0; i < resultSet.rows.length; i++) {
-            const row = resultSet.rows.item(i);
-            const { id, barcode, shelfBarcode, recipientId } = row;
-            parcels.push({
-                id,
-                barcode,
-                shelfBarcode,
-                recipientId,
-                //TODO: To be fixed
-                checkInDate: new Date()
-            });
+            const parcel: Parcel = resultSet.rows.item(i);
+            parcels.push(parcel);
         }
         return parcels;
     }
 
     public async updateParcel(parcelBarcode: string, checkoutPerson: string): Promise<void> {
-        await this.executeSql('UPDATE PACKAGE SET checkoutPerson = ? WHERE packageBarcode = ?;', [
+        this.executeSql('UPDATE PACKAGE SET checkoutPerson = ? WHERE packageBarcode = ?;', [
             checkoutPerson,
             parcelBarcode
         ]);
