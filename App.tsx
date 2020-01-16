@@ -23,7 +23,6 @@ import ParcelBrowser from './components/ParcelBrowser';
 
 export interface State {
     appState: string;
-    countParcels: number;
     parcel: Parcel;
     recipient: Recipient;
     recipients: Recipient[];
@@ -36,7 +35,6 @@ class App extends Component<object, State> {
         super(props);
         this.state = {
             appState: AppState.currentState,
-            countParcels: 0,
             recipient: { id: -1, name: '', email: '' },
             recipients: [],
             parcel: {} as Parcel,
@@ -64,7 +62,7 @@ class App extends Component<object, State> {
 
     handleCheckIn = async () => {
         const { parcel, recipient } = this.state;
-        await database.createParcel(parcel.barcode, recipient, parcel.shelfBarcode);
+        await database.createParcel(parcel.barcode, recipient.id, parcel.shelfBarcode);
 
         const shelfInfo = parcel.shelfBarcode !== '0' ? `Look it by the shelf no: ${parcel.shelfBarcode}.\n` : '';
         const body =
@@ -247,28 +245,20 @@ class App extends Component<object, State> {
     navigator: NavigationContainerComponent | null = null;
 
     handleScanParcel = async (barcode: string) => {
-        const result = await database.getParcelByBarcode(barcode);
+        let parcel = await database.getParcelByBarcode(barcode);
         //goto CheckIN
-        if (!result || result.length === 0) {
-            const newParcel = {
+        if (!parcel) {
+            parcel = {
                 barcode,
                 id: 0,
                 checkInDate: new Date(),
                 recipientId: 0
             };
-            return this.setState(
-                {
-                    parcel: newParcel,
-                    countParcels: this.state.countParcels + 1,
-                    appState: 'active'
-                },
-                () => this.navigateTo(Screen.RecipientSelection)
-            );
+            return this.setState({ parcel }, () => this.navigateTo(Screen.RecipientSelection));
         }
 
         // goto CheckOUT
-        const parcel = result[0];
-        const recipient = (await database.getRecipientById(parcel.recipientId))[0];
+        const recipient = (await database.getRecipientById(parcel.recipientId)) as Recipient;
         this.setState(
             {
                 parcel,
