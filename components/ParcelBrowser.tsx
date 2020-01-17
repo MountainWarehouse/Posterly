@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Content, Text, List, ListItem, Icon, Body, Item, Input, NativeBase, Left } from 'native-base';
+import { Content, Text, List, ListItem, Icon, Body, Item, Input, NativeBase, Left, Spinner, Right } from 'native-base';
 import { Parcel } from '../models/Parcel';
 import { database } from '../database/Database';
 
@@ -7,10 +7,14 @@ export interface ParcelBrowserProps extends NativeBase.Content {}
 
 const ParcelBrowser: React.SFC<ParcelBrowserProps> = ({ ...rest }) => {
     const [search, setSearch] = useState('');
+    const [isLoadingParcels, setIsLoadingParcels] = useState(true);
     const [parcels, setParcels] = useState([] as Parcel[]);
 
     useEffect(() => {
-        database.getAllParcels().then(setParcels);
+        database.getAllParcels(true).then(parcels => {
+            setParcels(parcels);
+            setIsLoadingParcels(false);
+        });
     }, []);
 
     const lowerSearch = search.toLowerCase();
@@ -18,9 +22,10 @@ const ParcelBrowser: React.SFC<ParcelBrowserProps> = ({ ...rest }) => {
     const filteredParcels = parcels.filter(
         parcel =>
             (parcel.barcode && parcel.barcode.toLowerCase().includes(lowerSearch)) ||
-            //TODO: Change to recipient name when available
-            parcel.recipientId.toString().includes(lowerSearch)
+            parcel.recipient?.name.includes(lowerSearch)
     );
+
+    if (isLoadingParcels) return <Spinner color="blue" />;
 
     return (
         //TODO: Group by recipient?
@@ -37,25 +42,22 @@ const ParcelBrowser: React.SFC<ParcelBrowserProps> = ({ ...rest }) => {
                         <Left>
                             <Icon
                                 name={parcel.checkOutPerson ? 'package-up' : 'package-down'}
-                                style={{ color: parcel.checkOutPerson ? 'green' : 'yellow', fontSize: 20 }}
+                                style={{ color: parcel.checkOutPerson ? 'green' : 'grey', fontSize: 20 }}
                                 type="MaterialCommunityIcons"
                             />
                         </Left>
                         <Body>
-                            <Text>Barcode: {parcel.barcode}</Text>
-                            <Text>Recipient: {parcel.recipientId}</Text>
-                            <Text note>Shelf: {parcel.shelfBarcode}</Text>
-                            <Text note>Collected by: {parcel.checkOutPerson}</Text>
-                            <Text>
-                                Checked In:{' '}
-                                {parcel.checkInDate.getFullYear() > 1970
-                                    ? parcel.checkInDate.toLocaleDateString()
-                                    : 'unknown'}
-                            </Text>
-                            {parcel.checkOutDate && (
-                                <Text>Checked Out: {parcel.checkOutDate.toLocaleDateString()}</Text>
-                            )}
+                            <Text>No: {parcel.barcode}</Text>
+                            <Text>For: {parcel.recipient?.name}</Text>
+                            <Text note>{parcel.checkInDate.toLocaleDateString()}</Text>
+                            {parcel.shelfBarcode && <Text note>Shelf: {parcel.shelfBarcode}</Text>}
                         </Body>
+                        <Right>
+                            {parcel.checkOutDate && (
+                                <Text note>Collected: {parcel.checkOutDate.toLocaleDateString()}</Text>
+                            )}
+                            {parcel.checkOutPerson ? <Text note>By: {parcel.checkOutPerson}</Text> : null}
+                        </Right>
                     </ListItem>
                 )}
             />

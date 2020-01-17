@@ -4,12 +4,12 @@ export class DatabaseInitialization {
     // Perform any updates to the database schema. These can occur during initial configuration, or after an app store update.
     // This should be called each time the database is opened.
     public async updateDatabaseTables(database: SQLite.SQLiteDatabase): Promise<void> {
-        // First: create tables if they do not already exist
-        await database.transaction(this.createTables);
-
         const dbVersion = await this.getDatabaseVersion(database);
 
-        // Perform DB updates based on this version
+        if (dbVersion === 0) {
+            await database.transaction(this.createTables);
+        }
+
         if (dbVersion < 1) {
             await database.transaction(this.preVersion1Inserts);
         }

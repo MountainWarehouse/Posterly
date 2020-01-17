@@ -64,7 +64,7 @@ class App extends Component<object, State> {
         parcel.checkInDate = new Date();
 
         const { recipient } = this.state;
-        const shelfInfo = parcel.shelfBarcode !== '0' ? `Look it by the shelf no: ${parcel.shelfBarcode}.\n` : '';
+        const shelfInfo = parcel.shelfBarcode ? `Look it by the shelf no: ${parcel.shelfBarcode}.\n` : '';
         const body =
             `Hello ${recipient.name},\n` +
             `Your parcel no: ${parcel.barcode} is waiting in reception.\n` +

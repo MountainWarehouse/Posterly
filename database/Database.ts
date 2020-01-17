@@ -11,10 +11,14 @@ export interface Database {
     getAllRecipients(): Promise<Recipient[]>;
     createParcel(parcel: Parcel): Promise<Parcel>;
     getParcelByBarcode(barcode: string): Promise<Parcel | null>;
-    getAllParcels(): Promise<Parcel[]>;
+    getAllParcels(includeRecipient?: boolean): Promise<Parcel[]>;
     updateParcel(parcel: Parcel): Promise<void>;
-    //todo getParcelByRecipient
 }
+
+const SELECT_PARCELS = 'SELECT * FROM Parcel';
+const SELECT_PARCELS_INCLUDE_RECIPIENTS = `SELECT p.*, r.name AS recipientName, r.email AS recipientEmail 
+        FROM Parcel p
+        INNER JOIN Recipient r ON p.recipientId = r.id`;
 
 class DatabaseImpl implements Database {
     private databaseName = 'AppDatabase.db';
@@ -62,7 +66,7 @@ class DatabaseImpl implements Database {
 
     // Get an array of all the lists in the database
     public async getAllRecipients(): Promise<Recipient[]> {
-        const resultSet = await this.executeSql('SELECT * FROM Recipient;');
+        const resultSet = await this.executeSql('SELECT * FROM Recipient ORDER BY name;');
         if (!resultSet) {
             return [];
         }
@@ -93,17 +97,18 @@ class DatabaseImpl implements Database {
         return createdParcel;
     }
 
-    public async getParcelByBarcode(barcode: string): Promise<Parcel | null> {
-        const resultSet = await this.executeSql(`SELECT * FROM Parcel WHERE barcode = ?;`, [barcode]);
+    public async getParcelByBarcode(barcode: string, includeRecipient?: boolean): Promise<Parcel | null> {
+        const select = includeRecipient ? SELECT_PARCELS_INCLUDE_RECIPIENTS : SELECT_PARCELS;
+        const resultSet = await this.executeSql(`${select} WHERE barcode = ?;`, [barcode]);
 
         if (resultSet && resultSet.rows && resultSet.rows.length === 1) {
-            return this.parcelFromDbRow(resultSet.rows.item(0));
+            return this.parcelFromDbRow(resultSet.rows.item(0), includeRecipient);
         }
 
         return null;
     }
 
-    private parcelFromDbRow = (parcelRow: any): Parcel => {
+    private parcelFromDbRow = (parcelRow: any, includeRecipient?: boolean): Parcel => {
         const { id, barcode, checkInDate, shelfBarcode, checkOutPerson, checkOutDate, recipientId } = parcelRow;
         const parcel: Parcel = {
             id,
@@ -115,18 +120,27 @@ class DatabaseImpl implements Database {
             recipientId
         };
 
+        if (includeRecipient) {
+            parcel.recipient = {
+                id: parcel.recipientId,
+                name: parcelRow.recipientName,
+                email: parcelRow.recipientEmail
+            };
+        }
+
         return parcel;
     };
 
-    public async getAllParcels(): Promise<Parcel[]> {
-        //TODO: Add recipient
-        const resultSet = await this.executeSql('SELECT * FROM Parcel;');
+    public async getAllParcels(includeRecipient?: boolean): Promise<Parcel[]> {
+        const select = includeRecipient ? SELECT_PARCELS_INCLUDE_RECIPIENTS : SELECT_PARCELS;
+        const resultSet = await this.executeSql(select + ' ORDER BY checkInDate DESC');
         if (!resultSet) {
             return [];
         }
         const parcels: Parcel[] = [];
         for (let i = 0; i < resultSet.rows.length; i++) {
-            const parcel = this.parcelFromDbRow(resultSet.rows.item(i));
+            const row = resultSet.rows.item(i);
+            const parcel = this.parcelFromDbRow(row, includeRecipient);
             parcels.push(parcel);
         }
         return parcels;
