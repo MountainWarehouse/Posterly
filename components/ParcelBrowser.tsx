@@ -46,7 +46,15 @@ const ParcelBrowser: React.SFC<ParcelBrowserProps> = ({ ...rest }) => {
                             <Text>Recipient: {parcel.recipientId}</Text>
                             <Text note>Shelf: {parcel.shelfBarcode}</Text>
                             <Text note>Collected by: {parcel.checkOutPerson}</Text>
-                            {/* TODO: Check in/out date */}
+                            <Text>
+                                Checked In:{' '}
+                                {parcel.checkInDate.getFullYear() > 1970
+                                    ? parcel.checkInDate.toLocaleDateString()
+                                    : 'unknown'}
+                            </Text>
+                            {parcel.checkOutDate && (
+                                <Text>Checked Out: {parcel.checkOutDate.toLocaleDateString()}</Text>
+                            )}
                         </Body>
                     </ListItem>
                 )}

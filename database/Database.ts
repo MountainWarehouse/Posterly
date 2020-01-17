@@ -1,5 +1,4 @@
 import SQLite from 'react-native-sqlite-storage';
-
 import { Parcel } from '../models/Parcel';
 import { Recipient } from '../models/Recipient';
 import { DatabaseInitialization } from './DatabaseInitialization';
@@ -10,10 +9,10 @@ export interface Database {
     createRecipient(name: string, email: string): Promise<Recipient>;
     getRecipientById(id: number): Promise<Recipient | null>;
     getAllRecipients(): Promise<Recipient[]>;
-    createParcel(parcelBarcode: string, recipientId: number, shelfBarcode?: string): Promise<Parcel>;
+    createParcel(parcel: Parcel): Promise<Parcel>;
     getParcelByBarcode(barcode: string): Promise<Parcel | null>;
     getAllParcels(): Promise<Parcel[]>;
-    updateParcel(barcode: string, checkoutPerson: string): Promise<void>;
+    updateParcel(parcel: Parcel): Promise<void>;
     //todo getParcelByRecipient
 }
 
@@ -47,85 +46,113 @@ class DatabaseImpl implements Database {
 
     // Insert a new list into the database
     public async createRecipient(name: string, email: string): Promise<Recipient> {
-        const resultSet = await this.executeSql('INSERT INTO User (userName, userEmail) VALUES (?,?);', [name, email]);
+        const resultSet = await this.executeSql(`INSERT INTO Recipient (name, email) VALUES (?,?);`, [name, email]);
         return { id: resultSet.insertId, name, email };
     }
 
     public async getRecipientById(id: number): Promise<Recipient | null> {
-        const resultSet = await this.executeSql(
-            'SELECT user_id as id, userName as name, UserEmail as email FROM User WHERE id = ?;',
-            [id]
-        );
-        if (!resultSet) {
-            return null;
+        const resultSet = await this.executeSql('SELECT * FROM Recipient WHERE id = ?;', [id]);
+
+        if (resultSet && resultSet.rows.length === 1) {
+            return resultSet.rows.item(0);
         }
 
-        return resultSet.rows.item(0);
+        return null;
     }
 
     // Get an array of all the lists in the database
     public async getAllRecipients(): Promise<Recipient[]> {
-        const resultSet = await this.executeSql(
-            'SELECT user_id as id, userName as name, UserEmail as email FROM User;'
-        );
+        const resultSet = await this.executeSql('SELECT * FROM Recipient;');
         if (!resultSet) {
             return [];
         }
-        const users: Recipient[] = [];
+        const recipients: Recipient[] = [];
         for (let i = 0; i < resultSet.rows.length; i++) {
-            const user = resultSet.rows.item(i);
-            users.push(user);
+            const recipient = resultSet.rows.item(i);
+            recipients.push(recipient);
         }
-        return users;
+        return recipients;
     }
 
-    public async createParcel(barcode: string, recipientId: number, shelfBarcode?: string): Promise<Parcel> {
+    public async createParcel(parcel: Parcel): Promise<Parcel> {
         const resultSet = await this.executeSql(
-            'INSERT INTO package (packageBarcode, shelfBarcode, user_id) VALUES (?, ?, ?);',
-            [barcode, shelfBarcode, recipientId]
+            `INSERT INTO Parcel (barcode, checkInDate, shelfBarcode, checkOutPerson, checkOutDate, recipientId) 
+                VALUES (?, ?, ?, ?, ?, ?);`,
+            [
+                parcel.barcode,
+                parcel.checkInDate.getTime(),
+                parcel.shelfBarcode,
+                parcel.checkOutPerson,
+                parcel.checkOutDate?.getTime(),
+                parcel.recipientId
+            ]
         );
-        return {
-            id: resultSet.insertId,
-            barcode,
-            shelfBarcode,
-            checkInDate: new Date(),
-            recipientId
-        };
+
+        const createdParcel = { ...parcel };
+        createdParcel.id = resultSet.insertId;
+        return createdParcel;
     }
 
     public async getParcelByBarcode(barcode: string): Promise<Parcel | null> {
-        const resultSet = await this.executeSql(
-            `SELECT package_id as id, packageBarcode as barcode, shelfBarcode, user_id as recipientId FROM Package WHERE packageBarcode = ?;`,
-            [barcode]
-        );
-        if (!resultSet) {
-            return null;
+        const resultSet = await this.executeSql(`SELECT * FROM Parcel WHERE barcode = ?;`, [barcode]);
+
+        if (resultSet && resultSet.rows && resultSet.rows.length === 1) {
+            return this.parcelFromDbRow(resultSet.rows.item(0));
         }
 
-        return resultSet.rows.item(0);
+        return null;
     }
 
+    private parcelFromDbRow = (parcelRow: any): Parcel => {
+        const { id, barcode, checkInDate, shelfBarcode, checkOutPerson, checkOutDate, recipientId } = parcelRow;
+        const parcel: Parcel = {
+            id,
+            barcode,
+            checkInDate: new Date(checkInDate),
+            shelfBarcode,
+            checkOutPerson,
+            checkOutDate: checkOutDate ? new Date(checkOutDate) : undefined,
+            recipientId
+        };
+
+        return parcel;
+    };
+
     public async getAllParcels(): Promise<Parcel[]> {
-        //TODO: Add checkout person
-        const resultSet = await this.executeSql(
-            'SELECT package_id as id, packageBarcode as barcode, shelfBarcode, user_id as recipientId, checkoutPerson as checkOutPerson FROM Package'
-        );
+        //TODO: Add recipient
+        const resultSet = await this.executeSql('SELECT * FROM Parcel;');
         if (!resultSet) {
             return [];
         }
         const parcels: Parcel[] = [];
         for (let i = 0; i < resultSet.rows.length; i++) {
-            const parcel: Parcel = resultSet.rows.item(i);
+            const parcel = this.parcelFromDbRow(resultSet.rows.item(i));
             parcels.push(parcel);
         }
         return parcels;
     }
 
-    public async updateParcel(parcelBarcode: string, checkoutPerson: string): Promise<void> {
-        this.executeSql('UPDATE PACKAGE SET checkoutPerson = ? WHERE packageBarcode = ?;', [
-            checkoutPerson,
-            parcelBarcode
-        ]);
+    public async updateParcel(parcel: Parcel): Promise<void> {
+        this.executeSql(
+            `UPDATE Parcel
+                SET
+                    barcode = ?, 
+                    checkInDate = ?, 
+                    shelfBarcode = ?, 
+                    checkOutPerson = ?, 
+                    checkOutDate = ?, 
+                    recipientId = ?
+                WHERE id = ?;`,
+            [
+                parcel.barcode,
+                parcel.checkInDate.getTime(),
+                parcel.shelfBarcode,
+                parcel.checkOutPerson,
+                parcel.checkOutDate?.getTime(),
+                parcel.recipientId,
+                parcel.id
+            ]
+        );
     }
 
     private getDatabase(): Promise<SQLite.SQLiteDatabase> {
@@ -135,6 +162,7 @@ class DatabaseImpl implements Database {
     private async executeSql(statement: string, params?: any[]): Promise<SQLite.ResultSet> {
         const db = await this.getDatabase();
         const [resultSet] = await db.executeSql(statement, params);
+
         return resultSet;
     }
 }

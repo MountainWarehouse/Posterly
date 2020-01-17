@@ -26,7 +26,6 @@ export interface State {
     parcel: Parcel;
     recipient: Recipient;
     recipients: Recipient[];
-    checkoutPerson: string;
     preferences: IPreferences;
 }
 
@@ -38,7 +37,6 @@ class App extends Component<object, State> {
             recipient: { id: -1, name: '', email: '' },
             recipients: [],
             parcel: {} as Parcel,
-            checkoutPerson: '',
             preferences: {} as IPreferences
         };
     }
@@ -61,23 +59,26 @@ class App extends Component<object, State> {
     }
 
     handleCheckIn = async () => {
-        const { parcel, recipient } = this.state;
-        await database.createParcel(parcel.barcode, recipient.id, parcel.shelfBarcode);
+        const parcel = { ...this.state.parcel };
+        await database.createParcel(parcel);
+        parcel.checkInDate = new Date();
 
+        const { recipient } = this.state;
         const shelfInfo = parcel.shelfBarcode !== '0' ? `Look it by the shelf no: ${parcel.shelfBarcode}.\n` : '';
         const body =
             `Hello ${recipient.name},\n` +
-            `Your package no: ${parcel.barcode} is waiting in reception.\n` +
+            `Your parcel no: ${parcel.barcode} is waiting in reception.\n` +
             shelfInfo +
             '\nHave a great day!';
-        emailService.sendEmail(recipient.email, 'Your package is waiting for you!', body);
+        emailService.sendEmail(recipient.email, 'Your parcel is waiting for you!', body);
+        this.setState({ parcel: {} as Parcel, recipient: {} as Recipient });
         this.navigateTo(Screen.Home);
     };
 
     handleCheckOut = async () => {
-        const { recipient, parcel, checkoutPerson } = this.state;
+        const { recipient, parcel } = this.state;
 
-        if (checkoutPerson === recipient.name) return this.checkOutPackage();
+        if (parcel.checkOutPerson === recipient.name) return this.checkOutParcel();
 
         Alert.alert(
             'Notify?',
@@ -90,17 +91,17 @@ class App extends Component<object, State> {
                 },
                 {
                     text: 'No',
-                    onPress: this.checkOutPackage
+                    onPress: this.checkOutParcel
                 },
                 {
                     text: 'Yes',
                     onPress: () => {
                         const body =
                             `Hello ${recipient.name},\n` +
-                            `Your package no: ${parcel.barcode} has been checked out by ${checkoutPerson}.\n\n` +
+                            `Your parcel no: ${parcel.barcode} has been checked out by ${parcel.checkOutPerson}.\n\n` +
                             'Have a great day!';
-                        emailService.sendEmail(recipient.email, 'Your package has been checked out', body);
-                        this.checkOutPackage();
+                        emailService.sendEmail(recipient.email, 'Your parcel has been checked out', body);
+                        this.checkOutParcel();
                     }
                 }
             ],
@@ -108,10 +109,19 @@ class App extends Component<object, State> {
         );
     };
 
-    checkOutPackage = async () => {
-        const { parcel, checkoutPerson } = this.state;
-        await database.updateParcel(parcel.barcode, checkoutPerson);
+    checkOutParcel = async () => {
+        const parcel = { ...this.state.parcel };
+        if (!parcel.checkOutPerson) {
+            return Alert.alert(
+                'Error',
+                'You need to specify person who collected parcel in order to proceed with checkout.'
+            );
+        }
+
+        parcel.checkOutDate = new Date();
+        await database.updateParcel(parcel);
         Toast.show({ text: 'Parcel has been checked out.' });
+        this.setState({ parcel: {} as Parcel, recipient: {} as Recipient });
         this.navigateTo(Screen.Home);
     };
 
@@ -189,7 +199,7 @@ class App extends Component<object, State> {
                         padder
                         parcel={this.state.parcel}
                         recipient={this.state.recipient}
-                        onChangeCheckoutPerson={checkoutPerson => this.setState({ checkoutPerson })}
+                        onChangeCheckoutPerson={this.handleChangeCheckOutPerson}
                         tip="By pressing 'Check Out' you confirm that the person has collected the parcel"
                     />
                 ),
@@ -201,7 +211,12 @@ class App extends Component<object, State> {
                     ),
                     headerTitle: <Text>Check Out Parcel</Text>,
                     headerRight: () => (
-                        <Button hasText transparent onPress={this.handleCheckOut} disabled={!this.state.checkoutPerson}>
+                        <Button
+                            hasText
+                            transparent
+                            onPress={this.handleCheckOut}
+                            disabled={!this.state.parcel.checkOutPerson}
+                        >
                             <Text>Check Out</Text>
                         </Button>
                     )
@@ -243,6 +258,12 @@ class App extends Component<object, State> {
     AppNavigationContainer = createAppContainer(this.appNavigator);
 
     navigator: NavigationContainerComponent | null = null;
+
+    handleChangeCheckOutPerson = (checkOutPerson: string) => {
+        const parcel = { ...this.state.parcel };
+        parcel.checkOutPerson = checkOutPerson;
+        this.setState({ parcel });
+    };
 
     handleScanParcel = async (barcode: string) => {
         let parcel = await database.getParcelByBarcode(barcode);
