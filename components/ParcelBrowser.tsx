@@ -1,7 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { Content, Text, List, ListItem, Icon, Body, Item, Input, NativeBase, Left, Spinner, Right } from 'native-base';
+import {
+    Content,
+    Text,
+    List,
+    ListItem,
+    Icon,
+    Body,
+    Item,
+    Input,
+    NativeBase,
+    Left,
+    Spinner,
+    Right,
+    Picker,
+    View
+} from 'native-base';
 import { Parcel } from '../models/Parcel';
 import { database } from '../database/Database';
+
+enum Show {
+    All,
+    In,
+    Out
+}
 
 export interface ParcelBrowserProps extends NativeBase.Content {}
 
@@ -9,6 +30,7 @@ const ParcelBrowser: React.SFC<ParcelBrowserProps> = ({ ...rest }) => {
     const [search, setSearch] = useState('');
     const [isLoadingParcels, setIsLoadingParcels] = useState(true);
     const [parcels, setParcels] = useState([] as Parcel[]);
+    const [show, setShow] = useState(Show.All);
 
     useEffect(() => {
         database.getAllParcels(true).then(parcels => {
@@ -19,10 +41,26 @@ const ParcelBrowser: React.SFC<ParcelBrowserProps> = ({ ...rest }) => {
 
     const lowerSearch = search.toLowerCase();
 
-    const filteredParcels = parcels.filter(
-        parcel =>
-            (parcel.barcode && parcel.barcode.toLowerCase().includes(lowerSearch)) ||
-            parcel.recipient?.name.includes(lowerSearch)
+    const isCheckedOut = (parcel: Parcel): boolean => (parcel.checkOutPerson ? true : false);
+
+    const filteredParcels = parcels.filter(parcel => {
+        const shouldBeShown =
+            show === Show.All ||
+            (show === Show.Out && isCheckedOut(parcel)) ||
+            (show === Show.In && !isCheckedOut(parcel));
+        const searchResult =
+            parcel.barcode.toLowerCase().includes(lowerSearch) ||
+            parcel.recipient?.name.toLocaleLowerCase().includes(lowerSearch);
+
+        return shouldBeShown && searchResult;
+    });
+
+    const parcelIcon = (isCheckedOut: boolean) => (
+        <Icon
+            name={isCheckedOut ? 'package-variant' : 'package-variant-closed'}
+            style={{ color: isCheckedOut ? '#27a844' : '#17a2b7' }}
+            type="MaterialCommunityIcons"
+        />
     );
 
     if (isLoadingParcels) return <Spinner color="blue" />;
@@ -30,7 +68,20 @@ const ParcelBrowser: React.SFC<ParcelBrowserProps> = ({ ...rest }) => {
     return (
         //TODO: Group by recipient?
         <Content {...rest}>
-            <Item style={{ marginVertical: 5 }}>
+            <Item>
+                <Text>Show: </Text>
+                {show === Show.All ? (
+                    <Icon name="package-variant-closed" style={{ color: 'lightgrey' }} type="MaterialCommunityIcons" />
+                ) : (
+                    parcelIcon(show === Show.Out)
+                )}
+                <Picker mode="dropdown" selectedValue={show} onValueChange={setShow}>
+                    <Picker.Item label="All" value={Show.All} />
+                    <Picker.Item label="Checked In" value={Show.In} />
+                    <Picker.Item label="Checked Out" value={Show.Out} />
+                </Picker>
+            </Item>
+            <Item>
                 <Icon name="md-search" />
                 <Input placeholder="Search" onChangeText={setSearch} />
             </Item>
@@ -39,13 +90,7 @@ const ParcelBrowser: React.SFC<ParcelBrowserProps> = ({ ...rest }) => {
                 keyExtractor={(parcel: Parcel) => parcel.id.toString()}
                 renderRow={(parcel: Parcel) => (
                     <ListItem avatar>
-                        <Left>
-                            <Icon
-                                name={parcel.checkOutPerson ? 'package-up' : 'package-down'}
-                                style={{ color: parcel.checkOutPerson ? 'green' : 'grey', fontSize: 20 }}
-                                type="MaterialCommunityIcons"
-                            />
-                        </Left>
+                        <Left>{parcelIcon(parcel.checkOutPerson ? true : false)}</Left>
                         <Body>
                             <Text>No: {parcel.barcode}</Text>
                             <Text>For: {parcel.recipient?.name}</Text>
