@@ -27,6 +27,7 @@ export interface State {
     recipient: Recipient;
     recipients: Recipient[];
     preferences: IPreferences;
+    parcelSearch: string;
 }
 
 class App extends Component<object, State> {
@@ -37,7 +38,8 @@ class App extends Component<object, State> {
             recipient: { id: -1, name: '', email: '' },
             recipients: [],
             parcel: {} as Parcel,
-            preferences: {} as IPreferences
+            preferences: {} as IPreferences,
+            parcelSearch: ''
         };
     }
 
@@ -134,13 +136,7 @@ class App extends Component<object, State> {
     appNavigator = createStackNavigator(
         {
             [Screen.Home]: {
-                screen: () => (
-                    <Home
-                        padder
-                        onScan={this.handleScanParcel}
-                        onSearchParcels={() => this.navigateTo(Screen.ParcelBrowser)}
-                    />
-                ),
+                screen: () => <Home padder onScan={this.handleScanParcel} onSearchParcels={this.handleSearchParcels} />,
                 navigationOptions: { title: 'Scan Parcel' }
             },
             [Screen.RecipientSelection]: {
@@ -232,7 +228,7 @@ class App extends Component<object, State> {
                 navigationOptions: { title: 'Settings', headerRight: null }
             },
             [Screen.ParcelBrowser]: {
-                screen: ParcelBrowser,
+                screen: () => <ParcelBrowser search={this.state.parcelSearch} />,
                 navigationOptions: { title: 'Browse Parcels' }
             }
         },
@@ -258,6 +254,10 @@ class App extends Component<object, State> {
     AppNavigationContainer = createAppContainer(this.appNavigator);
 
     navigator: NavigationContainerComponent | null = null;
+
+    handleSearchParcels = (search: string) => {
+        this.setState({ parcelSearch: search }, () => this.navigateTo(Screen.ParcelBrowser));
+    };
 
     handleChangeCheckOutPerson = (checkOutPerson: string) => {
         const parcel = { ...this.state.parcel };

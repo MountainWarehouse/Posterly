@@ -12,8 +12,7 @@ import {
     Left,
     Spinner,
     Right,
-    Picker,
-    View
+    Picker
 } from 'native-base';
 import { Parcel } from '../models/Parcel';
 import { database } from '../database/Database';
@@ -24,10 +23,12 @@ enum Show {
     Out
 }
 
-export interface ParcelBrowserProps extends NativeBase.Content {}
+export interface ParcelBrowserProps extends NativeBase.Content {
+    search: string;
+}
 
-const ParcelBrowser: React.SFC<ParcelBrowserProps> = ({ ...rest }) => {
-    const [search, setSearch] = useState('');
+const ParcelBrowser: React.SFC<ParcelBrowserProps> = ({ search: propsSearch, ...rest }) => {
+    const [search, setSearch] = useState(propsSearch);
     const [isLoadingParcels, setIsLoadingParcels] = useState(true);
     const [parcels, setParcels] = useState([] as Parcel[]);
     const [show, setShow] = useState(Show.All);
@@ -83,7 +84,7 @@ const ParcelBrowser: React.SFC<ParcelBrowserProps> = ({ ...rest }) => {
             </Item>
             <Item>
                 <Icon name="md-search" />
-                <Input placeholder="Search" onChangeText={setSearch} />
+                <Input placeholder="Search" onChangeText={setSearch} value={search} />
             </Item>
             <List
                 dataArray={filteredParcels}
