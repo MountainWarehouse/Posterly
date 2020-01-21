@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
-import { Button, Content, Form, Text, Toast } from 'native-base';
-import { User } from '../models/user';
-import { database } from '../database/database';
+import { Button, Content, Form, Text, Toast, NativeBase } from 'native-base';
+import { Recipient } from '../models/Recipient';
+import { database } from '../database/Database';
 import { OutlinedTextField } from 'react-native-material-textfield';
 import Joi from 'joi';
-import styles from '../_shared/styles';
+import styles from '../_shared/Styles';
 
-export interface UserFormProps {
-    onUserCreated: (user: User) => void;
-    users: User[];
+export interface RecipientFormProps extends NativeBase.Content {
+    onRecipientCreated: (recipient: Recipient) => void;
+    recipients: Recipient[];
 }
 
-const UserForm: React.SFC<UserFormProps> = ({ onUserCreated, users }) => {
+const RecipientForm: React.SFC<RecipientFormProps> = ({ onRecipientCreated, recipients, ...rest }) => {
     const [data, setData]: [any, (data: any) => void] = useState({
         name: '',
         email: ''
@@ -21,7 +21,7 @@ const UserForm: React.SFC<UserFormProps> = ({ onUserCreated, users }) => {
     const schema: any = {
         name: Joi.string()
             .required()
-            .invalid(users.map(user => user.UserName))
+            .invalid(recipients.map(recipient => recipient.name))
             .insensitive()
             .error(ers =>
                 ers.map(e => {
@@ -33,7 +33,7 @@ const UserForm: React.SFC<UserFormProps> = ({ onUserCreated, users }) => {
         email: Joi.string()
             .email({ minDomainAtoms: 2 })
             .required()
-            .invalid(users.map(user => user.UserEmail))
+            .invalid(recipients.map(recipient => recipient.email))
             .insensitive()
             .error(ers =>
                 ers.map(e => {
@@ -59,9 +59,9 @@ const UserForm: React.SFC<UserFormProps> = ({ onUserCreated, users }) => {
 
         if (errors) return setErrors(errors);
 
-        const user = await database.createUser(data.name, data.email);
+        const recipient = await database.createRecipient(data.name, data.email);
         Toast.show({ text: `Recipient ${data.name} created!` });
-        onUserCreated(user);
+        onRecipientCreated(recipient);
     };
 
     const validate = () => {
@@ -92,7 +92,7 @@ const UserForm: React.SFC<UserFormProps> = ({ onUserCreated, users }) => {
     const disabled = !isChanged || !isValid;
 
     return (
-        <Content padder>
+        <Content {...rest}>
             <Form>
                 <OutlinedTextField
                     label="Name"
@@ -115,4 +115,4 @@ const UserForm: React.SFC<UserFormProps> = ({ onUserCreated, users }) => {
     );
 };
 
-export default UserForm;
+export default RecipientForm;

@@ -1,14 +1,15 @@
 import 'react-native-gesture-handler';
 import React, { Component } from 'react';
 import { AppState, Alert } from 'react-native';
+import Home from './components/Home';
 import Scanner from './components/Scanner';
 import Summary from './components/Summary';
-import UserSelection from './components/UserSelection';
-import UserForm from './components/UserForm';
-import { database } from './database/database';
-import { Package } from './models/package';
+import RecipientSelection from './components/RecipientSelection';
+import RecipientForm from './components/RecipientForm';
+import { database } from './database/Database';
+import { Parcel } from './models/Parcel';
 import { Root, Toast, Button, Icon, Text } from 'native-base';
-import { User } from './models/user';
+import { Recipient } from './models/Recipient';
 import { createAppContainer, NavigationContainerComponent, NavigationActions } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 import Screen from './_shared/Screen';
@@ -18,15 +19,14 @@ import Preferences from './components/Preferences';
 import IPreferences from './_shared/IPreferences';
 import PreferenceService from './services/PreferenceService';
 import { MenuProvider, Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
+import ParcelBrowser from './components/Parcel/ParcelBrowser';
 
 export interface State {
     appState: string;
-    countParcels: number;
-    parcel: Package;
-    user: User;
-    users: User[];
-    checkoutPerson: string;
+    parcel: Parcel;
+    recipients: Recipient[];
     preferences: IPreferences;
+    parcelSearch: string;
 }
 
 class App extends Component<object, State> {
@@ -34,21 +34,19 @@ class App extends Component<object, State> {
         super(props);
         this.state = {
             appState: AppState.currentState,
-            countParcels: 0,
-            user: { UserId: -1, UserName: '', UserEmail: '' },
-            users: [],
-            parcel: {} as Package,
-            checkoutPerson: '',
-            preferences: {} as IPreferences
+            recipients: [],
+            parcel: {} as Parcel,
+            preferences: {} as IPreferences,
+            parcelSearch: ''
         };
     }
 
     public async componentDidMount() {
         await database.open();
-        const [users, preferences] = await Promise.all([database.getAllUsers(), PreferenceService.getAll()]);
+        const [recipients, preferences] = await Promise.all([database.getAllRecipients(), PreferenceService.getAll()]);
         this.setState({
             appState: 'active',
-            users,
+            recipients,
             preferences
         });
 
@@ -61,23 +59,27 @@ class App extends Component<object, State> {
     }
 
     handleCheckIn = async () => {
-        const { parcel, user } = this.state;
-        await database.createPackage(parcel.ParcelBarcode, parcel.ShelfBarcode, user, '');
+        const parcel = { ...this.state.parcel };
+        const recipient = parcel.recipient ? parcel.recipient : ({} as Recipient);
+        await database.createParcel(parcel);
+        parcel.checkInDate = new Date();
 
-        const shelfInfo = parcel.ShelfBarcode !== '0' ? `Look it by the shelf no: ${parcel.ShelfBarcode}.\n` : '';
+        const shelfInfo = parcel.shelfBarcode ? `Look it by the shelf no: ${parcel.shelfBarcode}.\n` : '';
         const body =
-            `Hello ${user.UserName},\n` +
-            `Your package no: ${parcel.ParcelBarcode} is waiting in reception.\n` +
+            `Hello ${recipient.name},\n` +
+            `Your parcel no: ${parcel.barcode} is waiting in reception.\n` +
             shelfInfo +
             '\nHave a great day!';
-        emailService.sendEmail(user.UserEmail, 'Your package is waiting for you!', body);
-        this.navigateTo(Screen.Parcel);
+        emailService.sendEmail(recipient.email as string, 'Your parcel is waiting for you!', body);
+        this.setState({ parcel: {} as Parcel });
+        this.navigateTo(Screen.Home);
     };
 
     handleCheckOut = async () => {
-        const { user, parcel, checkoutPerson } = this.state;
+        const { parcel } = this.state;
+        const recipient = parcel.recipient ? parcel.recipient : ({} as Recipient);
 
-        if (checkoutPerson === user.UserName) return this.checkOutPackage();
+        if (parcel.checkOutPerson === recipient.name) return this.checkOutParcel();
 
         Alert.alert(
             'Notify?',
@@ -90,17 +92,17 @@ class App extends Component<object, State> {
                 },
                 {
                     text: 'No',
-                    onPress: this.checkOutPackage
+                    onPress: this.checkOutParcel
                 },
                 {
                     text: 'Yes',
                     onPress: () => {
                         const body =
-                            `Hello ${user.UserName},\n` +
-                            `Your package no: ${parcel.ParcelBarcode} has been checked out by ${checkoutPerson}.\n\n` +
+                            `Hello ${recipient.name},\n` +
+                            `Your parcel no: ${parcel.barcode} has been checked out by ${parcel.checkOutPerson}.\n\n` +
                             'Have a great day!';
-                        emailService.sendEmail(user.UserEmail, 'Your package has been checked out', body);
-                        this.checkOutPackage();
+                        emailService.sendEmail(recipient.email, 'Your parcel has been checked out', body);
+                        this.checkOutParcel();
                     }
                 }
             ],
@@ -108,52 +110,70 @@ class App extends Component<object, State> {
         );
     };
 
-    checkOutPackage = async () => {
-        const { parcel, checkoutPerson } = this.state;
-        await database.updatePackage(parcel.ParcelBarcode, checkoutPerson);
+    checkOutParcel = async () => {
+        const parcel = { ...this.state.parcel };
+        if (!parcel.checkOutPerson) {
+            return Alert.alert(
+                'Error',
+                'You need to specify person who collected parcel in order to proceed with checkout.'
+            );
+        }
+
+        parcel.checkOutDate = new Date();
+        await database.updateParcel(parcel);
         Toast.show({ text: 'Parcel has been checked out.' });
-        this.navigateTo(Screen.Parcel);
+        this.setState({ parcel: {} as Parcel });
+        this.navigateTo(Screen.Home);
     };
 
     cancelHeaderButton = (
-        <Button transparent onPress={() => this.navigateTo(Screen.Parcel)}>
+        <Button transparent onPress={() => this.navigateTo(Screen.Home)}>
             <Icon name="md-close" />
         </Button>
     );
 
     appNavigator = createStackNavigator(
         {
-            [Screen.Parcel]: {
-                screen: () => (
-                    <Scanner tip="Scan barcode of a parcel to check in or out" onScan={this.handleScanParcel} />
-                ),
+            [Screen.Home]: {
+                screen: () => <Home padder onScan={this.handleScanParcel} onSearchParcels={this.handleSearchParcels} />,
                 navigationOptions: { title: 'Scan Parcel' }
             },
-            [Screen.UserSelection]: {
+            [Screen.RecipientSelection]: {
                 screen: () => (
-                    <UserSelection
-                        onSelectUser={this.handleSelectUser}
-                        onCreateUser={() => this.navigateTo(Screen.UserCreation)}
-                        users={this.state.users}
+                    <RecipientSelection
+                        padder
+                        onSelectRecipient={this.handleSelectRecipient}
+                        onCreateRecipient={() => this.navigateTo(Screen.RecipientCreation)}
+                        recipients={this.state.recipients}
                     />
                 ),
                 navigationOptions: { title: 'Logging a new parcel' }
             },
-            [Screen.UserCreation]: {
-                screen: () => <UserForm onUserCreated={this.handleUserCreated} users={this.state.users} />,
+            [Screen.RecipientCreation]: {
+                screen: () => (
+                    <RecipientForm
+                        padder
+                        onRecipientCreated={this.handleRecipientCreated}
+                        recipients={this.state.recipients}
+                    />
+                ),
                 navigationOptions: { title: 'Create New Recipient' }
             },
             [Screen.Shelf]: {
                 screen: () => (
-                    <Scanner tip="Place the parcel on a shelf and scan shelf barcode" onScan={this.handleScanShelf} />
+                    <Scanner
+                        padder
+                        tip="Place the parcel on a shelf and scan shelf barcode"
+                        onScan={this.handleScanShelf}
+                    />
                 ),
                 navigationOptions: { title: 'Scan Shelf' }
             },
             [Screen.Summary]: {
                 screen: () => (
                     <Summary
+                        padder
                         parcel={this.state.parcel}
-                        user={this.state.user}
                         tip="When 'Notify' is pressed the email for the parcel receiver will be generated"
                     />
                 ),
@@ -170,21 +190,25 @@ class App extends Component<object, State> {
             [Screen.CheckOut]: {
                 screen: () => (
                     <CheckOut
+                        padder
                         parcel={this.state.parcel}
-                        user={this.state.user}
-                        onChangeCheckoutPerson={checkoutPerson => this.setState({ checkoutPerson })}
-                        tip="By pressing 'Check Out' you confirm that the person has collected the parcel"
+                        onChangeCheckoutPerson={this.handleChangeCheckOutPerson}
                     />
                 ),
                 navigationOptions: {
                     headerLeft: (
-                        <Button transparent onPress={() => this.navigateTo(Screen.Parcel)}>
+                        <Button transparent onPress={() => this.navigateTo(Screen.Home)}>
                             <Icon name="md-close" />
                         </Button>
                     ),
                     headerTitle: <Text>Check Out Parcel</Text>,
                     headerRight: () => (
-                        <Button hasText transparent onPress={this.handleCheckOut} disabled={!this.state.checkoutPerson}>
+                        <Button
+                            hasText
+                            transparent
+                            onPress={this.handleCheckOut}
+                            disabled={!this.state.parcel.checkOutPerson}
+                        >
                             <Text>Check Out</Text>
                         </Button>
                     )
@@ -198,10 +222,22 @@ class App extends Component<object, State> {
                     />
                 ),
                 navigationOptions: { title: 'Settings', headerRight: null }
+            },
+            [Screen.ParcelBrowser]: {
+                screen: () => (
+                    <ParcelBrowser search={this.state.parcelSearch} onSelectParcel={this.handleSelectParcel} />
+                ),
+                navigationOptions: { title: 'Browse Parcels' }
+            },
+            [Screen.ParcelInfo]: {
+                screen: () => <CheckOut padder parcel={this.state.parcel} />,
+                navigationOptions: {
+                    title: 'Parcel Info'
+                }
             }
         },
         {
-            initialRouteName: Screen.Parcel,
+            initialRouteName: Screen.Home,
             defaultNavigationOptions: {
                 headerRight: (
                     <Button dark transparent>
@@ -223,59 +259,59 @@ class App extends Component<object, State> {
 
     navigator: NavigationContainerComponent | null = null;
 
-    handleScanParcel = async (code: string) => {
-        const result = await database.getPackageByBarocde(code);
-        //goto CheckIN
-        if (!result || result.length === 0) {
-            const newParcel = new Package(code, this.state.countParcels + 1);
-            return this.setState(
-                {
-                    parcel: newParcel,
-                    countParcels: this.state.countParcels + 1,
-                    appState: 'active'
-                },
-                () => this.navigateTo(Screen.UserSelection)
-            );
-        }
+    handleSearchParcels = (search: string) => {
+        this.setState({ parcelSearch: search }, () => this.navigateTo(Screen.ParcelBrowser));
+    };
 
-        // goto CheckOUT
-        const parcel = result[0];
-        const user = (await database.getUserByUserId(parcel.User_Id))[0];
-        this.setState(
-            {
-                parcel,
-                user
-            },
-            () => this.navigateTo(Screen.CheckOut)
-        );
+    handleChangeCheckOutPerson = (checkOutPerson: string) => {
+        const parcel = { ...this.state.parcel };
+        parcel.checkOutPerson = checkOutPerson;
+        this.setState({ parcel });
+    };
+
+    handleScanParcel = async (barcode: string) => {
+        let parcel = await database.getParcelByBarcode(barcode, true);
+
+        if (parcel) return this.handleSelectParcel(parcel);
+        parcel = {
+            barcode,
+            id: 0,
+            checkInDate: new Date(),
+            recipientId: 0,
+            recipient: {
+                id: 0,
+                name: '',
+                email: ''
+            }
+        };
+        return this.setState({ parcel }, () => this.navigateTo(Screen.RecipientSelection));
+    };
+
+    handleSelectParcel = (parcel: Parcel) => {
+        this.setState({ parcel }, () => this.navigateTo(parcel.checkOutPerson ? Screen.ParcelInfo : Screen.CheckOut));
     };
 
     navigateTo = (screen: Screen) =>
         this.navigator && this.navigator.dispatch(NavigationActions.navigate({ routeName: screen }));
 
-    handleUserCreated = (user: User) => {
-        const users = [...this.state.users];
-        users.push(user);
-        this.setState({ users });
-        this.handleSelectUser(user);
+    handleRecipientCreated = (recipient: Recipient) => {
+        const recipients = [...this.state.recipients];
+        recipients.push(recipient);
+        this.setState({ recipients });
+        this.handleSelectRecipient(recipient);
     };
 
-    handleSelectUser = (user: User) => {
+    handleSelectRecipient = (recipient: Recipient) => {
         const parcel = { ...this.state.parcel };
-        parcel.User_Id = user.UserId;
+        parcel.recipientId = recipient.id;
+        parcel.recipient = recipient;
         const nextScreen = this.state.preferences.useShelf ? Screen.Shelf : Screen.Summary;
-        this.setState(
-            {
-                parcel,
-                user
-            },
-            () => this.navigateTo(nextScreen)
-        );
+        this.setState({ parcel }, () => this.navigateTo(nextScreen));
     };
 
     handleScanShelf = (code: string) => {
         const parcel = { ...this.state.parcel };
-        parcel.ShelfBarcode = code;
+        parcel.shelfBarcode = code;
         this.setState({ parcel }, () => this.navigateTo(Screen.Summary));
     };
 
