@@ -6,7 +6,8 @@ enum Screen {
     Summary = 'Summary',
     CheckOut = 'CheckOut',
     Preferences = 'Preferences',
-    ParcelBrowser = 'ParcelBrowser'
+    ParcelBrowser = 'ParcelBrowser',
+    ParcelInfo = 'ParcelInfo'
 }
 
 export default Screen;

@@ -6,9 +6,10 @@ import styles from '../_shared/Styles';
 
 export interface CheckOutProps extends SummaryProps, NativeBase.Content {
     onChangeCheckoutPerson: (checkoutPerson: string) => void;
+    checkOutDisabled?: boolean;
 }
 
-const CheckOut: React.SFC<CheckOutProps> = ({ parcel, tip, onChangeCheckoutPerson, ...rest }) => {
+const CheckOut: React.SFC<CheckOutProps> = ({ parcel, tip, onChangeCheckoutPerson, checkOutDisabled, ...rest }) => {
     return (
         <Content {...rest}>
             <Summary parcel={parcel} />
@@ -17,6 +18,7 @@ const CheckOut: React.SFC<CheckOutProps> = ({ parcel, tip, onChangeCheckoutPerso
                 onChangeText={onChangeCheckoutPerson}
                 placeholder="Type name of the person"
                 value={parcel.checkOutPerson ? parcel.checkOutPerson : ''}
+                editable={!checkOutDisabled}
             />
             {tip && <Text style={styles.tip}>{tip}</Text>}
         </Content>

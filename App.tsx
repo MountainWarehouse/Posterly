@@ -229,6 +229,24 @@ class App extends Component<object, State> {
                     <ParcelBrowser search={this.state.parcelSearch} onSelectParcel={this.handleSelectParcel} />
                 ),
                 navigationOptions: { title: 'Browse Parcels' }
+            },
+            [Screen.ParcelInfo]: {
+                screen: () => {
+                    const { parcel } = this.state;
+                    const checkedOut = parcel.checkOutPerson ? true : false;
+                    return (
+                        <CheckOut
+                            padder
+                            parcel={parcel}
+                            onChangeCheckoutPerson={() => null}
+                            checkOutDisabled={checkedOut}
+                            tip={checkedOut ? 'This parcel has already been checked out' : ''}
+                        />
+                    );
+                },
+                navigationOptions: {
+                    title: 'Parcel Info'
+                }
             }
         },
         {
@@ -287,7 +305,7 @@ class App extends Component<object, State> {
     };
 
     handleSelectParcel = (parcel: Parcel) => {
-        this.setState({ parcel }, () => this.navigateTo(Screen.CheckOut));
+        this.setState({ parcel }, () => this.navigateTo(parcel.checkOutPerson ? Screen.ParcelInfo : Screen.CheckOut));
     };
 
     navigateTo = (screen: Screen) =>
