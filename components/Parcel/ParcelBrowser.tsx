@@ -1,21 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import {
-    Content,
-    Text,
-    List,
-    ListItem,
-    Icon,
-    Body,
-    Item,
-    Input,
-    NativeBase,
-    Left,
-    Spinner,
-    Right,
-    Picker
-} from 'native-base';
-import { Parcel } from '../models/Parcel';
-import { database } from '../database/Database';
+import { Content, Text, Icon, Item, Input, NativeBase, Spinner, Picker, Button } from 'native-base';
+import { Parcel } from '../../models/Parcel';
+import { database } from '../../database/Database';
+import styles from '../../_shared/Styles';
+import ParcelIcon from './ParcelIcon';
+import ParcelsListByRecipient from './ParcelsListByRecipient';
+import ParcelsList from './ParcelsList';
 
 enum Show {
     All,
@@ -32,6 +22,7 @@ const ParcelBrowser: React.SFC<ParcelBrowserProps> = ({ search: propsSearch, ...
     const [isLoadingParcels, setIsLoadingParcels] = useState(true);
     const [parcels, setParcels] = useState([] as Parcel[]);
     const [show, setShow] = useState(Show.All);
+    const [groupByRecipient, setGroupByRecipient] = useState(true);
 
     useEffect(() => {
         database.getAllParcels(true).then(parcels => {
@@ -56,57 +47,41 @@ const ParcelBrowser: React.SFC<ParcelBrowserProps> = ({ search: propsSearch, ...
         return shouldBeShown && searchResult;
     });
 
-    const parcelIcon = (isCheckedOut: boolean) => (
-        <Icon
-            name={isCheckedOut ? 'package-variant' : 'package-variant-closed'}
-            style={{ color: isCheckedOut ? '#27a844' : '#17a2b7' }}
-            type="MaterialCommunityIcons"
-        />
-    );
-
     if (isLoadingParcels) return <Spinner color="blue" />;
 
     return (
-        //TODO: Group by recipient?
         <Content {...rest}>
             <Item>
-                <Text>Show: </Text>
+                <Icon name="md-search" type="Ionicons" />
+                <Input placeholder="Search" onChangeText={setSearch} value={search} />
+            </Item>
+            <Item>
                 {show === Show.All ? (
                     <Icon name="package-variant-closed" style={{ color: 'lightgrey' }} type="MaterialCommunityIcons" />
                 ) : (
-                    parcelIcon(show === Show.Out)
+                    <ParcelIcon checkedOut={show === Show.Out} />
                 )}
                 <Picker mode="dropdown" selectedValue={show} onValueChange={setShow}>
                     <Picker.Item label="All" value={Show.All} />
                     <Picker.Item label="Checked In" value={Show.In} />
                     <Picker.Item label="Checked Out" value={Show.Out} />
                 </Picker>
+                <Content style={{ marginRight: 5 }}>
+                    <Button
+                        bordered={!groupByRecipient}
+                        full
+                        style={styles.button}
+                        onPress={() => setGroupByRecipient(!groupByRecipient)}
+                    >
+                        <Text>By Recipient</Text>
+                    </Button>
+                </Content>
             </Item>
-            <Item>
-                <Icon name="md-search" />
-                <Input placeholder="Search" onChangeText={setSearch} value={search} />
-            </Item>
-            <List
-                dataArray={filteredParcels}
-                keyExtractor={(parcel: Parcel) => parcel.id.toString()}
-                renderRow={(parcel: Parcel) => (
-                    <ListItem avatar>
-                        <Left>{parcelIcon(parcel.checkOutPerson ? true : false)}</Left>
-                        <Body>
-                            <Text>No: {parcel.barcode}</Text>
-                            <Text>For: {parcel.recipient?.name}</Text>
-                            <Text note>{parcel.checkInDate.toLocaleDateString()}</Text>
-                            {parcel.shelfBarcode && <Text note>Shelf: {parcel.shelfBarcode}</Text>}
-                        </Body>
-                        <Right>
-                            {parcel.checkOutDate && (
-                                <Text note>Collected: {parcel.checkOutDate.toLocaleDateString()}</Text>
-                            )}
-                            {parcel.checkOutPerson ? <Text note>By: {parcel.checkOutPerson}</Text> : null}
-                        </Right>
-                    </ListItem>
-                )}
-            />
+            {groupByRecipient ? (
+                <ParcelsListByRecipient parcels={filteredParcels} />
+            ) : (
+                <ParcelsList parcels={filteredParcels} />
+            )}
         </Content>
     );
 };

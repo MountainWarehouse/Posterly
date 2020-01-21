@@ -19,7 +19,7 @@ import Preferences from './components/Preferences';
 import IPreferences from './_shared/IPreferences';
 import PreferenceService from './services/PreferenceService';
 import { MenuProvider, Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
-import ParcelBrowser from './components/ParcelBrowser';
+import ParcelBrowser from './components/Parcel/ParcelBrowser';
 
 export interface State {
     appState: string;
