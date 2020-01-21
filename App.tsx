@@ -193,7 +193,6 @@ class App extends Component<object, State> {
                         padder
                         parcel={this.state.parcel}
                         onChangeCheckoutPerson={this.handleChangeCheckOutPerson}
-                        tip="By pressing 'Check Out' you confirm that the person has collected the parcel"
                     />
                 ),
                 navigationOptions: {
@@ -231,19 +230,7 @@ class App extends Component<object, State> {
                 navigationOptions: { title: 'Browse Parcels' }
             },
             [Screen.ParcelInfo]: {
-                screen: () => {
-                    const { parcel } = this.state;
-                    const checkedOut = parcel.checkOutPerson ? true : false;
-                    return (
-                        <CheckOut
-                            padder
-                            parcel={parcel}
-                            onChangeCheckoutPerson={() => null}
-                            checkOutDisabled={checkedOut}
-                            tip={checkedOut ? 'This parcel has already been checked out' : ''}
-                        />
-                    );
-                },
+                screen: () => <CheckOut padder parcel={this.state.parcel} />,
                 navigationOptions: {
                     title: 'Parcel Info'
                 }
@@ -284,24 +271,20 @@ class App extends Component<object, State> {
 
     handleScanParcel = async (barcode: string) => {
         let parcel = await database.getParcelByBarcode(barcode, true);
-        //goto CheckIN
-        if (!parcel) {
-            parcel = {
-                barcode,
-                id: 0,
-                checkInDate: new Date(),
-                recipientId: 0,
-                recipient: {
-                    id: 0,
-                    name: '',
-                    email: ''
-                }
-            };
-            return this.setState({ parcel }, () => this.navigateTo(Screen.RecipientSelection));
-        }
 
-        // goto CheckOUT
-        this.setState({ parcel }, () => this.navigateTo(Screen.CheckOut));
+        if (parcel) return this.handleSelectParcel(parcel);
+        parcel = {
+            barcode,
+            id: 0,
+            checkInDate: new Date(),
+            recipientId: 0,
+            recipient: {
+                id: 0,
+                name: '',
+                email: ''
+            }
+        };
+        return this.setState({ parcel }, () => this.navigateTo(Screen.RecipientSelection));
     };
 
     handleSelectParcel = (parcel: Parcel) => {
