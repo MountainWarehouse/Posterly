@@ -10,7 +10,7 @@ export interface Database {
     getRecipientById(id: number): Promise<Recipient | null>;
     getAllRecipients(): Promise<Recipient[]>;
     createParcel(parcel: Parcel): Promise<Parcel>;
-    getParcelByBarcode(barcode: string): Promise<Parcel | null>;
+    getParcelByBarcode(barcode: string, includeRecipient?: boolean): Promise<Parcel | null>;
     getAllParcels(includeRecipient?: boolean): Promise<Parcel[]>;
     updateParcel(parcel: Parcel): Promise<void>;
 }

@@ -5,11 +5,12 @@ import ParcelIcon from './ParcelIcon';
 export interface ParcelListItemProps {
     parcel: Parcel;
     hideRecipient?: boolean;
+    onSelect: () => void;
 }
 
-const ParcelListItem: React.SFC<ParcelListItemProps> = ({ parcel, hideRecipient }) => {
+const ParcelListItem: React.SFC<ParcelListItemProps> = ({ parcel, hideRecipient, onSelect }) => {
     return (
-        <ListItem avatar>
+        <ListItem avatar onPress={onSelect}>
             <Left>
                 <ParcelIcon checkedOut={parcel.checkOutPerson ? true : false} size={20} />
             </Left>

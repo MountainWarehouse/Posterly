@@ -5,14 +5,15 @@ import ParcelListItem from './ParcelListItem';
 
 export interface ParcelsListProps {
     parcels: Parcel[];
+    onSelectParcel: (parcel: Parcel) => void;
 }
 
-const ParcelsList: React.SFC<ParcelsListProps> = ({ parcels }) => {
+const ParcelsList: React.SFC<ParcelsListProps> = ({ parcels, onSelectParcel }) => {
     return (
         <List
             dataArray={parcels}
             keyExtractor={(parcel: Parcel) => parcel.id.toString()}
-            renderRow={(parcel: Parcel) => <ParcelListItem parcel={parcel} />}
+            renderRow={(parcel: Parcel) => <ParcelListItem parcel={parcel} onSelect={() => onSelectParcel(parcel)} />}
         />
     );
 };

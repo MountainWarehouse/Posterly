@@ -15,9 +15,10 @@ enum Show {
 
 export interface ParcelBrowserProps extends NativeBase.Content {
     search: string;
+    onSelectParcel: (parcel: Parcel) => void;
 }
 
-const ParcelBrowser: React.SFC<ParcelBrowserProps> = ({ search: propsSearch, ...rest }) => {
+const ParcelBrowser: React.SFC<ParcelBrowserProps> = ({ search: propsSearch, onSelectParcel, ...rest }) => {
     const [search, setSearch] = useState(propsSearch);
     const [isLoadingParcels, setIsLoadingParcels] = useState(true);
     const [parcels, setParcels] = useState([] as Parcel[]);
@@ -78,9 +79,9 @@ const ParcelBrowser: React.SFC<ParcelBrowserProps> = ({ search: propsSearch, ...
                 </Content>
             </Item>
             {groupByRecipient ? (
-                <ParcelsListByRecipient parcels={filteredParcels} />
+                <ParcelsListByRecipient parcels={filteredParcels} onSelectParcel={onSelectParcel} />
             ) : (
-                <ParcelsList parcels={filteredParcels} />
+                <ParcelsList parcels={filteredParcels} onSelectParcel={onSelectParcel} />
             )}
         </Content>
     );

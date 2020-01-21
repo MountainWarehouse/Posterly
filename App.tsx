@@ -24,7 +24,6 @@ import ParcelBrowser from './components/Parcel/ParcelBrowser';
 export interface State {
     appState: string;
     parcel: Parcel;
-    recipient: Recipient;
     recipients: Recipient[];
     preferences: IPreferences;
     parcelSearch: string;
@@ -35,7 +34,6 @@ class App extends Component<object, State> {
         super(props);
         this.state = {
             appState: AppState.currentState,
-            recipient: { id: -1, name: '', email: '' },
             recipients: [],
             parcel: {} as Parcel,
             preferences: {} as IPreferences,
@@ -62,23 +60,24 @@ class App extends Component<object, State> {
 
     handleCheckIn = async () => {
         const parcel = { ...this.state.parcel };
+        const recipient = parcel.recipient ? parcel.recipient : ({} as Recipient);
         await database.createParcel(parcel);
         parcel.checkInDate = new Date();
 
-        const { recipient } = this.state;
         const shelfInfo = parcel.shelfBarcode ? `Look it by the shelf no: ${parcel.shelfBarcode}.\n` : '';
         const body =
             `Hello ${recipient.name},\n` +
             `Your parcel no: ${parcel.barcode} is waiting in reception.\n` +
             shelfInfo +
             '\nHave a great day!';
-        emailService.sendEmail(recipient.email, 'Your parcel is waiting for you!', body);
-        this.setState({ parcel: {} as Parcel, recipient: {} as Recipient });
+        emailService.sendEmail(recipient.email as string, 'Your parcel is waiting for you!', body);
+        this.setState({ parcel: {} as Parcel });
         this.navigateTo(Screen.Home);
     };
 
     handleCheckOut = async () => {
-        const { recipient, parcel } = this.state;
+        const { parcel } = this.state;
+        const recipient = parcel.recipient ? parcel.recipient : ({} as Recipient);
 
         if (parcel.checkOutPerson === recipient.name) return this.checkOutParcel();
 
@@ -123,7 +122,7 @@ class App extends Component<object, State> {
         parcel.checkOutDate = new Date();
         await database.updateParcel(parcel);
         Toast.show({ text: 'Parcel has been checked out.' });
-        this.setState({ parcel: {} as Parcel, recipient: {} as Recipient });
+        this.setState({ parcel: {} as Parcel });
         this.navigateTo(Screen.Home);
     };
 
@@ -175,7 +174,6 @@ class App extends Component<object, State> {
                     <Summary
                         padder
                         parcel={this.state.parcel}
-                        recipient={this.state.recipient}
                         tip="When 'Notify' is pressed the email for the parcel receiver will be generated"
                     />
                 ),
@@ -194,7 +192,6 @@ class App extends Component<object, State> {
                     <CheckOut
                         padder
                         parcel={this.state.parcel}
-                        recipient={this.state.recipient}
                         onChangeCheckoutPerson={this.handleChangeCheckOutPerson}
                         tip="By pressing 'Check Out' you confirm that the person has collected the parcel"
                     />
@@ -228,7 +225,9 @@ class App extends Component<object, State> {
                 navigationOptions: { title: 'Settings', headerRight: null }
             },
             [Screen.ParcelBrowser]: {
-                screen: () => <ParcelBrowser search={this.state.parcelSearch} />,
+                screen: () => (
+                    <ParcelBrowser search={this.state.parcelSearch} onSelectParcel={this.handleSelectParcel} />
+                ),
                 navigationOptions: { title: 'Browse Parcels' }
             }
         },
@@ -266,27 +265,29 @@ class App extends Component<object, State> {
     };
 
     handleScanParcel = async (barcode: string) => {
-        let parcel = await database.getParcelByBarcode(barcode);
+        let parcel = await database.getParcelByBarcode(barcode, true);
         //goto CheckIN
         if (!parcel) {
             parcel = {
                 barcode,
                 id: 0,
                 checkInDate: new Date(),
-                recipientId: 0
+                recipientId: 0,
+                recipient: {
+                    id: 0,
+                    name: '',
+                    email: ''
+                }
             };
             return this.setState({ parcel }, () => this.navigateTo(Screen.RecipientSelection));
         }
 
         // goto CheckOUT
-        const recipient = (await database.getRecipientById(parcel.recipientId)) as Recipient;
-        this.setState(
-            {
-                parcel,
-                recipient
-            },
-            () => this.navigateTo(Screen.CheckOut)
-        );
+        this.setState({ parcel }, () => this.navigateTo(Screen.CheckOut));
+    };
+
+    handleSelectParcel = (parcel: Parcel) => {
+        this.setState({ parcel }, () => this.navigateTo(Screen.CheckOut));
     };
 
     navigateTo = (screen: Screen) =>
@@ -302,14 +303,9 @@ class App extends Component<object, State> {
     handleSelectRecipient = (recipient: Recipient) => {
         const parcel = { ...this.state.parcel };
         parcel.recipientId = recipient.id;
+        parcel.recipient = recipient;
         const nextScreen = this.state.preferences.useShelf ? Screen.Shelf : Screen.Summary;
-        this.setState(
-            {
-                parcel,
-                recipient
-            },
-            () => this.navigateTo(nextScreen)
-        );
+        this.setState({ parcel }, () => this.navigateTo(nextScreen));
     };
 
     handleScanShelf = (code: string) => {
