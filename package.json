@@ -1,6 +1,6 @@
 {
     "name": "Posterly",
-    "version": "0.0.1",
+    "version": "1.4.0",
     "private": true,
     "scripts": {
         "start": "react-native start",
