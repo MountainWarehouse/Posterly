@@ -1,97 +1,39 @@
-import React from "react";
-import { StyleSheet, DeviceEventEmitter } from "react-native";
-import {
-    Container,
-    Content,
-    Card,
-    Button,
-    Text,
-    Header,
-    CardItem,
-    Body,
-    Title,
-    Right,
-    StyleProvider
-} from "native-base";
-import { IIntent } from "../models/dwproperties";
-import dataWedgeService from "../services/DataWedgeService";
-import getTheme from "../native-base-theme/components";
-import commonColor from "../native-base-theme/variables/commonColor";
+import React, { useEffect } from 'react';
+import { DeviceEventEmitter } from 'react-native';
+import { Content, Button, Text, NativeBase } from 'native-base';
+import { IDataWedgeIntent } from '../DataWedge/DataWedgeProperties';
+import dataWedgeService from '../services/DataWedgeService';
+import styles from '../_shared/Styles';
 
-export interface ScannerProps {
-    prompt: string;
-    tip?: string;
+export interface ScannerProps extends NativeBase.Content {
+    tip: string;
     onScan: (code: string) => void;
 }
 
-export default class Scanner extends React.Component<ScannerProps> {
-    static navigationOptions = {
-        title: "Scanner"
-    };
-
-    constructor(props: ScannerProps) {
-        super(props);
-
-        DeviceEventEmitter.addListener("datawedge_broadcast_intent", this.handleBarcodeScanned);
-        dataWedgeService.setBroadcastReceiver();
-    }
-
-    handleBarcodeScanned = (intent: IIntent) => {
-        if (!intent.hasOwnProperty("RESULT_INFO")) {
-            const scannedData = intent["com.symbol.datawedge.data_string"];
+const Scanner: React.SFC<ScannerProps> = ({ tip, onScan, ...rest }) => {
+    const handleBarcodeScanned = (intent: IDataWedgeIntent) => {
+        if (!intent.hasOwnProperty('RESULT_INFO')) {
+            const scannedData = intent['com.symbol.datawedge.data_string'];
             if (scannedData) {
                 DeviceEventEmitter.removeAllListeners();
-                this.props.onScan(scannedData);
+                onScan(scannedData);
             }
         }
     };
 
-    render() {
-        const { prompt, tip } = this.props;
-        return (
-            <StyleProvider style={getTheme(commonColor)}>
-                <Container style={{ backgroundColor: "#204132" }}>
-                    <Header transparent style={{ backgroundColor: "#204132" }}>
-                        <Right>
-                            <Body>
-                                <Title>Posterly</Title>
-                            </Body>
-                        </Right>
-                    </Header>
-                    <Content>
-                        <Card transparent style={styles.maincard}>
-                            <Title>{prompt}</Title>
-                            <CardItem style={styles.card}>
-                                <Button full style={styles.scanButton} onPress={dataWedgeService.sendScanButtonPressed}>
-                                    <Text>Scan</Text>
-                                </Button>
-                            </CardItem>
-                            {tip && <Text style={styles.tip}>{tip}</Text>}
-                        </Card>
-                    </Content>
-                </Container>
-            </StyleProvider>
-        );
-    }
-}
+    useEffect(() => {
+        DeviceEventEmitter.addListener('datawedge_broadcast_intent', handleBarcodeScanned);
+        dataWedgeService.setBroadcastReceiver();
+    }, []);
 
-const styles = StyleSheet.create({
-    maincard: {
-        flex: 3,
-        alignItems: "center",
-        justifyContent: "center"
-    },
-    card: {
-        flex: 2,
-        backgroundColor: "#204132"
-    },
-    scanButton: {
-        flex: 1,
-        borderRadius: 10,
-        backgroundColor: "#8CC63F"
-    },
-    tip: {
-        color: "grey",
-        fontStyle: "italic"
-    }
-});
+    return (
+        <Content {...rest}>
+            <Text>{tip}</Text>
+            <Button block style={styles.button} onPress={dataWedgeService.sendScanButtonPressed}>
+                <Text>Scan</Text>
+            </Button>
+        </Content>
+    );
+};
+
+export default Scanner;

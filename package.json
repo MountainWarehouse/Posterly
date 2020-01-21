@@ -1,6 +1,6 @@
 {
     "name": "Posterly",
-    "version": "0.0.1",
+    "version": "1.4.0",
     "private": true,
     "scripts": {
         "start": "react-native start",
@@ -8,12 +8,20 @@
         "lint": "eslint ."
     },
     "dependencies": {
+        "@types/joi": "^14.3.4",
+        "@types/react-native-material-textfield": "^0.16.2",
+        "joi-react-native": "^3.0.0",
         "native-base": "^2.13.8",
-        "react": "16.12.0",
-        "react-native": "0.61.4",
-        "react-native-autocomplete-input": "^4.1.0",
+        "react": "16.9.0",
+        "react-native": "0.61.5",
         "react-native-datawedge-intents": "^0.1.2",
-        "react-native-sqlite-storage": "^4.1.0"
+        "react-native-default-preference": "^1.4.1",
+        "react-native-gesture-handler": "^1.5.2",
+        "react-native-material-textfield": "^0.16.1",
+        "react-native-popup-menu": "^0.15.6",
+        "react-native-sqlite-storage": "^4.1.0",
+        "react-navigation": "^4.0.10",
+        "react-navigation-stack": "^1.10.3"
     },
     "devDependencies": {
         "@babel/core": "7.5.4",
@@ -25,6 +33,7 @@
         "@types/react-native-sqlite-storage": "^3.3.1",
         "@types/react-test-renderer": "16.8.2",
         "babel-jest": "24.8.0",
+        "babel-plugin-rewrite-require": "^1.14.5",
         "eslint": "6.0.1",
         "jest": "24.8.0",
         "metro-react-native-babel-preset": "0.54.1",
