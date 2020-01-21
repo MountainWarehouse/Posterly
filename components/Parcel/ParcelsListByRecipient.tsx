@@ -1,35 +1,30 @@
 import React from 'react';
-import { Text, ListItem } from 'native-base';
+import { Accordion } from 'native-base';
 import { ParcelsListProps } from './ParcelsList';
 import ParcelListItem from './ParcelListItem';
+import { Parcel } from '../../models/Parcel';
+import groupBy from '../../utils/ArrayUtil';
 
 const ParcelsListByRecipient: React.SFC<ParcelsListProps> = ({ parcels }) => {
-    const orderedParcels = parcels.sort((a, b) => {
-        const aName = a.recipient?.name || '';
-        const bName = b.recipient?.name || '';
+    const grouped = groupBy(parcels, p => (p.recipient?.name ? p.recipient?.name : ''));
 
-        if (aName > bName) {
-            return 1;
-        }
-        if (aName < bName) {
-            return -1;
-        }
-        return 0;
-    });
+    const accordionData: { title: string; content: Parcel[] }[] = [];
+    grouped.forEach((value, key) =>
+        accordionData.push({
+            title: key,
+            content: value
+        })
+    );
+
+    accordionData.sort((a, b) => (a.title > b.title ? 1 : -1));
 
     return (
-        <React.Fragment>
-            {orderedParcels.map((parcel, index, a) => (
-                <React.Fragment key={index}>
-                    {a.findIndex(p => p.recipient?.name === parcel.recipient?.name) === index && (
-                        <ListItem itemDivider>
-                            <Text>{parcel.recipient?.name}</Text>
-                        </ListItem>
-                    )}
-                    <ParcelListItem parcel={parcel} hideRecipient />
-                </React.Fragment>
-            ))}
-        </React.Fragment>
+        <Accordion
+            dataArray={accordionData}
+            renderContent={({ content }) =>
+                content.map((parcel: Parcel) => <ParcelListItem key={parcel.id} parcel={parcel} hideRecipient />)
+            }
+        />
     );
 };
 
