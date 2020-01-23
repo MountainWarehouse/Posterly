@@ -6,7 +6,6 @@ import Scanner from './components/Scanner';
 import Summary from './components/Summary';
 import RecipientSelection from './components/RecipientSelection';
 import RecipientForm from './components/RecipientForm';
-import { database } from './database/Database';
 import { Parcel } from './models/Parcel';
 import { Root, Toast, Button, Icon, Text } from 'native-base';
 import { Recipient } from './models/Recipient';
@@ -20,6 +19,7 @@ import IPreferences from './_shared/IPreferences';
 import PreferenceService from './services/PreferenceService';
 import { MenuProvider, Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
 import ParcelBrowser from './components/Parcel/ParcelBrowser';
+import realm from './database/Realm';
 
 export interface State {
     appState: string;
@@ -42,8 +42,10 @@ class App extends Component<object, State> {
     }
 
     public async componentDidMount() {
-        await database.open();
-        const [recipients, preferences] = await Promise.all([database.getAllRecipients(), PreferenceService.getAll()]);
+        await realm.open();
+
+        const [recipients, preferences] = await Promise.all([realm.getRecipients(), PreferenceService.getAll()]);
+
         this.setState({
             appState: 'active',
             recipients,
@@ -56,12 +58,14 @@ class App extends Component<object, State> {
     public componentWillUnmount() {
         // Remove app state change listener
         AppState.removeEventListener('change', this.handleAppStateChange);
+
+        realm.close();
     }
 
     handleCheckIn = async () => {
         const parcel = { ...this.state.parcel };
         const recipient = parcel.recipient ? parcel.recipient : ({} as Recipient);
-        await database.createParcel(parcel);
+        await realm.createParcel(parcel);
         parcel.checkInDate = new Date();
 
         const shelfInfo = parcel.shelfBarcode ? `Look it by the shelf no: ${parcel.shelfBarcode}.\n` : '';
@@ -120,7 +124,7 @@ class App extends Component<object, State> {
         }
 
         parcel.checkOutDate = new Date();
-        await database.updateParcel(parcel);
+        await realm.updateParcel(parcel);
         Toast.show({ text: 'Parcel has been checked out.' });
         this.setState({ parcel: {} as Parcel });
         this.navigateTo(Screen.Home);
@@ -225,7 +229,7 @@ class App extends Component<object, State> {
             },
             [Screen.ParcelBrowser]: {
                 screen: () => (
-                    <ParcelBrowser search={this.state.parcelSearch} onSelectParcel={this.handleSelectParcel} />
+                    <ParcelBrowser padder search={this.state.parcelSearch} onSelectParcel={this.handleSelectParcel} />
                 ),
                 navigationOptions: { title: 'Browse Parcels' }
             },
@@ -270,14 +274,12 @@ class App extends Component<object, State> {
     };
 
     handleScanParcel = async (barcode: string) => {
-        let parcel = await database.getParcelByBarcode(barcode, true);
+        let parcel = await realm.findParcel(barcode);
 
         if (parcel) return this.handleSelectParcel(parcel);
         parcel = {
             barcode,
-            id: 0,
             checkInDate: new Date(),
-            recipientId: 0,
             recipient: {
                 id: 0,
                 name: '',
@@ -303,7 +305,6 @@ class App extends Component<object, State> {
 
     handleSelectRecipient = (recipient: Recipient) => {
         const parcel = { ...this.state.parcel };
-        parcel.recipientId = recipient.id;
         parcel.recipient = recipient;
         const nextScreen = this.state.preferences.useShelf ? Screen.Shelf : Screen.Summary;
         this.setState({ parcel }, () => this.navigateTo(nextScreen));
@@ -335,10 +336,10 @@ class App extends Component<object, State> {
     handleAppStateChange = (nextAppState: string) => {
         if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
             // App has moved from the background (or inactive) into the foreground
-            database.open();
+            realm.open();
         } else if (this.state.appState === 'active' && nextAppState.match(/inactive|background/)) {
             // App has moved from the foreground into the background (or become inactive)
-            database.close();
+            realm.close();
         }
         this.setState({ appState: nextAppState });
     };

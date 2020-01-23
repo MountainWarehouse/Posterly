@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Button, Content, Form, Text, Toast, NativeBase } from 'native-base';
 import { Recipient } from '../models/Recipient';
-import { database } from '../database/Database';
 import { OutlinedTextField } from 'react-native-material-textfield';
 import Joi from 'joi';
 import styles from '../_shared/Styles';
+import realm from '../database/Realm';
 
 export interface RecipientFormProps extends NativeBase.Content {
     onRecipientCreated: (recipient: Recipient) => void;
@@ -59,7 +59,7 @@ const RecipientForm: React.SFC<RecipientFormProps> = ({ onRecipientCreated, reci
 
         if (errors) return setErrors(errors);
 
-        const recipient = await database.createRecipient(data.name, data.email);
+        const recipient = await realm.createRecipient(data.name, data.email);
         Toast.show({ text: `Recipient ${data.name} created!` });
         onRecipientCreated(recipient);
     };
