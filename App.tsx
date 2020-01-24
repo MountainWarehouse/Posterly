@@ -44,7 +44,7 @@ class App extends Component<object, State> {
     public async componentDidMount() {
         await realm.open();
 
-        const [recipients, preferences] = await Promise.all([realm.getRecipients(), PreferenceService.getAll()]);
+        const [recipients, preferences] = await Promise.all([realm.getAllRecipients(), PreferenceService.getAll()]);
 
         this.setState({
             appState: 'active',

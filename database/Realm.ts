@@ -37,12 +37,20 @@ class RealmWrapper {
         this.realm = undefined;
     }
 
-    public getRecipients(query?: string): Promise<Recipient[]> {
-        return this.getObjects<Recipient>(recipientSchema.name, query);
+    public async getAllRecipients(): Promise<Recipient[]> {
+        const realm = await this.getRealm();
+        return realm
+            .objects<Recipient>(recipientSchema.name)
+            .sorted('name')
+            .map(this.extract);
     }
 
-    public getParcels(query?: string): Promise<Parcel[]> {
-        return this.getObjects<Parcel>(parcelSchema.name, query);
+    public async getAllParcels(): Promise<Parcel[]> {
+        const realm = await this.getRealm();
+        return realm
+            .objects<Parcel>(parcelSchema.name)
+            .sorted('checkInDate', true)
+            .map(this.extract);
     }
 
     public async findParcel(barcode: string): Promise<Parcel | null> {
@@ -109,17 +117,6 @@ class RealmWrapper {
         }
 
         realm.write(() => realm.delete(parcel));
-    }
-
-    private async getObjects<T>(name: string, query?: string): Promise<T[]> {
-        const realm = await this.getRealm();
-        let results = realm.objects<T>(name);
-
-        if (query) {
-            results = results.filtered(query);
-        }
-
-        return results.map<T>(this.extract);
     }
 
     private extract<T>(obj: T & Realm.Object) {

@@ -26,7 +26,7 @@ const ParcelBrowser: React.SFC<ParcelBrowserProps> = ({ search: propsSearch, onS
     const [groupByRecipient, setGroupByRecipient] = useState(true);
 
     useEffect(() => {
-        realm.getParcels().then(parcels => {
+        realm.getAllParcels().then(parcels => {
             setParcels(parcels);
             setIsLoading(false);
         });
