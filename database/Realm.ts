@@ -1,22 +1,39 @@
 import Realm from 'realm';
+import Config from 'react-native-config';
 import { Recipient, recipientSchema } from '../models/Recipient';
 import { Parcel, parcelSchema } from '../models/Parcel';
 
 class RealmWrapper {
     private realm?: Realm;
+    private user?: Realm.Sync.User;
 
     public async open(): Promise<Realm> {
-        const realm = await Realm.open({
-            schema: [recipientSchema, parcelSchema]
+        const credentials = Realm.Sync.Credentials.usernamePassword(Config.REALM_USER, Config.REALM_PASS, false);
+        const user = await Realm.Sync.User.login(`https://${Config.REALM_INSTANCE}`, credentials);
+        const config = user.createConfiguration({
+            schema: [recipientSchema, parcelSchema],
+            deleteRealmIfMigrationNeeded: true,
+            path: Config.REALM_NAME,
+            sync: {
+                url: `realms://${Config.REALM_INSTANCE}/${Config.REALM_NAME}`,
+                fullSynchronization: true
+            }
         });
 
+        console.log('open realm');
+        const realm = await Realm.open(config);
+        console.log('realm opened');
+
+        this.user = user;
         this.realm = realm;
 
         return realm;
     }
 
     public async close() {
+        this.user?.logout();
         this.realm?.close();
+        this.user = undefined;
         this.realm = undefined;
     }
 
