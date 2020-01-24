@@ -12,7 +12,6 @@ class RealmWrapper {
         const user = await Realm.Sync.User.login(`https://${Config.REALM_INSTANCE}`, credentials);
         const config = user.createConfiguration({
             schema: [recipientSchema, parcelSchema],
-            deleteRealmIfMigrationNeeded: true,
             path: Config.REALM_NAME,
             sync: {
                 url: `realms://${Config.REALM_INSTANCE}/${Config.REALM_NAME}`,
@@ -20,9 +19,7 @@ class RealmWrapper {
             }
         });
 
-        console.log('open realm');
         const realm = await Realm.open(config);
-        console.log('realm opened');
 
         this.user = user;
         this.realm = realm;
