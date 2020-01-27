@@ -165,7 +165,9 @@ class App extends Component<object, State> {
                         recipient={this.state.recipient}
                     />
                 ),
-                navigationOptions: { title: 'Create New Recipient' }
+                navigationOptions: {
+                    headerTitle: () => <Text>{this.state.recipient.id ? 'Edit' : 'Create New'} Recipient</Text>
+                }
             },
             [Screen.Shelf]: {
                 screen: () => (
