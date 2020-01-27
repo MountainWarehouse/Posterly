@@ -25,6 +25,7 @@ export interface State {
     appState: string;
     parcel: Parcel;
     recipients: Recipient[];
+    recipient: Recipient;
     preferences: IPreferences;
     parcelSearch: string;
 }
@@ -35,6 +36,7 @@ class App extends Component<object, State> {
         this.state = {
             appState: AppState.currentState,
             recipients: [],
+            recipient: { id: 0, name: '', email: '' },
             parcel: {} as Parcel,
             preferences: {} as IPreferences,
             parcelSearch: ''
@@ -147,18 +149,20 @@ class App extends Component<object, State> {
                     <RecipientSelection
                         padder
                         onSelectRecipient={this.handleSelectRecipient}
-                        onCreateRecipient={() => this.navigateTo(Screen.RecipientCreation)}
+                        onCreateRecipient={this.handleCreateOrEditRecipient}
+                        onEditRecipient={this.handleCreateOrEditRecipient}
                         recipients={this.state.recipients}
                     />
                 ),
                 navigationOptions: { title: 'Logging a new parcel' }
             },
-            [Screen.RecipientCreation]: {
+            [Screen.RecipientForm]: {
                 screen: () => (
                     <RecipientForm
                         padder
-                        onRecipientCreated={this.handleRecipientCreated}
+                        onRecipientSaved={this.handleRecipientSaved}
                         recipients={this.state.recipients}
+                        recipient={this.state.recipient}
                     />
                 ),
                 navigationOptions: { title: 'Create New Recipient' }
@@ -296,9 +300,15 @@ class App extends Component<object, State> {
     navigateTo = (screen: Screen) =>
         this.navigator && this.navigator.dispatch(NavigationActions.navigate({ routeName: screen }));
 
-    handleRecipientCreated = (recipient: Recipient) => {
+    handleRecipientSaved = (recipient: Recipient) => {
         const recipients = [...this.state.recipients];
-        recipients.push(recipient);
+        const index = recipients.findIndex(r => r.id === recipient.id);
+        if (index < 0) {
+            recipients.push(recipient);
+        } else {
+            recipients[index] = recipient;
+        }
+
         this.setState({ recipients });
         this.handleSelectRecipient(recipient);
     };
@@ -308,6 +318,12 @@ class App extends Component<object, State> {
         parcel.recipient = recipient;
         const nextScreen = this.state.preferences.useShelf ? Screen.Shelf : Screen.Summary;
         this.setState({ parcel }, () => this.navigateTo(nextScreen));
+    };
+
+    handleCreateOrEditRecipient = (recipient?: Recipient) => {
+        this.setState({ recipient: recipient ? recipient : { id: 0, name: '', email: '' } }, () =>
+            this.navigateTo(Screen.RecipientForm)
+        );
     };
 
     handleScanShelf = (code: string) => {

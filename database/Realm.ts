@@ -72,10 +72,12 @@ class RealmWrapper {
         return recipient;
     }
 
-    public async updateRecipient(recipient: Recipient): Promise<void> {
+    public async updateRecipient(recipient: Recipient): Promise<Recipient> {
         const realm = await this.getRealm();
 
         realm.write(() => realm.create(recipientSchema.name, recipient, true));
+
+        return recipient;
     }
 
     public async deleteRecipient(id: number): Promise<void> {

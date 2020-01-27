@@ -1,27 +1,26 @@
 import React, { useState } from 'react';
 import { Button, Content, Form, Text, Toast, NativeBase } from 'native-base';
 import { Recipient } from '../models/Recipient';
-import { OutlinedTextField } from 'react-native-material-textfield';
+import { TextField } from 'react-native-material-textfield';
 import Joi from 'joi';
 import styles from '../_shared/Styles';
 import realm from '../database/Realm';
 
 export interface RecipientFormProps extends NativeBase.Content {
-    onRecipientCreated: (recipient: Recipient) => void;
+    onRecipientSaved: (recipient: Recipient) => void;
     recipients: Recipient[];
+    recipient: Recipient;
 }
 
-const RecipientForm: React.SFC<RecipientFormProps> = ({ onRecipientCreated, recipients, ...rest }) => {
-    const [data, setData]: [any, (data: any) => void] = useState({
-        name: '',
-        email: ''
-    });
+const RecipientForm: React.SFC<RecipientFormProps> = ({ onRecipientSaved, recipients, recipient, ...rest }) => {
+    const [data, setData]: [Recipient, (data: Recipient) => void] = useState({ ...recipient });
     const [errors, setErrors]: [any, (errors: any) => void] = useState({});
 
+    const otherRecipients = recipients.filter(r => r.id !== recipient.id);
     const schema: any = {
         name: Joi.string()
             .required()
-            .invalid(recipients.map(recipient => recipient.name))
+            .invalid(otherRecipients.map(recipient => recipient.name))
             .insensitive()
             .error(ers =>
                 ers.map(e => {
@@ -33,7 +32,7 @@ const RecipientForm: React.SFC<RecipientFormProps> = ({ onRecipientCreated, reci
         email: Joi.string()
             .email({ minDomainAtoms: 2 })
             .required()
-            .invalid(recipients.map(recipient => recipient.email))
+            .invalid(otherRecipients.map(recipient => recipient.email))
             .insensitive()
             .error(ers =>
                 ers.map(e => {
@@ -46,7 +45,7 @@ const RecipientForm: React.SFC<RecipientFormProps> = ({ onRecipientCreated, reci
 
     const handleChange = (name: string, text: string) => {
         const newErrors = { ...errors };
-        const newData = { ...data };
+        const newData: any = { ...data };
         const errorMessage = validateProperty(name, text);
         newErrors[name] = errorMessage;
         newData[name] = text;
@@ -59,9 +58,11 @@ const RecipientForm: React.SFC<RecipientFormProps> = ({ onRecipientCreated, reci
 
         if (errors) return setErrors(errors);
 
-        const recipient = await realm.createRecipient(data.name, data.email);
-        Toast.show({ text: `Recipient ${data.name} created!` });
-        onRecipientCreated(recipient);
+        const submittedRecipient = recipient.id
+            ? await realm.updateRecipient(data)
+            : await realm.createRecipient(data.name, data.email);
+        Toast.show({ text: `Recipient ${data.name} saved!` });
+        onRecipientSaved(submittedRecipient);
     };
 
     const validate = () => {
@@ -87,28 +88,30 @@ const RecipientForm: React.SFC<RecipientFormProps> = ({ onRecipientCreated, reci
         return error ? error.details[0].message : null;
     };
 
-    const isChanged = data.name || data.email ? true : false;
+    const isChanged = data.name !== recipient.name || data.email !== recipient.email;
     const isValid = !validate();
     const disabled = !isChanged || !isValid;
 
     return (
         <Content {...rest}>
             <Form>
-                <OutlinedTextField
+                <TextField
                     label="Name"
                     value={data.name}
                     onChangeText={text => handleChange('name', text)}
+                    placeholder="Type name"
                     error={errors.name}
                 />
-                <OutlinedTextField
+                <TextField
                     label="Email"
+                    placeholder="Type email"
                     value={data.email}
                     onChangeText={text => handleChange('email', text)}
                     error={errors.email}
                     title="Can be a distribution list if you want to inform multiple people"
                 />
                 <Button block success disabled={disabled} onPress={handleSubmit} style={styles.button}>
-                    <Text>Create</Text>
+                    <Text>Save</Text>
                 </Button>
             </Form>
         </Content>
