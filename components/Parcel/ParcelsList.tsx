@@ -12,7 +12,7 @@ const ParcelsList: React.SFC<ParcelsListProps> = ({ parcels, onSelectParcel }) =
     return (
         <List
             dataArray={parcels}
-            keyExtractor={(parcel: Parcel) => parcel.id.toString()}
+            keyExtractor={(parcel: Parcel) => parcel.barcode}
             renderRow={(parcel: Parcel) => <ParcelListItem parcel={parcel} onSelect={() => onSelectParcel(parcel)} />}
         />
     );

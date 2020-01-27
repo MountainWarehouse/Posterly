@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Content, Text, Icon, Item, Input, NativeBase, Spinner, Picker, Button } from 'native-base';
 import { Parcel } from '../../models/Parcel';
-import { database } from '../../database/Database';
 import styles from '../../_shared/Styles';
 import ParcelIcon from './ParcelIcon';
 import ParcelsListByRecipient from './ParcelsListByRecipient';
 import ParcelsList from './ParcelsList';
+import realm from '../../database/Realm';
 
 enum Show {
     All,
@@ -20,15 +20,15 @@ export interface ParcelBrowserProps extends NativeBase.Content {
 
 const ParcelBrowser: React.SFC<ParcelBrowserProps> = ({ search: propsSearch, onSelectParcel, ...rest }) => {
     const [search, setSearch] = useState(propsSearch);
-    const [isLoadingParcels, setIsLoadingParcels] = useState(true);
+    const [isLoading, setIsLoading] = useState(true);
     const [parcels, setParcels] = useState([] as Parcel[]);
     const [show, setShow] = useState(Show.All);
     const [groupByRecipient, setGroupByRecipient] = useState(true);
 
     useEffect(() => {
-        database.getAllParcels(true).then(parcels => {
+        realm.getAllParcels().then(parcels => {
             setParcels(parcels);
-            setIsLoadingParcels(false);
+            setIsLoading(false);
         });
     }, []);
 
@@ -48,7 +48,16 @@ const ParcelBrowser: React.SFC<ParcelBrowserProps> = ({ search: propsSearch, onS
         return shouldBeShown && searchResult;
     });
 
-    if (isLoadingParcels) return <Spinner color="blue" />;
+    const list =
+        parcels.length > 0 ? (
+            groupByRecipient ? (
+                <ParcelsListByRecipient parcels={filteredParcels} onSelectParcel={onSelectParcel} />
+            ) : (
+                <ParcelsList parcels={filteredParcels} onSelectParcel={onSelectParcel} />
+            )
+        ) : (
+            <Text style={{ marginTop: 10 }}>There are no parcels registered yet.</Text>
+        );
 
     return (
         <Content {...rest}>
@@ -67,7 +76,7 @@ const ParcelBrowser: React.SFC<ParcelBrowserProps> = ({ search: propsSearch, onS
                     <Picker.Item label="Checked In" value={Show.In} />
                     <Picker.Item label="Checked Out" value={Show.Out} />
                 </Picker>
-                <Content style={{ marginRight: 5 }}>
+                <Content>
                     <Button
                         bordered={!groupByRecipient}
                         full
@@ -78,11 +87,7 @@ const ParcelBrowser: React.SFC<ParcelBrowserProps> = ({ search: propsSearch, onS
                     </Button>
                 </Content>
             </Item>
-            {groupByRecipient ? (
-                <ParcelsListByRecipient parcels={filteredParcels} onSelectParcel={onSelectParcel} />
-            ) : (
-                <ParcelsList parcels={filteredParcels} onSelectParcel={onSelectParcel} />
-            )}
+            {isLoading ? <Spinner color="blue" /> : list}
         </Content>
     );
 };
