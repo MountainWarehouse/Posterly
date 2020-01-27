@@ -12,7 +12,7 @@ const ParcelListItem: React.SFC<ParcelListItemProps> = ({ parcel, hideRecipient,
     return (
         <ListItem avatar onPress={onSelect}>
             <Left>
-                <ParcelIcon checkedOut={parcel.checkOutPerson ? true : false} size={20} />
+                <ParcelIcon checkedOut={!!parcel.checkOutPerson} size={20} />
             </Left>
             <Body>
                 {!hideRecipient && <Text>For: {parcel.recipient?.name}</Text>}

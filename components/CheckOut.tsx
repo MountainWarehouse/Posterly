@@ -9,7 +9,7 @@ export interface CheckOutProps extends SummaryProps, NativeBase.Content {
 }
 
 const CheckOut: React.SFC<CheckOutProps> = ({ parcel, tip, onChangeCheckoutPerson, ...rest }) => {
-    const [checkedOut] = useState(parcel.checkOutPerson ? true : false);
+    const [checkedOut] = useState(!!parcel.checkOutPerson);
     const [showCheckedOutInfo, setShowCheckedOutInfo] = useState(checkedOut);
     return (
         <Content>
