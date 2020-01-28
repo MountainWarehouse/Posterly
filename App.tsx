@@ -20,6 +20,8 @@ import PreferenceService from './services/PreferenceService';
 import { MenuProvider, Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
 import ParcelBrowser from './components/Parcel/ParcelBrowser';
 import realm from './database/Realm';
+import About from './components/About';
+import styles from './_shared/Styles';
 
 export interface State {
     appState: string;
@@ -251,6 +253,10 @@ class App extends Component<object, State> {
                 navigationOptions: {
                     title: 'Parcel Info'
                 }
+            },
+            [Screen.About]: {
+                screen: () => <About padder />,
+                navigationOptions: { title: 'Posterly', headerRight: null }
             }
         },
         {
@@ -263,7 +269,12 @@ class App extends Component<object, State> {
                                 <Icon name="md-more" />
                             </MenuTrigger>
                             <MenuOptions>
-                                <MenuOption onSelect={() => this.navigateTo(Screen.Preferences)} text="Settings" />
+                                <MenuOption onSelect={() => this.navigateTo(Screen.Preferences)}>
+                                    <Text style={styles.margin}>Settings</Text>
+                                </MenuOption>
+                                <MenuOption onSelect={() => this.navigateTo(Screen.About)}>
+                                    <Text style={styles.margin}>About</Text>
+                                </MenuOption>
                             </MenuOptions>
                         </Menu>
                     </Button>
