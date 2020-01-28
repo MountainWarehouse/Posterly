@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Content, Text, Icon, Item, Input, NativeBase, Spinner, Picker, Button } from 'native-base';
 import { Parcel } from '../../models/Parcel';
-import styles from '../../_shared/Styles';
 import ParcelIcon from './ParcelIcon';
-import ParcelsListByRecipient from './ParcelsListByRecipient';
-import ParcelsList from './ParcelsList';
 import realm from '../../database/Realm';
+import GroupedParcelsList from './GroupedParcelsList';
 
 enum Show {
     All,
@@ -24,7 +22,7 @@ const ParcelBrowser: React.SFC<ParcelBrowserProps> = ({ search: propsSearch, onS
     const [isLoading, setIsLoading] = useState(true);
     const [parcels, setParcels] = useState([] as Parcel[]);
     const [show, setShow] = useState(Show.All);
-    const [groupByRecipient, setGroupByRecipient] = useState(true);
+    const [groupByRecipient, setGroupByRecipient] = useState(false);
 
     useEffect(() => {
         realm.getAllParcels().then(parcels => {
@@ -49,16 +47,7 @@ const ParcelBrowser: React.SFC<ParcelBrowserProps> = ({ search: propsSearch, onS
         return shouldBeShown && searchResult;
     });
 
-    const list =
-        parcels.length > 0 ? (
-            groupByRecipient ? (
-                <ParcelsListByRecipient parcels={filteredParcels} onSelectParcel={onSelectParcel} onRemind={onRemind} />
-            ) : (
-                <ParcelsList parcels={filteredParcels} onSelectParcel={onSelectParcel} onRemind={onRemind} />
-            )
-        ) : (
-            <Text style={{ marginTop: 10 }}>There are no parcels registered yet.</Text>
-        );
+    const formatDate = (date: Date): string => date.toLocaleDateString();
 
     return (
         <Content {...rest}>
@@ -78,12 +67,30 @@ const ParcelBrowser: React.SFC<ParcelBrowserProps> = ({ search: propsSearch, onS
                     <Picker.Item label="Checked Out" value={Show.Out} />
                 </Picker>
                 <Content>
-                    <Button bordered={!groupByRecipient} block onPress={() => setGroupByRecipient(!groupByRecipient)}>
-                        <Text>By Recipient</Text>
+                    <Button iconLeft info block onPress={() => setGroupByRecipient(!groupByRecipient)}>
+                        <Icon name={groupByRecipient ? 'md-person' : 'md-calendar'} />
+                        <Text>{groupByRecipient ? 'By Recipient' : 'By Date'}</Text>
                     </Button>
                 </Content>
             </Item>
-            {isLoading ? <Spinner color="blue" /> : list}
+            {isLoading ? (
+                <Spinner color="blue" />
+            ) : (
+                <GroupedParcelsList
+                    parcels={filteredParcels}
+                    onSelectParcel={onSelectParcel}
+                    expanded={!groupByRecipient ? 0 : undefined}
+                    onRemind={onRemind}
+                    groupByKeyGetter={parcel =>
+                        groupByRecipient ? parcel.recipient.name : formatDate(parcel.checkInDate)
+                    }
+                    thenByKeyGetter={parcel =>
+                        groupByRecipient ? formatDate(parcel.checkInDate) : parcel.recipient.name
+                    }
+                    reverseSort={!groupByRecipient}
+                    thenByReverseSort={groupByRecipient}
+                />
+            )}
         </Content>
     );
 };

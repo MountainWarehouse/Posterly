@@ -4,12 +4,11 @@ import { Parcel } from '../../models/Parcel';
 import ParcelIcon from './ParcelIcon';
 export interface ParcelListItemProps {
     parcel: Parcel;
-    hideRecipient?: boolean;
     onSelect: () => void;
     onRemind: () => void;
 }
 
-const ParcelListItem: React.SFC<ParcelListItemProps> = ({ parcel, hideRecipient, onSelect, onRemind }) => {
+const ParcelListItem: React.SFC<ParcelListItemProps> = ({ parcel, onSelect, onRemind }) => {
     const isCheckedOut = !!parcel.checkOutPerson;
     return (
         <ListItem avatar onPress={onSelect}>
@@ -17,9 +16,7 @@ const ParcelListItem: React.SFC<ParcelListItemProps> = ({ parcel, hideRecipient,
                 <ParcelIcon checkedOut={isCheckedOut} size={20} />
             </Left>
             <Body>
-                {!hideRecipient && <Text>For: {parcel.recipient.name}</Text>}
-                <Text>No: {parcel.barcode}</Text>
-                <Text note>{parcel.checkInDate.toLocaleDateString()}</Text>
+                <Text style={{ fontWeight: !isCheckedOut ? 'bold' : 'normal' }}>No: {parcel.barcode}</Text>
                 {parcel.shelfBarcode && <Text note>Shelf: {parcel.shelfBarcode}</Text>}
             </Body>
             <Right>
