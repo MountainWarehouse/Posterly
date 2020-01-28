@@ -29,7 +29,7 @@ const Preferences: React.SFC<PreferencesProps> = props => {
                     <Text>Register Storage Shelf</Text>
                 </Body>
             </ListItem>
-            <Text style={styles.tip}>
+            <Text note>
                 If checked the shelf barcode needs to be scanned as well to register where the parcel was left.
             </Text>
         </Content>

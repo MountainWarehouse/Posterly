@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import Summary, { SummaryProps } from './Summary';
 import { Content, Text, NativeBase, Card, Button, CardItem, Body, H3 } from 'native-base';
 import { TextField } from 'react-native-material-textfield';
-import styles from '../_shared/Styles';
 
 export interface CheckOutProps extends SummaryProps, NativeBase.Content {
     onChangeCheckoutPerson?: (checkoutPerson: string) => void;
@@ -39,11 +38,7 @@ const CheckOut: React.SFC<CheckOutProps> = ({ parcel, tip, onChangeCheckoutPerso
                     value={parcel.checkOutPerson ? parcel.checkOutPerson : ''}
                     editable={!checkedOut}
                 />
-                {tip && (
-                    <Text style={styles.tip}>
-                        By pressing 'Check Out' you confirm that the person has collected the parcel
-                    </Text>
-                )}
+                {tip && <Text note>By pressing 'Check Out' you confirm that the person has collected the parcel</Text>}
             </Content>
         </Content>
     );
