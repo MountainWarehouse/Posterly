@@ -2,7 +2,7 @@ import { Recipient } from './Recipient';
 
 export interface Parcel {
     barcode: string;
-    recipient?: Recipient;
+    recipient: Recipient;
     checkInDate: Date;
     shelfBarcode?: string;
     checkOutDate?: Date;
