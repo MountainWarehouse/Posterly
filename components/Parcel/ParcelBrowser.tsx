@@ -16,9 +16,10 @@ enum Show {
 export interface ParcelBrowserProps extends NativeBase.Content {
     search: string;
     onSelectParcel: (parcel: Parcel) => void;
+    onRemind: (parcel: Parcel) => void;
 }
 
-const ParcelBrowser: React.SFC<ParcelBrowserProps> = ({ search: propsSearch, onSelectParcel, ...rest }) => {
+const ParcelBrowser: React.SFC<ParcelBrowserProps> = ({ search: propsSearch, onSelectParcel, onRemind, ...rest }) => {
     const [search, setSearch] = useState(propsSearch);
     const [isLoading, setIsLoading] = useState(true);
     const [parcels, setParcels] = useState([] as Parcel[]);
@@ -51,9 +52,9 @@ const ParcelBrowser: React.SFC<ParcelBrowserProps> = ({ search: propsSearch, onS
     const list =
         parcels.length > 0 ? (
             groupByRecipient ? (
-                <ParcelsListByRecipient parcels={filteredParcels} onSelectParcel={onSelectParcel} />
+                <ParcelsListByRecipient parcels={filteredParcels} onSelectParcel={onSelectParcel} onRemind={onRemind} />
             ) : (
-                <ParcelsList parcels={filteredParcels} onSelectParcel={onSelectParcel} />
+                <ParcelsList parcels={filteredParcels} onSelectParcel={onSelectParcel} onRemind={onRemind} />
             )
         ) : (
             <Text style={{ marginTop: 10 }}>There are no parcels registered yet.</Text>
@@ -77,12 +78,7 @@ const ParcelBrowser: React.SFC<ParcelBrowserProps> = ({ search: propsSearch, onS
                     <Picker.Item label="Checked Out" value={Show.Out} />
                 </Picker>
                 <Content>
-                    <Button
-                        bordered={!groupByRecipient}
-                        full
-                        style={styles.button}
-                        onPress={() => setGroupByRecipient(!groupByRecipient)}
-                    >
+                    <Button bordered={!groupByRecipient} block onPress={() => setGroupByRecipient(!groupByRecipient)}>
                         <Text>By Recipient</Text>
                     </Button>
                 </Content>

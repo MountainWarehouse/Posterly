@@ -7,7 +7,7 @@ import Summary from './components/Summary';
 import RecipientSelection from './components/RecipientSelection';
 import RecipientForm from './components/RecipientForm';
 import { Parcel } from './models/Parcel';
-import { Root, Toast, Button, Icon, Text } from 'native-base';
+import { Root, Toast, Button, Icon, Text, Grid, Col } from 'native-base';
 import { Recipient } from './models/Recipient';
 import { createAppContainer, NavigationContainerComponent, NavigationActions } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
@@ -66,26 +66,18 @@ class App extends Component<object, State> {
 
     handleCheckIn = async () => {
         const parcel = { ...this.state.parcel };
-        const recipient = parcel.recipient ? parcel.recipient : ({} as Recipient);
-        await realm.createParcel(parcel);
         parcel.checkInDate = new Date();
+        await realm.createParcel(parcel);
 
-        const shelfInfo = parcel.shelfBarcode ? `Look it by the shelf no: ${parcel.shelfBarcode}.\n` : '';
-        const body =
-            `Hello ${recipient.name},\n` +
-            `Your parcel no: ${parcel.barcode} is waiting in reception.\n` +
-            shelfInfo +
-            '\nHave a great day!';
-        emailService.sendEmail(recipient.email as string, 'Your parcel is waiting for you!', body);
+        this.sendNotificationEmail(parcel);
         this.setState({ parcel: {} as Parcel });
         this.navigateTo(Screen.Home);
     };
 
     handleCheckOut = async () => {
         const { parcel } = this.state;
-        const recipient = parcel.recipient ? parcel.recipient : ({} as Recipient);
 
-        if (parcel.checkOutPerson === recipient.name) return this.checkOutParcel();
+        if (parcel.checkOutPerson === parcel.recipient.name) return this.checkOutParcel();
 
         Alert.alert(
             'Notify?',
@@ -104,10 +96,10 @@ class App extends Component<object, State> {
                     text: 'Yes',
                     onPress: () => {
                         const body =
-                            `Hello ${recipient.name},\n` +
+                            `Hello ${parcel.recipient.name},\n` +
                             `Your parcel no: ${parcel.barcode} has been checked out by ${parcel.checkOutPerson}.\n\n` +
                             'Have a great day!';
-                        emailService.sendEmail(recipient.email, 'Your parcel has been checked out', body);
+                        emailService.sendEmail(parcel.recipient.email, 'Your parcel has been checked out', body);
                         this.checkOutParcel();
                     }
                 }
@@ -213,20 +205,30 @@ class App extends Component<object, State> {
                     ),
                     headerTitle: <Text>Check Out Parcel</Text>,
                     headerRight: () => (
-                        <Button
-                            hasText
-                            transparent
-                            onPress={this.handleCheckOut}
-                            disabled={!this.state.parcel.checkOutPerson}
-                        >
-                            <Text>Check Out</Text>
-                        </Button>
+                        <Grid>
+                            <Col>
+                                <Button hasText transparent onPress={this.handleRemind}>
+                                    <Text>Remind</Text>
+                                </Button>
+                            </Col>
+                            <Col>
+                                <Button
+                                    hasText
+                                    transparent
+                                    onPress={this.handleCheckOut}
+                                    disabled={!this.state.parcel.checkOutPerson}
+                                >
+                                    <Text>Check Out</Text>
+                                </Button>
+                            </Col>
+                        </Grid>
                     )
                 }
             },
             [Screen.Preferences]: {
                 screen: () => (
                     <Preferences
+                        padder
                         preferences={this.state.preferences}
                         onPreferencesChanged={this.handlePreferencesChanged}
                     />
@@ -235,7 +237,12 @@ class App extends Component<object, State> {
             },
             [Screen.ParcelBrowser]: {
                 screen: () => (
-                    <ParcelBrowser padder search={this.state.parcelSearch} onSelectParcel={this.handleSelectParcel} />
+                    <ParcelBrowser
+                        padder
+                        search={this.state.parcelSearch}
+                        onSelectParcel={this.handleSelectParcel}
+                        onRemind={parcel => this.sendNotificationEmail(parcel, true)}
+                    />
                 ),
                 navigationOptions: { title: 'Browse Parcels' }
             },
@@ -340,6 +347,24 @@ class App extends Component<object, State> {
         PreferenceService.setAll(preferences)
             .then(() => this.setState({ preferences }))
             .catch(() => this.setState({ preferences: currentPreferences }));
+    };
+
+    handleRemind = () => {
+        this.sendNotificationEmail(this.state.parcel, true);
+        this.navigateTo(Screen.Home);
+    };
+
+    sendNotificationEmail = (parcel: Parcel, asReminder?: boolean) => {
+        const subject = `${asReminder ? '[REMINDER] ' : ''}Your parcel is${
+            asReminder ? ' still' : ''
+        } waiting for you!`;
+        const shelfInfo = parcel.shelfBarcode ? `Look it by the shelf no: ${parcel.shelfBarcode}.\n` : '';
+        const body =
+            `Hello ${parcel.recipient.name},\n` +
+            `Your parcel no: ${parcel.barcode} is${asReminder ? ' still' : ''} waiting in reception.\n` +
+            shelfInfo +
+            '\nHave a great day!';
+        emailService.sendEmail(parcel.recipient.email, subject, body);
     };
 
     render = () => (

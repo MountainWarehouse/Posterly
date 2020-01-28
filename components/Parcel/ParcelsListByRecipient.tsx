@@ -5,7 +5,7 @@ import ParcelListItem from './ParcelListItem';
 import { Parcel } from '../../models/Parcel';
 import groupBy from '../../utils/ArrayUtil';
 
-const ParcelsListByRecipient: React.SFC<ParcelsListProps> = ({ parcels, onSelectParcel }) => {
+const ParcelsListByRecipient: React.SFC<ParcelsListProps> = ({ parcels, onSelectParcel, onRemind }) => {
     const grouped = groupBy(parcels, p => (p.recipient?.name ? p.recipient?.name : ''));
 
     const accordionData: { title: string; content: Parcel[] }[] = [];
@@ -22,7 +22,15 @@ const ParcelsListByRecipient: React.SFC<ParcelsListProps> = ({ parcels, onSelect
         <Accordion
             dataArray={accordionData}
             renderContent={({ content }) =>
-                content.map((parcel: Parcel) => <ParcelListItem key={parcel.id} parcel={parcel} onSelect={() => onSelectParcel(parcel)} hideRecipient />)
+                content.map((parcel: Parcel) => (
+                    <ParcelListItem
+                        key={parcel.barcode}
+                        parcel={parcel}
+                        onSelect={() => onSelectParcel(parcel)}
+                        onRemind={() => onRemind(parcel)}
+                        hideRecipient
+                    />
+                ))
             }
         />
     );
