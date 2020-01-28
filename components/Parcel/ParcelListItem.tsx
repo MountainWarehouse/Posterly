@@ -17,7 +17,7 @@ const ParcelListItem: React.SFC<ParcelListItemProps> = ({ parcel, hideRecipient,
                 <ParcelIcon checkedOut={isCheckedOut} size={20} />
             </Left>
             <Body>
-                {!hideRecipient && <Text>For: {parcel.recipient?.name}</Text>}
+                {!hideRecipient && <Text>For: {parcel.recipient.name}</Text>}
                 <Text>No: {parcel.barcode}</Text>
                 <Text note>{parcel.checkInDate.toLocaleDateString()}</Text>
                 {parcel.shelfBarcode && <Text note>Shelf: {parcel.shelfBarcode}</Text>}

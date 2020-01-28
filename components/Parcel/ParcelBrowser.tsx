@@ -44,7 +44,7 @@ const ParcelBrowser: React.SFC<ParcelBrowserProps> = ({ search: propsSearch, onS
             (show === Show.In && !isCheckedOut(parcel));
         const searchResult =
             parcel.barcode.toLowerCase().includes(lowerSearch) ||
-            parcel.recipient?.name.toLocaleLowerCase().includes(lowerSearch);
+            parcel.recipient.name.toLocaleLowerCase().includes(lowerSearch);
 
         return shouldBeShown && searchResult;
     });

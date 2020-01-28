@@ -6,7 +6,7 @@ import { Parcel } from '../../models/Parcel';
 import groupBy from '../../utils/ArrayUtil';
 
 const ParcelsListByRecipient: React.SFC<ParcelsListProps> = ({ parcels, onSelectParcel, onRemind }) => {
-    const grouped = groupBy(parcels, p => (p.recipient?.name ? p.recipient?.name : ''));
+    const grouped = groupBy(parcels, p => p.recipient.name);
 
     const accordionData: { title: string; content: Parcel[] }[] = [];
     grouped.forEach((value, key) =>
