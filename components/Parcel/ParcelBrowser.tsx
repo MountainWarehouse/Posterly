@@ -4,6 +4,7 @@ import { Parcel } from '../../models/Parcel';
 import ParcelIcon from './ParcelIcon';
 import realm from '../../database/Realm';
 import ParcelsList from './ParcelsList';
+import * as dateUtil from '../../utils/DateUtil';
 
 enum Show {
     All,
@@ -47,8 +48,6 @@ const ParcelBrowser: React.SFC<ParcelBrowserProps> = ({ search: propsSearch, onS
         return shouldBeShown && searchResult;
     });
 
-    const formatDate = (date: Date): string => date.toLocaleDateString();
-
     return (
         <View {...rest}>
             <Item>
@@ -82,11 +81,13 @@ const ParcelBrowser: React.SFC<ParcelBrowserProps> = ({ search: propsSearch, onS
                     expanded={!groupByRecipient ? 0 : undefined}
                     onRemind={onRemind}
                     groupByKeyGetter={parcel =>
-                        groupByRecipient ? parcel.recipient.name : formatDate(parcel.checkInDate)
+                        groupByRecipient ? parcel.recipient.name : dateUtil.getDateString(parcel.checkInDate)
                     }
+                    groupByTitleGetter={key => (groupByRecipient ? key : dateUtil.formatDate(new Date(key)))}
                     thenByKeyGetter={parcel =>
-                        groupByRecipient ? formatDate(parcel.checkInDate) : parcel.recipient.name
+                        groupByRecipient ? dateUtil.getDateString(parcel.checkInDate) : parcel.recipient.name
                     }
+                    thenByTitleGetter={key => (groupByRecipient ? dateUtil.formatDate(new Date(key)) : key)}
                     reverseSort={!groupByRecipient}
                     thenByReverseSort={groupByRecipient}
                 />

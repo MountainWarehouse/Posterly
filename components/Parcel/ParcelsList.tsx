@@ -8,8 +8,10 @@ export interface ParcelsListProps {
     parcels: Parcel[];
     onSelectParcel: (parcel: Parcel) => void;
     onRemind: (parcel: Parcel) => void;
-    groupByKeyGetter: (parcel: Parcel) => string;
-    thenByKeyGetter: (parcel: Parcel) => string;
+    groupByKeyGetter: (parcel: Parcel) => any;
+    groupByTitleGetter: (key: any) => string;
+    thenByKeyGetter: (parcel: Parcel) => any;
+    thenByTitleGetter: (key: any) => string;
     reverseSort?: boolean;
     thenByReverseSort?: boolean;
     expanded?: number;
@@ -20,7 +22,9 @@ const ParcelsList: React.SFC<ParcelsListProps> = ({
     onSelectParcel,
     onRemind,
     groupByKeyGetter,
+    groupByTitleGetter,
     thenByKeyGetter,
+    thenByTitleGetter,
     reverseSort,
     thenByReverseSort,
     expanded
@@ -29,14 +33,15 @@ const ParcelsList: React.SFC<ParcelsListProps> = ({
 
     const grouped = arrayUtil.groupBy(parcels, groupByKeyGetter);
 
-    const accordionData: { title: string; content: Parcel[] }[] = [];
+    const accordionData: { group: any; title: string; content: Parcel[] }[] = [];
     grouped.forEach((value, key) =>
         accordionData.push({
-            title: key,
+            group: key,
+            title: groupByTitleGetter(key),
             content: value
         })
     );
-    arrayUtil.sortArray(accordionData, i => i.title, reverseSort);
+    arrayUtil.sortArray(accordionData, i => i.group, reverseSort);
 
     return (
         <Accordion
@@ -45,10 +50,10 @@ const ParcelsList: React.SFC<ParcelsListProps> = ({
             headerStyle={{ backgroundColor: '#BBDEFB' }}
             renderContent={({ content }) => {
                 const subGroups = arrayUtil.groupBy(content, thenByKeyGetter);
-                const subData: { subTitle: string; items: Parcel[] }[] = [];
-                subGroups.forEach((items, subTitle) => subData.push({ subTitle, items }));
+                const subData: { group: any; subTitle: string; items: Parcel[] }[] = [];
+                subGroups.forEach((items, group) => subData.push({ group, subTitle: thenByTitleGetter(group), items }));
 
-                arrayUtil.sortArray(subData, i => i.subTitle, thenByReverseSort);
+                arrayUtil.sortArray(subData, i => i.group, thenByReverseSort);
 
                 return (
                     <View>
