@@ -38,8 +38,6 @@ const GroupedParcelsList: React.SFC<GroupedParcelsListProps> = ({
     );
     arrayUtil.sortArray(accordionData, i => i.title, reverseSort);
 
-    // accordionData.sort((a, b) => (reverseSort ? (a.title > b.title ? -1 : 1) : a.title > b.title ? 1 : -1));
-
     return (
         <Accordion
             dataArray={accordionData}
@@ -51,10 +49,6 @@ const GroupedParcelsList: React.SFC<GroupedParcelsListProps> = ({
                 subGroups.forEach((items, subTitle) => subData.push({ subTitle, items }));
 
                 arrayUtil.sortArray(subData, i => i.subTitle, thenByReverseSort);
-
-                // subData.sort((a, b) =>
-                //     thenByReverseSort ? (a.subTitle > b.subTitle ? -1 : 1) : a.subTitle > b.subTitle ? 1 : -1
-                // );
 
                 return (
                     <List>
