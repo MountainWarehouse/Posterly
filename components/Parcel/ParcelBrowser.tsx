@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Content, Text, Icon, Item, Input, NativeBase, Spinner, Picker, Button } from 'native-base';
+import { Content, Text, Icon, Item, Input, NativeBase, Spinner, Picker, Button, View } from 'native-base';
 import { Parcel } from '../../models/Parcel';
 import ParcelIcon from './ParcelIcon';
 import realm from '../../database/Realm';
@@ -11,7 +11,7 @@ enum Show {
     Out
 }
 
-export interface ParcelBrowserProps extends NativeBase.Content {
+export interface ParcelBrowserProps extends NativeBase.View {
     search: string;
     onSelectParcel: (parcel: Parcel) => void;
     onRemind: (parcel: Parcel) => void;
@@ -50,7 +50,7 @@ const ParcelBrowser: React.SFC<ParcelBrowserProps> = ({ search: propsSearch, onS
     const formatDate = (date: Date): string => date.toLocaleDateString();
 
     return (
-        <Content {...rest}>
+        <View {...rest}>
             <Item>
                 <Icon name="md-search" type="Ionicons" />
                 <Input placeholder="Search" onChangeText={setSearch} value={search} />
@@ -91,7 +91,7 @@ const ParcelBrowser: React.SFC<ParcelBrowserProps> = ({ search: propsSearch, onS
                     thenByReverseSort={groupByRecipient}
                 />
             )}
-        </Content>
+        </View>
     );
 };
 
