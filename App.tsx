@@ -22,6 +22,7 @@ import ParcelBrowser from './components/Parcel/ParcelBrowser';
 import realm from './database/Realm';
 import About from './components/About';
 import styles from './_shared/Styles';
+import * as arrayUtil from './utils/ArrayUtil';
 
 export interface State {
     appState: string;
@@ -328,6 +329,7 @@ class App extends Component<object, State> {
         } else {
             recipients[index] = recipient;
         }
+        arrayUtil.sortArray(recipients, r => r.name);
 
         this.setState({ recipients });
         this.handleSelectRecipient(recipient);
