@@ -3,7 +3,7 @@ import { Content, Text, Icon, Item, Input, NativeBase, Spinner, Picker, Button, 
 import { Parcel } from '../../models/Parcel';
 import ParcelIcon from './ParcelIcon';
 import realm from '../../database/Realm';
-import GroupedParcelsList from './GroupedParcelsList';
+import ParcelsList from './ParcelsList';
 
 enum Show {
     All,
@@ -33,7 +33,7 @@ const ParcelBrowser: React.SFC<ParcelBrowserProps> = ({ search: propsSearch, onS
 
     const lowerSearch = search.toLowerCase();
 
-    const isCheckedOut = (parcel: Parcel): boolean => (parcel.checkOutPerson ? true : false);
+    const isCheckedOut = (parcel: Parcel): boolean => !!parcel.checkOutPerson;
 
     const filteredParcels = parcels.filter(parcel => {
         const shouldBeShown =
@@ -76,7 +76,7 @@ const ParcelBrowser: React.SFC<ParcelBrowserProps> = ({ search: propsSearch, onS
             {isLoading ? (
                 <Spinner color="blue" />
             ) : (
-                <GroupedParcelsList
+                <ParcelsList
                     parcels={filteredParcels}
                     onSelectParcel={onSelectParcel}
                     expanded={!groupByRecipient ? 0 : undefined}

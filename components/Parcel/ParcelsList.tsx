@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { Parcel } from '../../models/Parcel';
 import * as arrayUtil from '../../utils/ArrayUtil';
-import { Accordion, Text, ListItem, List } from 'native-base';
+import { Accordion, Text, View, Card, CardItem } from 'native-base';
 import ParcelListItem from './ParcelListItem';
 
-export interface GroupedParcelsListProps {
+export interface ParcelsListProps {
     parcels: Parcel[];
     onSelectParcel: (parcel: Parcel) => void;
     onRemind: (parcel: Parcel) => void;
@@ -15,7 +15,7 @@ export interface GroupedParcelsListProps {
     expanded?: number;
 }
 
-const GroupedParcelsList: React.SFC<GroupedParcelsListProps> = ({
+const ParcelsList: React.SFC<ParcelsListProps> = ({
     parcels,
     onSelectParcel,
     onRemind,
@@ -51,12 +51,12 @@ const GroupedParcelsList: React.SFC<GroupedParcelsListProps> = ({
                 arrayUtil.sortArray(subData, i => i.subTitle, thenByReverseSort);
 
                 return (
-                    <List>
+                    <View>
                         {subData.map(({ subTitle, items }, index) => (
-                            <React.Fragment key={index}>
-                                <ListItem itemDivider style={{ backgroundColor: '#E3F2FD' }}>
+                            <Card key={index}>
+                                <CardItem style={{ backgroundColor: '#E3F2FD' }}>
                                     <Text>{subTitle}</Text>
-                                </ListItem>
+                                </CardItem>
                                 {items.map((parcel: Parcel) => (
                                     <ParcelListItem
                                         key={parcel.barcode}
@@ -65,13 +65,13 @@ const GroupedParcelsList: React.SFC<GroupedParcelsListProps> = ({
                                         onRemind={() => onRemind(parcel)}
                                     />
                                 ))}
-                            </React.Fragment>
+                            </Card>
                         ))}
-                    </List>
+                    </View>
                 );
             }}
         />
     );
 };
 
-export default GroupedParcelsList;
+export default ParcelsList;
