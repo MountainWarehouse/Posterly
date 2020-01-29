@@ -11,12 +11,12 @@ export interface ParcelListItemProps {
 const ParcelListItem: React.SFC<ParcelListItemProps> = ({ parcel, onSelect, onRemind }) => {
     const isCheckedOut = !!parcel.checkOutPerson;
     return (
-        <ListItem avatar onPress={onSelect}>
+        <ListItem thumbnail onPress={onSelect}>
             <Left>
                 <ParcelIcon checkedOut={isCheckedOut} size={20} />
             </Left>
             <Body>
-                <Text style={{ fontWeight: !isCheckedOut ? 'bold' : 'normal' }}>No: {parcel.barcode}</Text>
+                <Text style={{ fontWeight: !isCheckedOut ? 'bold' : 'normal' }}>{parcel.barcode}</Text>
                 {parcel.shelfBarcode && <Text note>Shelf: {parcel.shelfBarcode}</Text>}
             </Body>
             <Right>
