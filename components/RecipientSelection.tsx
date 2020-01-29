@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Content, H3, Text, List, ListItem, Icon, Body, Item, Input, NativeBase } from 'native-base';
+import { Button, H3, Text, List, ListItem, Icon, Body, Item, Input, NativeBase, View, Fab } from 'native-base';
 import { Recipient } from '../models/Recipient';
-import styles from '../_shared/Styles';
 
-export interface RecipientSelectionProps extends NativeBase.Content {
+export interface RecipientSelectionProps extends NativeBase.View {
     onCreateRecipient: () => void;
     onSelectRecipient: (recipient: Recipient) => void;
     onEditRecipient: (recipient: Recipient) => void;
@@ -28,13 +27,9 @@ const RecipientSelection: React.SFC<RecipientSelectionProps> = ({
     );
 
     return (
-        <Content {...rest}>
+        <View {...rest} style={{ flex: 1 }}>
             <H3>Who is this parcel for?</H3>
             <Text>Select parcel recipient or create a new one</Text>
-            <Button block bordered style={styles.button} onPress={onCreateRecipient}>
-                <Icon name="md-person-add" />
-                <Text>Create New Recipient </Text>
-            </Button>
             <Item style={{ marginVertical: 5 }}>
                 <Icon name="md-search" />
                 <Input placeholder="Search" onChangeText={setSearch} />
@@ -55,7 +50,15 @@ const RecipientSelection: React.SFC<RecipientSelectionProps> = ({
                     </ListItem>
                 )}
             />
-        </Content>
+            <Fab
+                style={{ backgroundColor: '#3f51b5' }}
+                containerStyle={{ flex: 1 }}
+                position="bottomRight"
+                onPress={onCreateRecipient}
+            >
+                <Icon name="md-add" />
+            </Fab>
+        </View>
     );
 };
 
