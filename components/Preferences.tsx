@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Content, ListItem, CheckBox, Body, Text, NativeBase } from 'native-base';
+import { View, ListItem, CheckBox, Body, Text, NativeBase } from 'native-base';
 import IPreferences from '../_shared/IPreferences';
 
-export interface PreferencesProps extends NativeBase.Content {
+export interface PreferencesProps extends NativeBase.View {
     preferences: IPreferences;
     onPreferencesChanged: (preferences: IPreferences) => void;
 }
@@ -21,7 +21,7 @@ const Preferences: React.SFC<PreferencesProps> = props => {
     };
 
     return (
-        <Content {...rest}>
+        <View {...rest}>
             <ListItem>
                 <CheckBox checked={preferences.useShelf} onPress={toggleUseShelf} />
                 <Body>
@@ -29,7 +29,7 @@ const Preferences: React.SFC<PreferencesProps> = props => {
                     <Text note>Check to scan & register shelf no.</Text>
                 </Body>
             </ListItem>
-        </Content>
+        </View>
     );
 };
 

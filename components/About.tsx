@@ -1,19 +1,19 @@
 import React from 'react';
-import { Content, ListItem, Body, Text, NativeBase } from 'native-base';
+import { View, ListItem, Body, Text, NativeBase } from 'native-base';
 const { version } = require('../package.json');
 
-export interface AboutProps extends NativeBase.Content {}
+export interface AboutProps extends NativeBase.View {}
 
 const About: React.SFC<AboutProps> = ({ ...rest }) => {
     return (
-        <Content {...rest}>
+        <View {...rest}>
             <ListItem>
                 <Body>
                     <Text>App Version</Text>
                     <Text note>{version}</Text>
                 </Body>
             </ListItem>
-        </Content>
+        </View>
     );
 };
 
