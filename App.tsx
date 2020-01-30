@@ -376,6 +376,7 @@ class App extends Component<object, State> {
     handleNotify = async () => {
         const parcel = { ...this.state.parcel };
         await emailService.sendParcelNotification(parcel);
+        parcel.checkOutPerson = undefined;
         parcel.notificationCount++;
         await realm.updateParcel(parcel);
         this.setState({ parcel: {} as Parcel }, () => this.navigateTo(Screen.Home));
