@@ -106,6 +106,12 @@ class RealmWrapper {
         realm.write(() => realm.create(parcelSchema.name, parcel, true));
     }
 
+    public async updateParcels(parcels: Parcel[]): Promise<void> {
+        const realm = await this.getRealm();
+
+        realm.write(() => parcels.forEach(parcel => realm.create(parcelSchema.name, parcel, true)));
+    }
+
     public async deleteParcel(barcode: number): Promise<void> {
         const realm = await this.getRealm();
 

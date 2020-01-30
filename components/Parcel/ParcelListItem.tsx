@@ -5,10 +5,10 @@ import ParcelIcon from './ParcelIcon';
 export interface ParcelListItemProps {
     parcel: Parcel;
     onSelect: () => void;
-    onRemind: () => void;
+    onNotify: () => void;
 }
 
-const ParcelListItem: React.SFC<ParcelListItemProps> = ({ parcel, onSelect, onRemind }) => {
+const ParcelListItem: React.SFC<ParcelListItemProps> = ({ parcel, onSelect, onNotify }) => {
     const isCheckedOut = !!parcel.checkOutPerson;
     return (
         <ListItem thumbnail onPress={onSelect}>
@@ -26,9 +26,8 @@ const ParcelListItem: React.SFC<ParcelListItemProps> = ({ parcel, onSelect, onRe
                         <Text note>By: {parcel.checkOutPerson}</Text>
                     </React.Fragment>
                 ) : (
-                    <Button iconLeft rounded info onPress={onRemind}>
-                        <Icon name="md-mail" />
-                        <Text>Remind</Text>
+                    <Button icon rounded info={!!parcel.notificationCount} onPress={onNotify}>
+                        <Icon name={parcel.notificationCount ? 'md-mail' : 'md-mail-unread'} />
                     </Button>
                 )}
             </Right>

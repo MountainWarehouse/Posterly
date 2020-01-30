@@ -5,6 +5,8 @@ import ParcelIcon from './ParcelIcon';
 import realm from '../../database/Realm';
 import ParcelsList from './ParcelsList';
 import * as dateUtil from '../../utils/DateUtil';
+import * as emailService from '../../services/EmailService';
+import ParcelNotifyActions from './ParcelNotifyActions';
 
 enum Show {
     All,
@@ -15,10 +17,9 @@ enum Show {
 export interface ParcelBrowserProps extends NativeBase.View {
     search: string;
     onSelectParcel: (parcel: Parcel) => void;
-    onRemind: (parcel: Parcel) => void;
 }
 
-const ParcelBrowser: React.SFC<ParcelBrowserProps> = ({ search: propsSearch, onSelectParcel, onRemind, ...rest }) => {
+const ParcelBrowser: React.SFC<ParcelBrowserProps> = ({ search: propsSearch, onSelectParcel, ...rest }) => {
     const [search, setSearch] = useState(propsSearch);
     const [isLoading, setIsLoading] = useState(true);
     const [parcels, setParcels] = useState([] as Parcel[]);
@@ -31,6 +32,13 @@ const ParcelBrowser: React.SFC<ParcelBrowserProps> = ({ search: propsSearch, onS
             setIsLoading(false);
         });
     }, []);
+
+    const handleNotify = async (parcels: Parcel[]) => {
+        await emailService.sendParcelsNotification(parcels);
+        parcels.forEach(parcel => parcel.notificationCount++);
+        await realm.updateParcels(parcels);
+        setParcels([...parcels]);
+    };
 
     const lowerSearch = search.toLowerCase();
 
@@ -47,6 +55,8 @@ const ParcelBrowser: React.SFC<ParcelBrowserProps> = ({ search: propsSearch, onS
 
         return shouldBeShown && searchResult;
     });
+
+    const notifyActions = (parcels: Parcel[]) => <ParcelNotifyActions parcels={parcels} onNotify={handleNotify} />;
 
     return (
         <View {...rest}>
@@ -79,7 +89,7 @@ const ParcelBrowser: React.SFC<ParcelBrowserProps> = ({ search: propsSearch, onS
                     parcels={filteredParcels}
                     onSelectParcel={onSelectParcel}
                     expanded={!groupByRecipient ? 0 : undefined}
-                    onRemind={onRemind}
+                    onNotify={parcel => handleNotify([parcel])}
                     groupByKeyGetter={parcel =>
                         groupByRecipient ? parcel.recipient.name : dateUtil.getDateString(parcel.checkInDate)
                     }
@@ -90,6 +100,8 @@ const ParcelBrowser: React.SFC<ParcelBrowserProps> = ({ search: propsSearch, onS
                     thenByTitleGetter={key => (groupByRecipient ? dateUtil.formatDate(new Date(key)) : key)}
                     reverseSort={!groupByRecipient}
                     thenByReverseSort={groupByRecipient}
+                    contentActions={groupByRecipient ? notifyActions : undefined}
+                    subcontentActions={!groupByRecipient ? notifyActions : undefined}
                 />
             )}
         </View>
