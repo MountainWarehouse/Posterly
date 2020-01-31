@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { Button, Content, Form, Text, Toast, NativeBase } from 'native-base';
+import { Button, View, Form, Text, Toast, NativeBase } from 'native-base';
 import { Recipient } from '../models/Recipient';
 import { TextField } from 'react-native-material-textfield';
 import Joi from 'joi';
 import styles from '../_shared/Styles';
 import realm from '../database/Realm';
 
-export interface RecipientFormProps extends NativeBase.Content {
+export interface RecipientFormProps extends NativeBase.View {
     onRecipientSaved: (recipient: Recipient) => void;
     recipients: Recipient[];
     recipient: Recipient;
@@ -93,7 +93,7 @@ const RecipientForm: React.SFC<RecipientFormProps> = ({ onRecipientSaved, recipi
     const disabled = !isChanged || !isValid;
 
     return (
-        <Content {...rest}>
+        <View {...rest}>
             <Form>
                 <TextField
                     label="Name"
@@ -114,7 +114,7 @@ const RecipientForm: React.SFC<RecipientFormProps> = ({ onRecipientSaved, recipi
                     <Text>Save</Text>
                 </Button>
             </Form>
-        </Content>
+        </View>
     );
 };
 

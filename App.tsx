@@ -20,6 +20,9 @@ import PreferenceService from './services/PreferenceService';
 import { MenuProvider, Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
 import ParcelBrowser from './components/Parcel/ParcelBrowser';
 import realm from './database/Realm';
+import About from './components/About';
+import styles from './_shared/Styles';
+import * as arrayUtil from './utils/ArrayUtil';
 
 export interface State {
     appState: string;
@@ -64,14 +67,20 @@ class App extends Component<object, State> {
         realm.close();
     }
 
-    handleCheckIn = async () => {
+    handleCheckIn = async (notify: boolean) => {
         const parcel = { ...this.state.parcel };
         parcel.checkInDate = new Date();
         await realm.createParcel(parcel);
 
-        this.sendNotificationEmail(parcel);
-        this.setState({ parcel: {} as Parcel });
-        this.navigateTo(Screen.Home);
+        if (notify) {
+            await emailService.sendParcelNotification(parcel);
+            parcel.notificationCount++;
+            await realm.updateParcel(parcel);
+        } else {
+            Toast.show({ text: 'Parcel has been checked in.' });
+        }
+
+        this.setState({ parcel: {} as Parcel }, () => this.navigateTo(Screen.Home));
     };
 
     handleCheckOut = async () => {
@@ -176,16 +185,25 @@ class App extends Component<object, State> {
                     <Summary
                         padder
                         parcel={this.state.parcel}
-                        tip="When 'Notify' is pressed the email for the parcel receiver will be generated"
+                        tip="When 'Save & Notify' is pressed the email for the parcel receiver will be generated."
                     />
                 ),
                 navigationOptions: {
                     headerLeft: this.cancelHeaderButton,
                     headerTitle: <Text>Check In Summary</Text>,
                     headerRight: () => (
-                        <Button hasText transparent onPress={this.handleCheckIn}>
-                            <Text>Notify</Text>
-                        </Button>
+                        <Grid>
+                            <Col>
+                                <Button hasText transparent onPress={() => this.handleCheckIn(false)}>
+                                    <Text>Save</Text>
+                                </Button>
+                            </Col>
+                            <Col>
+                                <Button hasText transparent onPress={() => this.handleCheckIn(true)}>
+                                    <Text>Save & Notify</Text>
+                                </Button>
+                            </Col>
+                        </Grid>
                     )
                 }
             },
@@ -207,8 +225,8 @@ class App extends Component<object, State> {
                     headerRight: () => (
                         <Grid>
                             <Col>
-                                <Button hasText transparent onPress={this.handleRemind}>
-                                    <Text>Remind</Text>
+                                <Button hasText transparent onPress={this.handleNotify}>
+                                    <Text>{this.state.parcel.notificationCount ? 'Remind' : 'Notify'}</Text>
                                 </Button>
                             </Col>
                             <Col>
@@ -237,12 +255,7 @@ class App extends Component<object, State> {
             },
             [Screen.ParcelBrowser]: {
                 screen: () => (
-                    <ParcelBrowser
-                        padder
-                        search={this.state.parcelSearch}
-                        onSelectParcel={this.handleSelectParcel}
-                        onRemind={parcel => this.sendNotificationEmail(parcel, true)}
-                    />
+                    <ParcelBrowser padder search={this.state.parcelSearch} onSelectParcel={this.handleSelectParcel} />
                 ),
                 navigationOptions: { title: 'Browse Parcels' }
             },
@@ -251,6 +264,10 @@ class App extends Component<object, State> {
                 navigationOptions: {
                     title: 'Parcel Info'
                 }
+            },
+            [Screen.About]: {
+                screen: () => <About padder />,
+                navigationOptions: { title: 'Posterly', headerRight: null }
             }
         },
         {
@@ -263,7 +280,12 @@ class App extends Component<object, State> {
                                 <Icon name="md-more" />
                             </MenuTrigger>
                             <MenuOptions>
-                                <MenuOption onSelect={() => this.navigateTo(Screen.Preferences)} text="Settings" />
+                                <MenuOption onSelect={() => this.navigateTo(Screen.Preferences)}>
+                                    <Text style={styles.margin}>Settings</Text>
+                                </MenuOption>
+                                <MenuOption onSelect={() => this.navigateTo(Screen.About)}>
+                                    <Text style={styles.margin}>About</Text>
+                                </MenuOption>
                             </MenuOptions>
                         </Menu>
                     </Button>
@@ -293,6 +315,7 @@ class App extends Component<object, State> {
         parcel = {
             barcode,
             checkInDate: new Date(),
+            notificationCount: 0,
             recipient: {
                 id: 0,
                 name: '',
@@ -317,6 +340,7 @@ class App extends Component<object, State> {
         } else {
             recipients[index] = recipient;
         }
+        arrayUtil.sortArray(recipients, r => r.name);
 
         this.setState({ recipients });
         this.handleSelectRecipient(recipient);
@@ -349,22 +373,13 @@ class App extends Component<object, State> {
             .catch(() => this.setState({ preferences: currentPreferences }));
     };
 
-    handleRemind = () => {
-        this.sendNotificationEmail(this.state.parcel, true);
-        this.navigateTo(Screen.Home);
-    };
-
-    sendNotificationEmail = (parcel: Parcel, asReminder?: boolean) => {
-        const subject = `${asReminder ? '[REMINDER] ' : ''}Your parcel is${
-            asReminder ? ' still' : ''
-        } waiting for you!`;
-        const shelfInfo = parcel.shelfBarcode ? `Look it by the shelf no: ${parcel.shelfBarcode}.\n` : '';
-        const body =
-            `Hello ${parcel.recipient.name},\n` +
-            `Your parcel no: ${parcel.barcode} is${asReminder ? ' still' : ''} waiting in reception.\n` +
-            shelfInfo +
-            '\nHave a great day!';
-        emailService.sendEmail(parcel.recipient.email, subject, body);
+    handleNotify = async () => {
+        const parcel = { ...this.state.parcel };
+        await emailService.sendParcelNotification(parcel);
+        parcel.checkOutPerson = undefined;
+        parcel.notificationCount++;
+        await realm.updateParcel(parcel);
+        this.setState({ parcel: {} as Parcel }, () => this.navigateTo(Screen.Home));
     };
 
     render = () => (

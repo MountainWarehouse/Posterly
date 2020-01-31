@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Content, Text, Icon, Item, Input, NativeBase, Spinner, Picker, Button } from 'native-base';
+import { Content, Text, Icon, Item, Input, NativeBase, Spinner, Picker, Button, View } from 'native-base';
 import { Parcel } from '../../models/Parcel';
-import styles from '../../_shared/Styles';
 import ParcelIcon from './ParcelIcon';
-import ParcelsListByRecipient from './ParcelsListByRecipient';
-import ParcelsList from './ParcelsList';
 import realm from '../../database/Realm';
+import ParcelsList from './ParcelsList';
+import * as dateUtil from '../../utils/DateUtil';
+import * as emailService from '../../services/EmailService';
+import ParcelNotifyActions from './ParcelNotifyActions';
 
 enum Show {
     All,
@@ -13,18 +14,17 @@ enum Show {
     Out
 }
 
-export interface ParcelBrowserProps extends NativeBase.Content {
+export interface ParcelBrowserProps extends NativeBase.View {
     search: string;
     onSelectParcel: (parcel: Parcel) => void;
-    onRemind: (parcel: Parcel) => void;
 }
 
-const ParcelBrowser: React.SFC<ParcelBrowserProps> = ({ search: propsSearch, onSelectParcel, onRemind, ...rest }) => {
+const ParcelBrowser: React.SFC<ParcelBrowserProps> = ({ search: propsSearch, onSelectParcel, ...rest }) => {
     const [search, setSearch] = useState(propsSearch);
     const [isLoading, setIsLoading] = useState(true);
     const [parcels, setParcels] = useState([] as Parcel[]);
     const [show, setShow] = useState(Show.All);
-    const [groupByRecipient, setGroupByRecipient] = useState(true);
+    const [groupByRecipient, setGroupByRecipient] = useState(false);
 
     useEffect(() => {
         realm.getAllParcels().then(parcels => {
@@ -33,9 +33,16 @@ const ParcelBrowser: React.SFC<ParcelBrowserProps> = ({ search: propsSearch, onS
         });
     }, []);
 
+    const handleNotify = async (parcels: Parcel[]) => {
+        await emailService.sendParcelsNotification(parcels);
+        parcels.forEach(parcel => parcel.notificationCount++);
+        await realm.updateParcels(parcels);
+        setParcels([...parcels]);
+    };
+
     const lowerSearch = search.toLowerCase();
 
-    const isCheckedOut = (parcel: Parcel): boolean => (parcel.checkOutPerson ? true : false);
+    const isCheckedOut = (parcel: Parcel): boolean => !!parcel.checkOutPerson;
 
     const filteredParcels = parcels.filter(parcel => {
         const shouldBeShown =
@@ -44,24 +51,15 @@ const ParcelBrowser: React.SFC<ParcelBrowserProps> = ({ search: propsSearch, onS
             (show === Show.In && !isCheckedOut(parcel));
         const searchResult =
             parcel.barcode.toLowerCase().includes(lowerSearch) ||
-            parcel.recipient?.name.toLocaleLowerCase().includes(lowerSearch);
+            parcel.recipient.name.toLocaleLowerCase().includes(lowerSearch);
 
         return shouldBeShown && searchResult;
     });
 
-    const list =
-        parcels.length > 0 ? (
-            groupByRecipient ? (
-                <ParcelsListByRecipient parcels={filteredParcels} onSelectParcel={onSelectParcel} onRemind={onRemind} />
-            ) : (
-                <ParcelsList parcels={filteredParcels} onSelectParcel={onSelectParcel} onRemind={onRemind} />
-            )
-        ) : (
-            <Text style={{ marginTop: 10 }}>There are no parcels registered yet.</Text>
-        );
+    const notifyActions = (parcels: Parcel[]) => <ParcelNotifyActions parcels={parcels} onNotify={handleNotify} />;
 
     return (
-        <Content {...rest}>
+        <View {...rest}>
             <Item>
                 <Icon name="md-search" type="Ionicons" />
                 <Input placeholder="Search" onChangeText={setSearch} value={search} />
@@ -78,13 +76,35 @@ const ParcelBrowser: React.SFC<ParcelBrowserProps> = ({ search: propsSearch, onS
                     <Picker.Item label="Checked Out" value={Show.Out} />
                 </Picker>
                 <Content>
-                    <Button bordered={!groupByRecipient} block onPress={() => setGroupByRecipient(!groupByRecipient)}>
-                        <Text>By Recipient</Text>
+                    <Button iconLeft info block onPress={() => setGroupByRecipient(!groupByRecipient)}>
+                        <Icon name={groupByRecipient ? 'md-person' : 'md-calendar'} />
+                        <Text>{groupByRecipient ? 'By Recipient' : 'By Date'}</Text>
                     </Button>
                 </Content>
             </Item>
-            {isLoading ? <Spinner color="blue" /> : list}
-        </Content>
+            {isLoading ? (
+                <Spinner color="blue" />
+            ) : (
+                <ParcelsList
+                    parcels={filteredParcels}
+                    onSelectParcel={onSelectParcel}
+                    expanded={!groupByRecipient ? 0 : undefined}
+                    onNotify={parcel => handleNotify([parcel])}
+                    groupByKeyGetter={parcel =>
+                        groupByRecipient ? parcel.recipient.name : dateUtil.getDateString(parcel.checkInDate)
+                    }
+                    groupByTitleGetter={key => (groupByRecipient ? key : dateUtil.formatDate(new Date(key)))}
+                    thenByKeyGetter={parcel =>
+                        groupByRecipient ? dateUtil.getDateString(parcel.checkInDate) : parcel.recipient.name
+                    }
+                    thenByTitleGetter={key => (groupByRecipient ? dateUtil.formatDate(new Date(key)) : key)}
+                    reverseSort={!groupByRecipient}
+                    thenByReverseSort={groupByRecipient}
+                    contentActions={groupByRecipient ? notifyActions : undefined}
+                    subcontentActions={!groupByRecipient ? notifyActions : undefined}
+                />
+            )}
+        </View>
     );
 };
 

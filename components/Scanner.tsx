@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
 import { DeviceEventEmitter } from 'react-native';
-import { Content, Button, Text, NativeBase } from 'native-base';
+import { View, Button, Text, NativeBase } from 'native-base';
 import { IDataWedgeIntent } from '../DataWedge/DataWedgeProperties';
 import dataWedgeService from '../services/DataWedgeService';
 import styles from '../_shared/Styles';
 
-export interface ScannerProps extends NativeBase.Content {
+export interface ScannerProps extends NativeBase.View {
     tip: string;
     onScan: (code: string) => void;
 }
@@ -27,12 +27,12 @@ const Scanner: React.SFC<ScannerProps> = ({ tip, onScan, ...rest }) => {
     }, []);
 
     return (
-        <Content {...rest}>
+        <View {...rest}>
             <Text>{tip}</Text>
             <Button block style={styles.button} onPress={dataWedgeService.sendScanButtonPressed}>
                 <Text>Scan</Text>
             </Button>
-        </Content>
+        </View>
     );
 };
 

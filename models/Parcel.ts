@@ -7,6 +7,7 @@ export interface Parcel {
     shelfBarcode?: string;
     checkOutDate?: Date;
     checkOutPerson?: string;
+    notificationCount: number;
 }
 
 export const parcelSchema = {
@@ -18,6 +19,7 @@ export const parcelSchema = {
         checkInDate: 'date',
         shelfBarcode: 'string?',
         checkOutDate: 'date?',
-        checkOutPerson: 'string?'
+        checkOutPerson: 'string?',
+        notificationCount: 'int'
     }
 };

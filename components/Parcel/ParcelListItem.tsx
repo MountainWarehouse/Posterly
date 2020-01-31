@@ -4,22 +4,19 @@ import { Parcel } from '../../models/Parcel';
 import ParcelIcon from './ParcelIcon';
 export interface ParcelListItemProps {
     parcel: Parcel;
-    hideRecipient?: boolean;
     onSelect: () => void;
-    onRemind: () => void;
+    onNotify: () => void;
 }
 
-const ParcelListItem: React.SFC<ParcelListItemProps> = ({ parcel, hideRecipient, onSelect, onRemind }) => {
+const ParcelListItem: React.SFC<ParcelListItemProps> = ({ parcel, onSelect, onNotify }) => {
     const isCheckedOut = !!parcel.checkOutPerson;
     return (
-        <ListItem avatar onPress={onSelect}>
+        <ListItem thumbnail onPress={onSelect}>
             <Left>
                 <ParcelIcon checkedOut={isCheckedOut} size={20} />
             </Left>
             <Body>
-                {!hideRecipient && <Text>For: {parcel.recipient?.name}</Text>}
-                <Text>No: {parcel.barcode}</Text>
-                <Text note>{parcel.checkInDate.toLocaleDateString()}</Text>
+                <Text style={{ fontWeight: !isCheckedOut ? 'bold' : 'normal' }}>{parcel.barcode}</Text>
                 {parcel.shelfBarcode && <Text note>Shelf: {parcel.shelfBarcode}</Text>}
             </Body>
             <Right>
@@ -29,9 +26,8 @@ const ParcelListItem: React.SFC<ParcelListItemProps> = ({ parcel, hideRecipient,
                         <Text note>By: {parcel.checkOutPerson}</Text>
                     </React.Fragment>
                 ) : (
-                    <Button iconLeft rounded info onPress={onRemind}>
-                        <Icon name="md-mail" />
-                        <Text>Remind</Text>
+                    <Button icon rounded info={!!parcel.notificationCount} onPress={onNotify}>
+                        <Icon name={parcel.notificationCount ? 'md-mail' : 'md-mail-unread'} />
                     </Button>
                 )}
             </Right>

@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import Summary, { SummaryProps } from './Summary';
-import { Content, Text, NativeBase, Card, Button, CardItem, Body, H3 } from 'native-base';
+import { View, Text, NativeBase, Card, Button, CardItem, Body, H3 } from 'native-base';
 import { TextField } from 'react-native-material-textfield';
 
-export interface CheckOutProps extends SummaryProps, NativeBase.Content {
+export interface CheckOutProps extends SummaryProps, NativeBase.View {
     onChangeCheckoutPerson?: (checkoutPerson: string) => void;
 }
 
@@ -11,7 +11,7 @@ const CheckOut: React.SFC<CheckOutProps> = ({ parcel, tip, onChangeCheckoutPerso
     const [checkedOut] = useState(!!parcel.checkOutPerson);
     const [showCheckedOutInfo, setShowCheckedOutInfo] = useState(checkedOut);
     return (
-        <Content>
+        <View>
             {showCheckedOutInfo && (
                 <Card>
                     <CardItem header>
@@ -29,7 +29,7 @@ const CheckOut: React.SFC<CheckOutProps> = ({ parcel, tip, onChangeCheckoutPerso
                     </CardItem>
                 </Card>
             )}
-            <Content {...rest}>
+            <View {...rest}>
                 <Summary parcel={parcel} />
                 <TextField
                     label="Person collecting parcel"
@@ -39,8 +39,8 @@ const CheckOut: React.SFC<CheckOutProps> = ({ parcel, tip, onChangeCheckoutPerso
                     editable={!checkedOut}
                 />
                 {tip && <Text note>By pressing 'Check Out' you confirm that the person has collected the parcel</Text>}
-            </Content>
-        </Content>
+            </View>
+        </View>
     );
 };
 
