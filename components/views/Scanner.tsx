@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
 import { DeviceEventEmitter } from 'react-native';
 import { View, Button, Text, NativeBase } from 'native-base';
-import { IDataWedgeIntent } from '../DataWedge/DataWedgeProperties';
-import dataWedgeService from '../services/DataWedgeService';
-import styles from '../_shared/Styles';
+import { IDataWedgeIntent } from '../../DataWedge/DataWedgeProperties';
+import dataWedgeService from '../../services/DataWedgeService';
+import styles from '../../_shared/Styles';
 
 export interface ScannerProps extends NativeBase.View {
     tip: string;

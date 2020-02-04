@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, ListItem, Body, Left, Right, Button, Icon } from 'native-base';
-import { Parcel } from '../../models/Parcel';
+import { Parcel } from '../../../models/Parcel';
 import ParcelIcon from './ParcelIcon';
 export interface ParcelListItemProps {
     parcel: Parcel;

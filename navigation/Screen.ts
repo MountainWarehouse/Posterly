@@ -1,9 +1,9 @@
 enum Screen {
-    Home = 'Parcel',
+    Home = 'Home',
     RecipientSelection = 'RecipientSelection',
     RecipientForm = 'RecipientForm',
     Shelf = 'Shelf',
-    Summary = 'Summary',
+    CheckIn = 'CheckIn',
     CheckOut = 'CheckOut',
     Preferences = 'Preferences',
     ParcelBrowser = 'ParcelBrowser',

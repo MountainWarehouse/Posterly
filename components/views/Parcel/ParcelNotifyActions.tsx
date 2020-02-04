@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, Icon, Button, View, Toast, Badge } from 'native-base';
-import { Parcel } from '../../models/Parcel';
+import { Parcel } from '../../../models/Parcel';
 import { StyleSheet, ViewStyle } from 'react-native';
 
 export interface ParcelNotifyActionsProps {

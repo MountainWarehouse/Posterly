@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Content, Text, Icon, Item, Input, NativeBase, Spinner, Picker, Button, View } from 'native-base';
+import { Content, Text, Icon, Item, Input, Spinner, Picker, Button, View } from 'native-base';
 import { Parcel } from '../../models/Parcel';
-import ParcelIcon from './ParcelIcon';
-import realm from '../../database/Realm';
-import ParcelsList from './ParcelsList';
+import ParcelIcon from '../views/Parcel/ParcelIcon';
+import ParcelsList from '../views/Parcel/ParcelsList';
+import ParcelNotifyActions from '../views/Parcel/ParcelNotifyActions';
 import * as dateUtil from '../../utils/DateUtil';
 import * as emailService from '../../services/EmailService';
-import ParcelNotifyActions from './ParcelNotifyActions';
+import realm from '../../database/Realm';
+import { NavigationStackScreenComponent } from 'react-navigation-stack';
+import Screen from '../../navigation/Screen';
+import Loading from '../views/Loading';
 
 enum Show {
     All,
@@ -14,13 +17,12 @@ enum Show {
     Out
 }
 
-export interface ParcelBrowserProps extends NativeBase.View {
+export interface ParcelBrowserParams {
     search: string;
-    onSelectParcel: (parcel: Parcel) => void;
 }
 
-const ParcelBrowser: React.SFC<ParcelBrowserProps> = ({ search: propsSearch, onSelectParcel, ...rest }) => {
-    const [search, setSearch] = useState(propsSearch);
+const ParcelBrowser: NavigationStackScreenComponent<ParcelBrowserParams> = ({ navigation }) => {
+    const search = navigation.getParam('search', '');
     const [isLoading, setIsLoading] = useState(true);
     const [parcels, setParcels] = useState([] as Parcel[]);
     const [show, setShow] = useState(Show.All);
@@ -33,10 +35,10 @@ const ParcelBrowser: React.SFC<ParcelBrowserProps> = ({ search: propsSearch, onS
         });
     }, []);
 
-    const handleNotify = async (parcels: Parcel[]) => {
-        await emailService.sendParcelsNotification(parcels);
-        parcels.forEach(parcel => parcel.notificationCount++);
-        await realm.updateParcels(parcels);
+    const handleNotify = async (parcelsToNotify: Parcel[]) => {
+        await emailService.sendParcelsNotification(parcelsToNotify);
+        parcelsToNotify.forEach(parcel => parcel.notificationCount++);
+        await realm.updateParcels(parcelsToNotify);
         setParcels([...parcels]);
     };
 
@@ -59,10 +61,10 @@ const ParcelBrowser: React.SFC<ParcelBrowserProps> = ({ search: propsSearch, onS
     const notifyActions = (parcels: Parcel[]) => <ParcelNotifyActions parcels={parcels} onNotify={handleNotify} />;
 
     return (
-        <View {...rest}>
+        <View padder style={{ flex: 1 }}>
             <Item>
                 <Icon name="md-search" type="Ionicons" />
-                <Input placeholder="Search" onChangeText={setSearch} value={search} />
+                <Input placeholder="Search" onChangeText={search => navigation.setParams({ search })} value={search} />
             </Item>
             <Item>
                 {show === Show.All ? (
@@ -83,11 +85,13 @@ const ParcelBrowser: React.SFC<ParcelBrowserProps> = ({ search: propsSearch, onS
                 </Content>
             </Item>
             {isLoading ? (
-                <Spinner color="blue" />
+                <Loading text="Loading parcels..." />
             ) : (
                 <ParcelsList
                     parcels={filteredParcels}
-                    onSelectParcel={onSelectParcel}
+                    onSelectParcel={parcel =>
+                        navigation.navigate(parcel.checkOutPerson ? Screen.ParcelInfo : Screen.CheckOut, { parcel })
+                    }
                     expanded={!groupByRecipient ? 0 : undefined}
                     onNotify={parcel => handleNotify([parcel])}
                     groupByKeyGetter={parcel =>
@@ -107,5 +111,7 @@ const ParcelBrowser: React.SFC<ParcelBrowserProps> = ({ search: propsSearch, onS
         </View>
     );
 };
+
+ParcelBrowser.navigationOptions = { title: 'Browse Parcels' };
 
 export default ParcelBrowser;

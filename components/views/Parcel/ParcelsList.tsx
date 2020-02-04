@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { Parcel } from '../../models/Parcel';
-import * as arrayUtil from '../../utils/ArrayUtil';
+import { Parcel } from '../../../models/Parcel';
+import * as arrayUtil from '../../../utils/ArrayUtil';
 import { Accordion, Text, View, Card, CardItem, Icon, Left, Right } from 'native-base';
 import ParcelListItem from './ParcelListItem';
 
