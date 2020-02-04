@@ -1,22 +1,25 @@
 import React, { useState } from 'react';
-import { Button, View, Form, Text, Toast, NativeBase } from 'native-base';
-import { Recipient } from '../models/Recipient';
+import { Button, View, Form, Text, Toast } from 'native-base';
+import { Recipient } from '../../models/Recipient';
 import { TextField } from 'react-native-material-textfield';
 import Joi from 'joi';
-import styles from '../_shared/Styles';
-import realm from '../database/Realm';
+import styles from '../../_shared/Styles';
+import realm from '../../database/Realm';
+import { NavigationStackScreenComponent } from 'react-navigation-stack';
 
-export interface RecipientFormProps extends NativeBase.View {
-    onRecipientSaved: (recipient: Recipient) => void;
+export interface RecipientFormParams {
     recipients: Recipient[];
     recipient: Recipient;
+    onRecipientSaved: (recipient: Recipient) => void;
 }
 
-const RecipientForm: React.SFC<RecipientFormProps> = ({ onRecipientSaved, recipients, recipient, ...rest }) => {
+const RecipientForm: NavigationStackScreenComponent<RecipientFormParams> = ({ navigation }) => {
+    const recipient = navigation.getParam('recipient');
+    const onRecipientSaved = navigation.getParam('onRecipientSaved');
     const [data, setData]: [Recipient, (data: Recipient) => void] = useState({ ...recipient });
     const [errors, setErrors]: [any, (errors: any) => void] = useState({});
 
-    const otherRecipients = recipients.filter(r => r.id !== recipient.id);
+    const otherRecipients = navigation.getParam('recipients', []).filter(r => r.id !== recipient.id);
     const schema: any = {
         name: Joi.string()
             .required()
@@ -58,10 +61,10 @@ const RecipientForm: React.SFC<RecipientFormProps> = ({ onRecipientSaved, recipi
 
         if (errors) return setErrors(errors);
 
-        const submittedRecipient = recipient.id
+        const submittedRecipient = data.id
             ? await realm.updateRecipient(data)
             : await realm.createRecipient(data.name, data.email);
-        Toast.show({ text: `Recipient ${data.name} saved!` });
+        Toast.show({ text: `Recipient ${data.name} saved.` });
         onRecipientSaved(submittedRecipient);
     };
 
@@ -93,7 +96,7 @@ const RecipientForm: React.SFC<RecipientFormProps> = ({ onRecipientSaved, recipi
     const disabled = !isChanged || !isValid;
 
     return (
-        <View {...rest}>
+        <View padder>
             <Form>
                 <TextField
                     label="Name"
@@ -117,5 +120,9 @@ const RecipientForm: React.SFC<RecipientFormProps> = ({ onRecipientSaved, recipi
         </View>
     );
 };
+
+RecipientForm.navigationOptions = ({ navigation }) => ({
+    title: navigation.getParam('recipient', {} as Recipient).id ? 'Edit Recipient' : 'Create New Recipient'
+});
 
 export default RecipientForm;

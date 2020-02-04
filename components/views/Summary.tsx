@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, NativeBase } from 'native-base';
-import { Parcel } from '../models/Parcel';
+import { Parcel } from '../../models/Parcel';
 import { TextField } from 'react-native-material-textfield';
 
 export interface SummaryProps extends NativeBase.View {
