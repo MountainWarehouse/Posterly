@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, H3, Text, List, ListItem, Icon, Body, Item, Input, View, Fab } from 'native-base';
+import { Button, H3, Text, List, ListItem, Icon, Body, Item, Input, View, Fab, Right } from 'native-base';
 import { Recipient } from '../../models/Recipient';
 import { NavigationStackScreenComponent } from 'react-navigation-stack';
 import { Parcel } from '../../models/Parcel';
@@ -63,11 +63,13 @@ const RecipientSelection: NavigationStackScreenComponent<RecipientSelectionParam
                             <ListItem icon onPress={() => handleSelectRecipient(recipient)}>
                                 <Body>
                                     <Text>{recipient.name}</Text>
-                                    <Text style={{ fontSize: 12, fontStyle: 'italic' }}>{recipient.email}</Text>
+                                    <Text note>{recipient.email}</Text>
                                 </Body>
-                                <Button transparent onPress={() => handleCreateOrEditRecipient(recipient)}>
-                                    <Icon name="md-create" type="Ionicons" />
-                                </Button>
+                                <Right>
+                                    <Button transparent onPress={() => handleCreateOrEditRecipient(recipient)}>
+                                        <Icon name="md-create" type="Ionicons" />
+                                    </Button>
+                                </Right>
                             </ListItem>
                         )}
                     />
