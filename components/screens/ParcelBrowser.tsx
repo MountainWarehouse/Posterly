@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Content, Text, Icon, Item, Input, Spinner, Picker, Button, View } from 'native-base';
+import { Content, Text, Icon, Item, Input, Picker, Button, View, Container, Header } from 'native-base';
 import { Parcel } from '../../models/Parcel';
 import ParcelIcon from '../views/Parcel/ParcelIcon';
 import ParcelsList from '../views/Parcel/ParcelsList';
@@ -10,6 +10,7 @@ import realm from '../../database/Realm';
 import { NavigationStackScreenComponent } from 'react-navigation-stack';
 import Screen from '../../navigation/Screen';
 import Loading from '../views/Loading';
+import Search from '../Search';
 
 enum Show {
     All,
@@ -63,10 +64,6 @@ const ParcelBrowser: NavigationStackScreenComponent<ParcelBrowserParams> = ({ na
     return (
         <View padder style={{ flex: 1 }}>
             <Item>
-                <Icon name="md-search" type="Ionicons" />
-                <Input placeholder="Search" onChangeText={search => navigation.setParams({ search })} value={search} />
-            </Item>
-            <Item>
                 {show === Show.All ? (
                     <Icon name="package-variant-closed" style={{ color: 'lightgrey' }} type="MaterialCommunityIcons" />
                 ) : (
@@ -112,6 +109,10 @@ const ParcelBrowser: NavigationStackScreenComponent<ParcelBrowserParams> = ({ na
     );
 };
 
-ParcelBrowser.navigationOptions = { title: 'Browse Parcels' };
+ParcelBrowser.navigationOptions = ({ navigation }) => ({
+    headerTitle: (
+        <Search onSearch={search => navigation.setParams({ search })} value={navigation.getParam('search', '')} />
+    )
+});
 
 export default ParcelBrowser;
