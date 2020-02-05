@@ -20,7 +20,7 @@ const CheckIn: NavigationStackScreenComponent<ParcelInfoParams> = ({ navigation 
 
 CheckIn.navigationOptions = ({ navigation }) => ({
     headerLeft: <HeaderCancelButton onPress={() => navigation.navigate(Screen.Home)} />,
-    headerTitle: <Text>Check In Summary</Text>,
+    headerTitle: <Text>Check In</Text>,
     headerRight: () => {
         const handleCheckIn = async (notify: boolean) => {
             const parcel = { ...navigation.getParam('parcel') };
@@ -32,10 +32,10 @@ CheckIn.navigationOptions = ({ navigation }) => ({
                 parcel.notificationCount++;
                 await realm.updateParcel(parcel);
             } else {
-                Toast.show({ text: 'Parcel has been checked in.' });
             }
 
             navigation.navigate(Screen.Home);
+            Toast.show({ text: 'Parcel has been checked in', duration: 1000 });
         };
         return (
             <Grid>
