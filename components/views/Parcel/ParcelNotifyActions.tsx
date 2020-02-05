@@ -18,19 +18,23 @@ const ParcelNotifyActions: React.SFC<ParcelNotifyActionsProps> = ({ parcels, onN
 
     return (
         <View style={{ flexDirection: 'row' }}>
-            <Button
-                small
-                info
-                rounded
-                onPress={() => onNotify(awaitingParcels)}
-                onLongPress={() => Toast.show({ text: 'Send a notification about all awaiting parcels' })}
-            >
-                <Icon name="md-mail" />
-                <Badge success style={allNotificationsBadge}>
-                    <Text style={styles.iconBadgeText}>{awaitingParcels.length}</Text>
-                </Badge>
-            </Button>
-            <Text> </Text>
+            {awaitingParcels.length > unnotifiedParcels.length && (
+                <React.Fragment>
+                    <Button
+                        small
+                        info
+                        rounded
+                        onPress={() => onNotify(awaitingParcels)}
+                        onLongPress={() => Toast.show({ text: 'Send a notification about all awaiting parcels' })}
+                    >
+                        <Icon name="md-mail" />
+                        <Badge style={allNotificationsBadge}>
+                            <Text style={styles.iconBadgeText}>{awaitingParcels.length}</Text>
+                        </Badge>
+                    </Button>
+                    <Text> </Text>
+                </React.Fragment>
+            )}
             {unnotifiedParcels.length > 0 && (
                 <Button
                     small
