@@ -29,7 +29,6 @@ const Home: NavigationStackScreenComponent = ({ navigation }) => {
             }
         };
         const params: ParcelInfoParams = { parcel };
-        //TODO: Create extension method to allow Params type check?
         return navigation.navigate(Screen.RecipientSelection, params);
     };
 
