@@ -58,7 +58,9 @@ const RecipientSelection: NavigationStackScreenComponent<RecipientSelectionParam
                     <ListItem icon onPress={() => handleSelectRecipient(recipient)}>
                         <Body>
                             <Text>{recipient.name}</Text>
-                            <Text note>{recipient.email}</Text>
+                            <Text note style={{ fontSize: 12 }}>
+                                {recipient.email}
+                            </Text>
                         </Body>
                         <Right>
                             <Button transparent onPress={() => handleCreateOrEditRecipient(recipient)}>
