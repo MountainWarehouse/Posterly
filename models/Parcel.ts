@@ -1,8 +1,9 @@
-import { Recipient } from './Recipient';
+import { DisplayContact } from './DisplayContact';
 
 export interface Parcel {
     barcode: string;
-    recipient: Recipient;
+    recipientRecordID: string;
+    recipient?: DisplayContact;
     checkInDate: Date;
     shelfBarcode?: string;
     checkOutDate?: Date;
@@ -15,7 +16,7 @@ export const parcelSchema = {
     primaryKey: 'barcode',
     properties: {
         barcode: { type: 'string', indexed: true },
-        recipient: 'Recipient',
+        recipientRecordID: 'string',
         checkInDate: 'date',
         shelfBarcode: 'string?',
         checkOutDate: 'date?',

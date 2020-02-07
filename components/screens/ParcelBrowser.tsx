@@ -6,7 +6,7 @@ import ParcelsList from '../views/Parcel/ParcelsList';
 import ParcelNotifyActions from '../views/Parcel/ParcelNotifyActions';
 import * as dateUtil from '../../utils/DateUtil';
 import * as emailService from '../../services/EmailService';
-import realm from '../../database/Realm';
+import db from '../../database/Db';
 import { NavigationStackScreenComponent } from 'react-navigation-stack';
 import Screen from '../../navigation/Screen';
 import Loading from '../views/Loading';
@@ -30,7 +30,7 @@ const ParcelBrowser: NavigationStackScreenComponent<ParcelBrowserParams> = ({ na
     const [groupByRecipient, setGroupByRecipient] = useState(false);
 
     useEffect(() => {
-        realm.getAllParcels().then(parcels => {
+        db.getAllParcels().then(parcels => {
             setParcels(parcels);
             setIsLoading(false);
         });
@@ -39,7 +39,7 @@ const ParcelBrowser: NavigationStackScreenComponent<ParcelBrowserParams> = ({ na
     const handleNotify = async (parcelsToNotify: Parcel[]) => {
         await emailService.sendParcelsNotification(parcelsToNotify);
         parcelsToNotify.forEach(parcel => parcel.notificationCount++);
-        await realm.updateParcels(parcelsToNotify);
+        await db.updateParcels(parcelsToNotify);
         setParcels([...parcels]);
     };
 
@@ -54,7 +54,8 @@ const ParcelBrowser: NavigationStackScreenComponent<ParcelBrowserParams> = ({ na
             (show === Show.In && !isCheckedOut(parcel));
         const searchResult =
             parcel.barcode.toLowerCase().includes(lowerSearch) ||
-            parcel.recipient.name.toLocaleLowerCase().includes(lowerSearch);
+            parcel.recipient?.displayName.toLowerCase().includes(lowerSearch) ||
+            parcel.checkOutPerson?.toLowerCase().includes(lowerSearch);
 
         return shouldBeShown && searchResult;
     });
@@ -92,11 +93,11 @@ const ParcelBrowser: NavigationStackScreenComponent<ParcelBrowserParams> = ({ na
                     expanded={!groupByRecipient ? 0 : undefined}
                     onNotify={parcel => handleNotify([parcel])}
                     groupByKeyGetter={parcel =>
-                        groupByRecipient ? parcel.recipient.name : dateUtil.getDateString(parcel.checkInDate)
+                        groupByRecipient ? parcel.recipient?.displayName : dateUtil.getDateString(parcel.checkInDate)
                     }
                     groupByTitleGetter={key => (groupByRecipient ? key : dateUtil.formatDate(new Date(key)))}
                     thenByKeyGetter={parcel =>
-                        groupByRecipient ? dateUtil.getDateString(parcel.checkInDate) : parcel.recipient.name
+                        groupByRecipient ? dateUtil.getDateString(parcel.checkInDate) : parcel.recipient?.displayName
                     }
                     thenByTitleGetter={key => (groupByRecipient ? dateUtil.formatDate(new Date(key)) : key)}
                     reverseSort={!groupByRecipient}

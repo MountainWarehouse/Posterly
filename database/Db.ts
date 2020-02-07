@@ -1,9 +1,12 @@
 import Realm from 'realm';
 import Config from 'react-native-config';
-import { Recipient, recipientSchema } from '../models/Recipient';
 import { Parcel, parcelSchema } from '../models/Parcel';
+import Contacts from 'react-native-contacts';
+import { PermissionsAndroid, Alert, Permission } from 'react-native';
+import { DisplayContact, toDisplayContact } from '../models/DisplayContact';
+import { sortArray } from '../utils/ArrayUtil';
 
-class RealmWrapper {
+class DbManager {
     private realm?: Realm;
     private user?: Realm.Sync.User;
 
@@ -11,7 +14,7 @@ class RealmWrapper {
         const credentials = Realm.Sync.Credentials.usernamePassword(Config.REALM_USER, Config.REALM_PASS, false);
         const user = await Realm.Sync.User.login(`https://${Config.REALM_INSTANCE}`, credentials);
         const config = user.createConfiguration({
-            schema: [recipientSchema, parcelSchema],
+            schema: [parcelSchema],
             path: Config.REALM_NAME,
             sync: {
                 url: `realms://${Config.REALM_INSTANCE}/${Config.REALM_NAME}`,
@@ -34,20 +37,32 @@ class RealmWrapper {
         this.realm = undefined;
     }
 
-    public async getAllRecipients(): Promise<Recipient[]> {
-        const realm = await this.getRealm();
-        return realm
-            .objects<Recipient>(recipientSchema.name)
-            .sorted('name')
-            .map(this.extract);
+    public getAllContacts(): Promise<DisplayContact[]> {
+        return this.useContacts(PermissionsAndroid.PERMISSIONS.READ_CONTACTS, resolve => {
+            Contacts.getAll((err, contacts) => {
+                if (err) throw err;
+                const displayContacts = contacts.map(toDisplayContact);
+                sortArray(displayContacts, c => c.displayName);
+                resolve(displayContacts);
+            });
+        });
     }
 
     public async getAllParcels(): Promise<Parcel[]> {
         const realm = await this.getRealm();
+        const contacts = await this.getAllContacts();
+
         return realm
             .objects<Parcel>(parcelSchema.name)
             .sorted('checkInDate', true)
-            .map(this.extract);
+            .map(pObj => {
+                const parcel = this.extract(pObj);
+                const recipient = contacts.find(c => c.recordID === parcel.recipientRecordID);
+                parcel.recipient = recipient
+                    ? recipient
+                    : ({ recordID: '', displayName: '', emailsText: '' } as DisplayContact);
+                return parcel;
+            });
     }
 
     public async findParcel(barcode: string): Promise<Parcel | null> {
@@ -55,41 +70,6 @@ class RealmWrapper {
         const parcel = realm.objectForPrimaryKey<Parcel>(parcelSchema.name, barcode);
 
         return parcel ? this.extract<Parcel>(parcel) : null;
-    }
-
-    public async createRecipient(name: string, email: string): Promise<Recipient> {
-        const realm = await this.getRealm();
-
-        const lastId = realm.objects(recipientSchema.name).max('id') as number | undefined;
-        const recipient: Recipient = {
-            id: lastId ? lastId + 1 : 1,
-            name,
-            email
-        };
-
-        realm.write(() => realm.create(recipientSchema.name, recipient));
-
-        return recipient;
-    }
-
-    public async updateRecipient(recipient: Recipient): Promise<Recipient> {
-        const realm = await this.getRealm();
-
-        realm.write(() => realm.create(recipientSchema.name, recipient, true));
-
-        return recipient;
-    }
-
-    public async deleteRecipient(id: number): Promise<void> {
-        const realm = await this.getRealm();
-
-        const recipient = realm.objectForPrimaryKey(recipientSchema.name, id);
-
-        if (!recipient) {
-            throw Error(`Cannot delete recipient, id '${id}' not found.`);
-        }
-
-        realm.write(() => realm.delete(recipient));
     }
 
     public async createParcel(parcel: Parcel): Promise<Parcel> {
@@ -135,8 +115,26 @@ class RealmWrapper {
     private async getRealm(): Promise<Realm> {
         return this.realm ? this.realm : this.open();
     }
+
+    private async useContacts<T>(
+        requiredPermission: Permission,
+        executor: (resolve: (value?: T | PromiseLike<T> | undefined) => void, reject: (reason?: any) => void) => void
+    ): Promise<T> {
+        try {
+            PermissionsAndroid.PERMISSIONS;
+            const permissionStatus = await PermissionsAndroid.request(requiredPermission);
+            if (permissionStatus !== PermissionsAndroid.RESULTS.GRANTED) {
+                Alert.alert('You need to give requested permission in order to use this feature.');
+                throw Error(`Permission denied: ${requiredPermission}`);
+            } else {
+                return new Promise(executor);
+            }
+        } catch (error) {
+            throw Error(`Permissions error.\n${error}`);
+        }
+    }
 }
 
-const realm = new RealmWrapper();
+const db = new DbManager();
 
-export default realm;
+export default db;

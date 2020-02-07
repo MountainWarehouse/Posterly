@@ -5,7 +5,7 @@ import { ParcelInfoParams } from './ParcelInfo';
 import ParcelView from '../views/Parcel/ParcelView';
 import HeaderCancelButton from '../HeaderCancelButton';
 import Screen from '../../navigation/Screen';
-import realm from '../../database/Realm';
+import db from '../../database/Db';
 import * as emailService from '../../services/EmailService';
 
 const CheckIn: NavigationStackScreenComponent<ParcelInfoParams> = ({ navigation }) => {
@@ -25,12 +25,12 @@ CheckIn.navigationOptions = ({ navigation }) => ({
         const handleCheckIn = async (notify: boolean) => {
             const parcel = { ...navigation.getParam('parcel') };
             parcel.checkInDate = new Date();
-            await realm.createParcel(parcel);
+            await db.createParcel(parcel);
 
             if (notify) {
                 await emailService.sendParcelNotification(parcel);
                 parcel.notificationCount++;
-                await realm.updateParcel(parcel);
+                await db.updateParcel(parcel);
             } else {
             }
 
