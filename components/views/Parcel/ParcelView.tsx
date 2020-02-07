@@ -21,7 +21,20 @@ const ParcelView: React.SFC<ParcelViewProps> = ({ parcel, checkIn, onChangeCheck
             {parcel.shelfBarcode && <TextField label="Shelf No" value={parcel.shelfBarcode} editable={false} />}
             {!checkIn && (
                 <React.Fragment>
-                    {/* //TODO: Notifications sent? */}
+                    {onChangeCheckoutPerson && (
+                        <TextField
+                            label="Notification sent"
+                            value={
+                                parcel.notificationCount === 1
+                                    ? 'Yes'
+                                    : parcel.notificationCount > 1
+                                    ? 'More than once'
+                                    : 'No'
+                            }
+                            editable={false}
+                        />
+                    )}
+
                     {parcel.checkOutDate && (
                         <TextField
                             label="Checked Out"
