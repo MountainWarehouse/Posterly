@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { DeviceEventEmitter } from 'react-native';
+import { DeviceEventEmitter, Alert } from 'react-native';
 import { View, Button, Text, NativeBase } from 'native-base';
 import { IDataWedgeIntent } from '../../DataWedge/DataWedgeProperties';
 import dataWedgeService from '../../services/DataWedgeService';
@@ -16,6 +16,8 @@ const Scanner: React.SFC<ScannerProps> = ({ tip, onScan, ...rest }) => {
             const scannedData = intent['com.symbol.datawedge.data_string'];
             if (scannedData) {
                 onScan(scannedData);
+            } else if (intent['com.symbol.datawedge.label_type'] === 'Unknown') {
+                Alert.alert('Unknown barcode', 'Unknown barcode type. Please scan different barcode.');
             }
         }
     };

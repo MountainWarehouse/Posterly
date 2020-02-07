@@ -13,7 +13,9 @@ const ParcelView: React.SFC<ParcelViewProps> = ({ parcel, checkIn, onChangeCheck
     return (
         <View>
             <TextField label="Parcel No" value={parcel.barcode} editable={false} />
-            <TextField label="Checked In" value={parcel.checkInDate.toLocaleDateString()} editable={false} />
+            {!checkIn && (
+                <TextField label="Checked In" value={parcel.checkInDate.toLocaleDateString()} editable={false} />
+            )}
             <TextField label="Recipient Name" value={parcel.recipient.name} editable={false} />
             <TextField label="Recipient Email" value={parcel.recipient.email} editable={false} />
             {parcel.shelfBarcode && <TextField label="Shelf No" value={parcel.shelfBarcode} editable={false} />}

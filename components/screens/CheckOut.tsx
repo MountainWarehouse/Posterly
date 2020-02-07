@@ -28,7 +28,7 @@ const CheckOut: NavigationStackScreenComponent<ParcelInfoParams> = ({ navigation
 
 CheckOut.navigationOptions = ({ navigation }) => ({
     headerLeft: <HeaderCancelButton onPress={() => navigation.navigate(Screen.Home)} />,
-    headerTitle: <Text>Check Out Parcel</Text>,
+    headerTitle: <Text>Check Out</Text>,
     headerRight: () => {
         const parcel = { ...navigation.getParam('parcel') };
 
@@ -74,7 +74,7 @@ CheckOut.navigationOptions = ({ navigation }) => ({
 
             parcel.checkOutDate = new Date();
             await realm.updateParcel(parcel);
-            Toast.show({ text: 'Parcel has been checked out.' });
+            Toast.show({ text: 'Parcel has been checked out', duration: 1000 });
             navigation.navigate(Screen.Home);
         };
 

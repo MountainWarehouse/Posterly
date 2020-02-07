@@ -12,7 +12,6 @@ import Preferences from '../components/screens/Preferences';
 import ParcelBrowser from '../components/screens/ParcelBrowser';
 import ParcelInfo from '../components/screens/ParcelInfo';
 import About from '../components/screens/About';
-//TODO: Remove if unnecessary
 import { Button, Icon, Text } from 'native-base';
 import { Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
 import styles from '../_shared/Styles';
