@@ -52,7 +52,7 @@ const RecipientSelection: NavigationStackScreenComponent<RecipientSelectionParam
     };
 
     const handleSelectContact = async (contact: Contact) => {
-        const parcel = { ...navigation.getParam('parcel') };
+        const parcel = navigation.getParam('parcel');
         parcel.recipientRecordID = contact.recordID;
         parcel.recipient = toDisplayContact(contact);
 

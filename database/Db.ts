@@ -48,6 +48,15 @@ class DbManager {
         });
     }
 
+    public getContactById(recordID: string): Promise<DisplayContact | undefined> {
+        return this.useContacts(PermissionsAndroid.PERMISSIONS.READ_CONTACTS, resolve => {
+            Contacts.getContactById(recordID, (err, contact) => {
+                if (err) throw err;
+                resolve(contact ? toDisplayContact(contact) : undefined);
+            });
+        });
+    }
+
     public async getAllParcels(): Promise<Parcel[]> {
         const realm = await this.getRealm();
         const contacts = await this.getAllContacts();
@@ -55,21 +64,18 @@ class DbManager {
         return realm
             .objects<Parcel>(parcelSchema.name)
             .sorted('checkInDate', true)
-            .map(pObj => {
-                const parcel = this.extract(pObj);
-                const recipient = contacts.find(c => c.recordID === parcel.recipientRecordID);
-                parcel.recipient = recipient
-                    ? recipient
-                    : ({ recordID: '', displayName: '', emailsText: '' } as DisplayContact);
-                return parcel;
-            });
+            .map(pObj => this.extractParcel(pObj, contacts));
     }
 
-    public async findParcel(barcode: string): Promise<Parcel | null> {
+    public async findParcel(barcode: string): Promise<Parcel | undefined> {
         const realm = await this.getRealm();
         const parcel = realm.objectForPrimaryKey<Parcel>(parcelSchema.name, barcode);
 
-        return parcel ? this.extract<Parcel>(parcel) : null;
+        if (parcel) {
+            parcel.recipient = await this.getContactById(parcel.recipientRecordID);
+        }
+
+        return parcel;
     }
 
     public async createParcel(parcel: Parcel): Promise<Parcel> {
@@ -92,6 +98,19 @@ class DbManager {
         realm.write(() => parcels.forEach(parcel => realm.create(parcelSchema.name, parcel, true)));
     }
 
+    public async restoreRecipient(recordID: string, restoredRecordId: string): Promise<void> {
+        const realm = await this.getRealm();
+
+        const parcels = realm.objects<Parcel>(parcelSchema.name).filter(p => p.recipientRecordID === recordID);
+
+        realm.write(() =>
+            parcels.forEach(parcel => {
+                parcel.recipientRecordID = restoredRecordId;
+                realm.create(parcelSchema.name, parcel, true);
+            })
+        );
+    }
+
     public async deleteParcel(barcode: number): Promise<void> {
         const realm = await this.getRealm();
 
@@ -102,6 +121,12 @@ class DbManager {
         }
 
         realm.write(() => realm.delete(parcel));
+    }
+
+    private extractParcel(obj: Parcel & Realm.Object, contacts: DisplayContact[]) {
+        const parcel = this.extract(obj);
+        parcel.recipient = contacts.find(c => c.recordID === parcel.recipientRecordID);
+        return parcel;
     }
 
     private extract<T>(obj: T & Realm.Object) {

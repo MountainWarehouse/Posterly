@@ -3,6 +3,7 @@ import { NavigationStackScreenComponent } from 'react-navigation-stack';
 import { Parcel } from '../../models/Parcel';
 import { View, Text, Card, CardItem, H3, Body, Button } from 'native-base';
 import ParcelView from '../views/Parcel/ParcelView';
+import ContactService from '../../services/ContactService';
 
 export interface ParcelInfoParams {
     parcel: Parcel;
@@ -10,6 +11,10 @@ export interface ParcelInfoParams {
 
 const ParcelInfo: NavigationStackScreenComponent<ParcelInfoParams> = ({ navigation }) => {
     const parcel = navigation.getParam('parcel');
+
+    if (!parcel.recipient) {
+        ContactService.restoreRecipient(parcel).then(parcel => (parcel ? navigation.setParams({ parcel }) : null));
+    }
     const [showCheckedOutInfo, setShowCheckedOutInfo] = useState(true);
     return (
         <View>

@@ -60,6 +60,10 @@ const ParcelBrowser: NavigationStackScreenComponent<ParcelBrowserParams> = ({ na
         return shouldBeShown && searchResult;
     });
 
+    const getName = ({ recipient, recipientRecordID }: Parcel) =>
+        recipient?.displayName ? recipient?.displayName : `(not found) (${recipientRecordID})`;
+    const getCheckInDate = (parcel: Parcel) => dateUtil.getDateString(parcel.checkInDate);
+
     const notifyActions = (parcels: Parcel[]) => <ParcelNotifyActions parcels={parcels} onNotify={handleNotify} />;
 
     return (
@@ -92,13 +96,9 @@ const ParcelBrowser: NavigationStackScreenComponent<ParcelBrowserParams> = ({ na
                     }
                     expanded={!groupByRecipient ? 0 : undefined}
                     onNotify={parcel => handleNotify([parcel])}
-                    groupByKeyGetter={parcel =>
-                        groupByRecipient ? parcel.recipient?.displayName : dateUtil.getDateString(parcel.checkInDate)
-                    }
+                    groupByKeyGetter={parcel => (groupByRecipient ? getName(parcel) : getCheckInDate(parcel))}
                     groupByTitleGetter={key => (groupByRecipient ? key : dateUtil.formatDate(new Date(key)))}
-                    thenByKeyGetter={parcel =>
-                        groupByRecipient ? dateUtil.getDateString(parcel.checkInDate) : parcel.recipient?.displayName
-                    }
+                    thenByKeyGetter={parcel => (groupByRecipient ? getCheckInDate(parcel) : getName(parcel))}
                     thenByTitleGetter={key => (groupByRecipient ? dateUtil.formatDate(new Date(key)) : key)}
                     reverseSort={!groupByRecipient}
                     thenByReverseSort={groupByRecipient}

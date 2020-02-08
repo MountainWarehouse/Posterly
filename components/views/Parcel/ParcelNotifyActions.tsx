@@ -2,6 +2,7 @@ import React from 'react';
 import { Text, Icon, Button, View, Toast, Badge } from 'native-base';
 import { Parcel } from '../../../models/Parcel';
 import { StyleSheet, ViewStyle } from 'react-native';
+import ContactService from '../../../services/ContactService';
 
 export interface ParcelNotifyActionsProps {
     parcels: Parcel[];
@@ -16,29 +17,46 @@ const ParcelNotifyActions: React.SFC<ParcelNotifyActionsProps> = ({ parcels, onN
     const allNotificationsBadge: ViewStyle = { ...styles.iconBadge };
     allNotificationsBadge.backgroundColor = '#42A5F5';
 
+    const unknownRecipient = parcels.filter(p => p.recipient).length === 0;
+
     return (
         <View style={{ flexDirection: 'row' }}>
+            {unknownRecipient && (
+                <Button
+                    small
+                    dark
+                    bordered
+                    rounded
+                    style={styles.button}
+                    onPress={() => ContactService.restoreRecipient(parcels[0])}
+                    onLongPress={() => Toast.show({ text: 'Restore contact information' })}
+                >
+                    <Icon name="md-person" />
+                    <Badge style={styles.iconBadge}>
+                        <Text style={styles.iconBadgeText}> ! </Text>
+                    </Badge>
+                </Button>
+            )}
             {awaitingParcels.length > unnotifiedParcels.length && (
-                <React.Fragment>
-                    <Button
-                        small
-                        info
-                        rounded
-                        onPress={() => onNotify(awaitingParcels)}
-                        onLongPress={() => Toast.show({ text: 'Send a notification about all awaiting parcels' })}
-                    >
-                        <Icon name="md-mail" />
-                        <Badge style={allNotificationsBadge}>
-                            <Text style={styles.iconBadgeText}>{awaitingParcels.length}</Text>
-                        </Badge>
-                    </Button>
-                    <Text> </Text>
-                </React.Fragment>
+                <Button
+                    small
+                    info
+                    rounded
+                    style={styles.button}
+                    onPress={() => onNotify(awaitingParcels)}
+                    onLongPress={() => Toast.show({ text: 'Send a notification about all awaiting parcels' })}
+                >
+                    <Icon name="md-mail" />
+                    <Badge style={allNotificationsBadge}>
+                        <Text style={styles.iconBadgeText}>{awaitingParcels.length}</Text>
+                    </Badge>
+                </Button>
             )}
             {unnotifiedParcels.length > 0 && (
                 <Button
                     small
                     rounded
+                    style={styles.button}
                     onPress={() => onNotify(unnotifiedParcels)}
                     onLongPress={() => Toast.show({ text: 'Send a notification about new awaiting parcels' })}
                 >
@@ -54,6 +72,9 @@ const ParcelNotifyActions: React.SFC<ParcelNotifyActionsProps> = ({ parcels, onN
 };
 
 const styles = StyleSheet.create({
+    button: {
+        marginLeft: 5
+    },
     iconBadge: {
         position: 'absolute',
         top: -2,

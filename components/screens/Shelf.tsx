@@ -10,7 +10,7 @@ export interface ShelfParams {
 
 const Shelf: NavigationStackScreenComponent<ShelfParams> = ({ navigation }) => {
     const handleScanShelf = (code: string) => {
-        const parcel = { ...navigation.getParam('parcel') };
+        const parcel = navigation.getParam('parcel');
         parcel.shelfBarcode = code;
         navigation.navigate(Screen.CheckIn, { parcel });
     };

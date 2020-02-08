@@ -23,7 +23,7 @@ CheckIn.navigationOptions = ({ navigation }) => ({
     headerTitle: <Text>Check In</Text>,
     headerRight: () => {
         const handleCheckIn = async (notify: boolean) => {
-            const parcel = { ...navigation.getParam('parcel') };
+            const parcel = navigation.getParam('parcel');
             parcel.checkInDate = new Date();
             await db.createParcel(parcel);
 

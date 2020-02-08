@@ -8,14 +8,18 @@ import Screen from '../../navigation/Screen';
 import * as emailService from '../../services/EmailService';
 import db from '../../database/Db';
 import { Alert } from 'react-native';
+import ContactService from '../../services/ContactService';
 
 const CheckOut: NavigationStackScreenComponent<ParcelInfoParams> = ({ navigation }) => {
     const parcel = navigation.getParam('parcel');
 
+    if (!parcel.recipient) {
+        ContactService.restoreRecipient(parcel).then(parcel => (parcel ? navigation.setParams({ parcel }) : null));
+    }
+
     const handleChangeCheckOutPerson = (checkOutPerson: string) => {
-        const updatedParcel = { ...parcel };
-        updatedParcel.checkOutPerson = checkOutPerson;
-        navigation.setParams({ parcel: updatedParcel });
+        parcel.checkOutPerson = checkOutPerson;
+        navigation.setParams({ parcel });
     };
 
     return (
@@ -30,7 +34,7 @@ CheckOut.navigationOptions = ({ navigation }) => ({
     headerLeft: <HeaderCancelButton onPress={() => navigation.navigate(Screen.Home)} />,
     headerTitle: <Text>Check Out</Text>,
     headerRight: () => {
-        const parcel = { ...navigation.getParam('parcel') };
+        const parcel = navigation.getParam('parcel');
 
         const handleCheckOut = () => {
             if (parcel.checkOutPerson === parcel.recipient?.displayName) return checkOutParcel();
