@@ -3,8 +3,7 @@ import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 import Screen from './Screen';
 import Home from '../components/screens/Home';
-import RecipientSelection from '../components/screens/RecipientSelection';
-import RecipientForm from '../components/screens/RecipientForm';
+import ContactSelection from '../components/screens/ContactSelection';
 import Shelf from '../components/screens/Shelf';
 import CheckIn from '../components/screens/CheckIn';
 import CheckOut from '../components/screens/CheckOut';
@@ -19,8 +18,7 @@ import styles from '../_shared/Styles';
 const appNavigator = createStackNavigator(
     {
         [Screen.Home]: Home,
-        [Screen.RecipientSelection]: RecipientSelection,
-        [Screen.RecipientForm]: RecipientForm,
+        [Screen.ContactSelection]: ContactSelection,
         [Screen.Shelf]: Shelf,
         [Screen.CheckIn]: CheckIn,
         [Screen.CheckOut]: CheckOut,

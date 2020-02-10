@@ -1,7 +1,6 @@
 enum Screen {
     Home = 'Home',
-    RecipientSelection = 'RecipientSelection',
-    RecipientForm = 'RecipientForm',
+    ContactSelection = 'ContactSelection',
     Shelf = 'Shelf',
     CheckIn = 'CheckIn',
     CheckOut = 'CheckOut',

@@ -10,14 +10,30 @@ export interface ParcelViewProps {
 }
 
 const ParcelView: React.SFC<ParcelViewProps> = ({ parcel, checkIn, onChangeCheckoutPerson }) => {
+    const { recipient } = parcel;
+    const recipientPlaceholder = !recipient ? '(not found)' : undefined;
+
     return (
         <View>
             <TextField label="Parcel No" value={parcel.barcode} editable={false} />
             {!checkIn && (
                 <TextField label="Checked In" value={parcel.checkInDate.toLocaleDateString()} editable={false} />
             )}
-            <TextField label="Recipient Name" value={parcel.recipient.name} editable={false} />
-            <TextField label="Recipient Email" value={parcel.recipient.email} editable={false} />
+
+            <TextField
+                label="Recipient Name"
+                value={recipient?.displayName}
+                defaultValue={recipient?.displayName}
+                editable={false}
+                placeholder={recipientPlaceholder}
+            />
+            <TextField
+                label="Recipient Email"
+                value={recipient?.emailsText}
+                defaultValue={recipient?.emailsText}
+                editable={false}
+                placeholder={recipientPlaceholder}
+            />
             {parcel.shelfBarcode && <TextField label="Shelf No" value={parcel.shelfBarcode} editable={false} />}
             {!checkIn && (
                 <React.Fragment>

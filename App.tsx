@@ -2,15 +2,15 @@ import 'react-native-gesture-handler';
 import React, { useEffect } from 'react';
 import { Root } from 'native-base';
 import { MenuProvider } from 'react-native-popup-menu';
-import realm from './database/Realm';
+import db from './database/Db';
 import AppNavigationContainer from './navigation/AppNavigationContainer';
 
 const App: React.SFC = () => {
     useEffect(() => {
-        realm.open();
+        db.open();
 
         return () => {
-            realm.close();
+            db.close();
         };
     }, []);
 

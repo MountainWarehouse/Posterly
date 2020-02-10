@@ -1,7 +1,7 @@
 import { Linking } from 'react-native';
 import { Parcel } from '../models/Parcel';
 
-export function sendEmail(email: string, subject: string, body: string): Promise<any> {
+export function sendEmail(email: string | undefined, subject: string, body: string): Promise<any> {
     let url = `mailto:${email}?subject=${subject}&body=${body}`;
     // check if we can use this link
     const canOpen = Linking.canOpenURL(url);
@@ -18,11 +18,11 @@ export function sendParcelNotification(parcel: Parcel): Promise<any> {
     const subject = `${asReminder ? '[REMINDER] ' : ''}Your parcel is${asReminder ? ' still' : ''} waiting for you!`;
     const shelfInfo = parcel.shelfBarcode ? `Look it by the shelf no: ${parcel.shelfBarcode}.\n` : '';
     const body =
-        `Hello ${parcel.recipient.name},\n` +
+        `Hello ${parcel.recipient?.displayName},\n` +
         `Your parcel no: ${parcel.barcode} is${asReminder ? ' still' : ''} waiting in reception.\n` +
         shelfInfo +
         '\nHave a great day!';
-    return sendEmail(parcel.recipient.email, subject, body);
+    return sendEmail(parcel.recipient?.emailsText, subject, body);
 }
 
 export function sendParcelsNotification(parcels: Parcel[]): Promise<any> {
@@ -32,7 +32,7 @@ export function sendParcelsNotification(parcels: Parcel[]): Promise<any> {
 
     const { recipient } = parcels[0];
 
-    if (parcels.filter(p => p.recipient.email !== parcels[0].recipient.email).length > 0) {
+    if (parcels.filter(p => p.recipient?.emailsText !== parcels[0].recipient?.emailsText).length > 0) {
         throw Error('Cannot send a notification to multiple recipients.');
     }
 
@@ -53,7 +53,7 @@ export function sendParcelsNotification(parcels: Parcel[]): Promise<any> {
               parcels[0].shelfBarcode ? `\nLook it by the shelf no: ${parcels[0].shelfBarcode}.` : ''
           }\n`;
 
-    const body = `Hello ${recipient.name},\n\n${awaitingHeader} in reception:\n${parcelInfo}\nHave a great day!`;
+    const body = `Hello ${recipient?.displayName},\n\n${awaitingHeader} in reception:\n${parcelInfo}\nHave a great day!`;
 
-    return sendEmail(recipient.email, subject, body);
+    return sendEmail(recipient?.emailsText, subject, body);
 }

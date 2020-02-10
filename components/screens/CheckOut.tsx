@@ -6,16 +6,20 @@ import { NavigationStackScreenComponent } from 'react-navigation-stack';
 import HeaderCancelButton from '../HeaderCancelButton';
 import Screen from '../../navigation/Screen';
 import * as emailService from '../../services/EmailService';
-import realm from '../../database/Realm';
+import db from '../../database/Db';
 import { Alert } from 'react-native';
+import ContactService from '../../services/ContactService';
 
 const CheckOut: NavigationStackScreenComponent<ParcelInfoParams> = ({ navigation }) => {
     const parcel = navigation.getParam('parcel');
 
+    if (!parcel.recipient) {
+        ContactService.restoreRecipient(parcel).then(parcel => (parcel ? navigation.setParams({ parcel }) : null));
+    }
+
     const handleChangeCheckOutPerson = (checkOutPerson: string) => {
-        const updatedParcel = { ...parcel };
-        updatedParcel.checkOutPerson = checkOutPerson;
-        navigation.setParams({ parcel: updatedParcel });
+        parcel.checkOutPerson = checkOutPerson;
+        navigation.setParams({ parcel });
     };
 
     return (
@@ -30,10 +34,10 @@ CheckOut.navigationOptions = ({ navigation }) => ({
     headerLeft: <HeaderCancelButton onPress={() => navigation.navigate(Screen.Home)} />,
     headerTitle: <Text>Check Out</Text>,
     headerRight: () => {
-        const parcel = { ...navigation.getParam('parcel') };
+        const parcel = navigation.getParam('parcel');
 
         const handleCheckOut = () => {
-            if (parcel.checkOutPerson === parcel.recipient.name) return checkOutParcel();
+            if (parcel.checkOutPerson === parcel.recipient?.displayName) return checkOutParcel();
 
             Alert.alert(
                 'Notify?',
@@ -52,10 +56,14 @@ CheckOut.navigationOptions = ({ navigation }) => ({
                         text: 'Yes',
                         onPress: () => {
                             const body =
-                                `Hello ${parcel.recipient.name},\n` +
+                                `Hello ${parcel.recipient?.displayName},\n` +
                                 `Your parcel no: ${parcel.barcode} has been checked out by ${parcel.checkOutPerson}.\n\n` +
                                 'Have a great day!';
-                            emailService.sendEmail(parcel.recipient.email, 'Your parcel has been checked out', body);
+                            emailService.sendEmail(
+                                parcel.recipient?.emailsText,
+                                'Your parcel has been checked out',
+                                body
+                            );
                             checkOutParcel();
                         }
                     }
@@ -73,7 +81,7 @@ CheckOut.navigationOptions = ({ navigation }) => ({
             }
 
             parcel.checkOutDate = new Date();
-            await realm.updateParcel(parcel);
+            await db.updateParcel(parcel);
             Toast.show({ text: 'Parcel has been checked out', duration: 1000 });
             navigation.navigate(Screen.Home);
         };
@@ -82,7 +90,7 @@ CheckOut.navigationOptions = ({ navigation }) => ({
             await emailService.sendParcelNotification(parcel);
             parcel.checkOutPerson = undefined;
             parcel.notificationCount++;
-            await realm.updateParcel(parcel);
+            await db.updateParcel(parcel);
             navigation.navigate(Screen.Home);
         };
 

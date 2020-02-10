@@ -3,7 +3,7 @@ import Scanner from '../views/Scanner';
 import { View, Button, Text, Icon, Item, Input } from 'native-base';
 import styles from '../../_shared/Styles';
 import { NavigationStackScreenComponent } from 'react-navigation-stack';
-import realm from '../../database/Realm';
+import db from '../../database/Db';
 import Screen from '../../navigation/Screen';
 import { ParcelInfoParams } from './ParcelInfo';
 
@@ -13,7 +13,7 @@ const Home: NavigationStackScreenComponent = ({ navigation }) => {
     const browseParcels = (search: string) => navigation.navigate(Screen.ParcelBrowser, { search });
 
     const handleScanParcel = async (barcode: string) => {
-        let parcel = await realm.findParcel(barcode);
+        let parcel = await db.findParcel(barcode);
 
         //TODO: Refactor to load all parcels here or upper?
         if (parcel) return navigation.navigate(parcel.checkOutPerson ? Screen.ParcelInfo : Screen.CheckOut, { parcel });
@@ -22,14 +22,10 @@ const Home: NavigationStackScreenComponent = ({ navigation }) => {
             barcode,
             checkInDate: new Date(),
             notificationCount: 0,
-            recipient: {
-                id: 0,
-                name: '',
-                email: ''
-            }
+            recipientRecordID: ''
         };
         const params: ParcelInfoParams = { parcel };
-        return navigation.navigate(Screen.RecipientSelection, params);
+        return navigation.navigate(Screen.ContactSelection, params);
     };
 
     return (

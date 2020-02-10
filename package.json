@@ -8,13 +8,12 @@
         "lint": "eslint ."
     },
     "dependencies": {
-        "@types/joi": "^14.3.4",
         "@types/react-native-material-textfield": "^0.16.2",
-        "joi-react-native": "^3.0.0",
         "native-base": "^2.13.8",
         "react": "16.9.0",
         "react-native": "0.61.5",
         "react-native-config": "^0.12.0",
+        "react-native-contacts": "^5.0.7",
         "react-native-datawedge-intents": "^0.1.2",
         "react-native-default-preference": "^1.4.1",
         "react-native-gesture-handler": "^1.5.2",
