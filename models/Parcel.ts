@@ -1,4 +1,5 @@
 import { DisplayContact } from './DisplayContact';
+import { Operator } from './Operator';
 
 export interface Parcel {
     barcode: string;
@@ -9,6 +10,7 @@ export interface Parcel {
     checkOutDate?: Date;
     checkOutPerson?: string;
     notificationCount: number;
+    operator?: Operator;
 }
 
 export const parcelSchema = {
@@ -21,6 +23,7 @@ export const parcelSchema = {
         shelfBarcode: 'string?',
         checkOutDate: 'date?',
         checkOutPerson: 'string?',
-        notificationCount: 'int'
+        notificationCount: 'int',
+        operator: 'string?'
     }
 };

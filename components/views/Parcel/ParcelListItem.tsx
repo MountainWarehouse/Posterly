@@ -2,6 +2,7 @@ import React from 'react';
 import { Text, ListItem, Body, Left, Right, Button, Icon, View } from 'native-base';
 import { Parcel } from '../../../models/Parcel';
 import ParcelIcon from './ParcelIcon';
+import ParcelOperator from '../../../utils/ParcelOperator';
 export interface ParcelListItemProps {
     parcel: Parcel;
     onSelect: () => void;
@@ -17,7 +18,9 @@ const ParcelListItem: React.SFC<ParcelListItemProps> = ({ parcel, onSelect, onNo
                     <ParcelIcon checkedOut={isCheckedOut} size={20} />
                 </Left>
                 <Body>
-                    <Text style={{ fontWeight: !isCheckedOut ? 'bold' : 'normal' }}>{parcel.barcode}</Text>
+                    <Text style={{ fontWeight: !isCheckedOut ? 'bold' : 'normal' }}>
+                        {parcel.operator ? ParcelOperator.getConsignmentNo(parcel) : parcel.barcode}
+                    </Text>
                     {parcel.shelfBarcode && <Text note>Shelf: {parcel.shelfBarcode}</Text>}
                 </Body>
                 <Right>

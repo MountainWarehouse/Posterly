@@ -7,12 +7,18 @@ import HeaderCancelButton from '../HeaderCancelButton';
 import Screen from '../../navigation/Screen';
 import db from '../../database/Db';
 import * as emailService from '../../services/EmailService';
+import { Operator } from '../../models/Operator';
 
 const CheckIn: NavigationStackScreenComponent<ParcelInfoParams> = ({ navigation }) => {
     const parcel = navigation.getParam('parcel');
+    const handleChangeOperator = (operator: Operator) => {
+        parcel.operator = operator;
+        navigation.setParams({ parcel });
+    };
+
     return (
         <View padder>
-            <ParcelView parcel={parcel} checkIn />
+            <ParcelView parcel={parcel} checkIn onChangeOperator={handleChangeOperator} />
             <Text note>When 'Save & Notify' is pressed the email for the parcel receiver will be generated.</Text>
         </View>
     );

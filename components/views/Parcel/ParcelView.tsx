@@ -1,21 +1,50 @@
 import React from 'react';
-import { View } from 'native-base';
+import { View, Picker, Item, Text } from 'native-base';
 import { Parcel } from '../../../models/Parcel';
 import { TextField } from 'react-native-material-textfield';
+import ParcelOperator from '../../../utils/ParcelOperator';
+import { Operator } from '../../../models/Operator';
 
 export interface ParcelViewProps {
     parcel: Parcel;
     checkIn?: boolean;
     onChangeCheckoutPerson?: (checkoutPerson: string) => void;
+    onChangeOperator?: (operator: Operator) => void;
 }
 
-const ParcelView: React.SFC<ParcelViewProps> = ({ parcel, checkIn, onChangeCheckoutPerson }) => {
-    const { recipient } = parcel;
+const ParcelView: React.SFC<ParcelViewProps> = ({ parcel, checkIn, onChangeCheckoutPerson, onChangeOperator }) => {
+    const { barcode, recipient } = parcel;
     const recipientPlaceholder = !recipient ? '(not found)' : undefined;
+    const consignmentNo = ParcelOperator.getConsignmentNo(parcel);
 
     return (
         <View>
-            <TextField label="Parcel No" value={parcel.barcode} editable={false} />
+            <TextField label="Parcel No" value={barcode} editable={false} />
+            <Text style={{ color: '#9c9c9c', fontSize: 12 }}>Operator</Text>
+            <Item picker>
+                <Picker
+                    mode="dropdown"
+                    selectedValue={parcel.operator}
+                    onValueChange={onChangeOperator}
+                    enabled={!!checkIn}
+                >
+                    <Picker.Item
+                        label={checkIn ? 'Select Operator' : Operator.Other}
+                        value=""
+                        color={checkIn ? '#9c9c9c' : ''}
+                    />
+                    {Object.keys(Operator).map(o => (
+                        <Picker.Item key={o} label={o} value={o} />
+                    ))}
+                </Picker>
+            </Item>
+            <TextField
+                label="Consignment No"
+                placeholder={barcode}
+                defaultValue={consignmentNo}
+                value={consignmentNo}
+                editable={false}
+            />
             {!checkIn && (
                 <TextField label="Checked In" value={parcel.checkInDate.toLocaleDateString()} editable={false} />
             )}
