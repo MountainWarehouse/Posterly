@@ -11,6 +11,7 @@ import { NavigationStackScreenComponent } from 'react-navigation-stack';
 import Screen from '../../navigation/Screen';
 import Loading from '../views/Loading';
 import Search from '../Search';
+import ContactService from '../../services/ContactService';
 
 enum Show {
     All,
@@ -43,6 +44,18 @@ const ParcelBrowser: NavigationStackScreenComponent<ParcelBrowserParams> = ({ na
         setParcels([...parcels]);
     };
 
+    const handleRestoreRecipient = async (parcelsToRestoreRecipient: Parcel[]) => {
+        setIsLoading(true);
+        const parcel = await ContactService.restoreRecipient(parcelsToRestoreRecipient[0]);
+        if (!parcel) return;
+        parcelsToRestoreRecipient.forEach(p => {
+            p.recipientRecordID = parcel.recipientRecordID;
+            p.recipient = parcel.recipient;
+            setParcels([...parcels]);
+        });
+        setIsLoading(false);
+    };
+
     const lowerSearch = search.toLowerCase();
 
     const isCheckedOut = (parcel: Parcel): boolean => !!parcel.checkOutPerson;
@@ -64,7 +77,13 @@ const ParcelBrowser: NavigationStackScreenComponent<ParcelBrowserParams> = ({ na
         recipient ? recipient?.displayName : `(not found) (${recipientRecordID})`;
     const getCheckInDate = (parcel: Parcel) => dateUtil.getDateString(parcel.checkInDate);
 
-    const notifyActions = (parcels: Parcel[]) => <ParcelsActions parcels={parcels} onNotify={handleNotify} />;
+    const parcelsActions = (parcels: Parcel[]) => (
+        <ParcelsActions
+            parcels={parcels}
+            onNotify={handleNotify}
+            onRestoreRecipient={() => handleRestoreRecipient(parcels)}
+        />
+    );
 
     return (
         <View padder style={{ flex: 1 }}>
@@ -102,8 +121,8 @@ const ParcelBrowser: NavigationStackScreenComponent<ParcelBrowserParams> = ({ na
                     thenByTitleGetter={key => (groupByRecipient ? dateUtil.formatDate(new Date(key)) : key)}
                     reverseSort={!groupByRecipient}
                     thenByReverseSort={groupByRecipient}
-                    contentActions={groupByRecipient ? notifyActions : undefined}
-                    subcontentActions={!groupByRecipient ? notifyActions : undefined}
+                    contentActions={groupByRecipient ? parcelsActions : undefined}
+                    subcontentActions={!groupByRecipient ? parcelsActions : undefined}
                 />
             )}
         </View>

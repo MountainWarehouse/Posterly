@@ -2,17 +2,16 @@ import React from 'react';
 import { Text, Icon, Button, View, Toast, Badge } from 'native-base';
 import { Parcel } from '../../../models/Parcel';
 import { StyleSheet, ViewStyle } from 'react-native';
-import ContactService from '../../../services/ContactService';
 
 export interface ParcelsActionsProps {
     parcels: Parcel[];
     onNotify: (parcels: Parcel[]) => void;
+    onRestoreRecipient: () => void;
 }
 
-const ParcelsActions: React.SFC<ParcelsActionsProps> = ({ parcels, onNotify }) => {
+const ParcelsActions: React.SFC<ParcelsActionsProps> = ({ parcels, onNotify, onRestoreRecipient }) => {
     const awaitingParcels = parcels.filter(p => !p.checkOutPerson);
 
-    if (awaitingParcels.length === 0) return <React.Fragment />;
     const unnotifiedParcels = awaitingParcels.filter(p => !p.notificationCount);
     const allNotificationsBadge: ViewStyle = { ...styles.iconBadge };
     allNotificationsBadge.backgroundColor = '#42A5F5';
@@ -28,7 +27,7 @@ const ParcelsActions: React.SFC<ParcelsActionsProps> = ({ parcels, onNotify }) =
                     bordered
                     rounded
                     style={styles.button}
-                    onPress={() => ContactService.restoreRecipient(parcels[0])}
+                    onPress={onRestoreRecipient}
                     onLongPress={() => Toast.show({ text: 'Restore contact information' })}
                 >
                     <Icon name="md-person" />

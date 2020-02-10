@@ -111,18 +111,6 @@ class DbManager {
         );
     }
 
-    public async deleteParcel(barcode: number): Promise<void> {
-        const realm = await this.getRealm();
-
-        const parcel = realm.objectForPrimaryKey(parcelSchema.name, barcode);
-
-        if (!parcel) {
-            throw Error(`Cannot delete parcel, barcode '${barcode}' not found.`);
-        }
-
-        realm.write(() => realm.delete(parcel));
-    }
-
     private extractParcel(obj: Parcel & Realm.Object, contacts: DisplayContact[]) {
         const parcel = this.extract(obj);
         parcel.recipient = contacts.find(c => c.recordID === parcel.recipientRecordID);
