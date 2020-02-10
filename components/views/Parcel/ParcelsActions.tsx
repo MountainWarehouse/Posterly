@@ -4,12 +4,12 @@ import { Parcel } from '../../../models/Parcel';
 import { StyleSheet, ViewStyle } from 'react-native';
 import ContactService from '../../../services/ContactService';
 
-export interface ParcelNotifyActionsProps {
+export interface ParcelsActionsProps {
     parcels: Parcel[];
     onNotify: (parcels: Parcel[]) => void;
 }
 
-const ParcelNotifyActions: React.SFC<ParcelNotifyActionsProps> = ({ parcels, onNotify }) => {
+const ParcelsActions: React.SFC<ParcelsActionsProps> = ({ parcels, onNotify }) => {
     const awaitingParcels = parcels.filter(p => !p.checkOutPerson);
 
     if (awaitingParcels.length === 0) return <React.Fragment />;
@@ -86,4 +86,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default ParcelNotifyActions;
+export default ParcelsActions;

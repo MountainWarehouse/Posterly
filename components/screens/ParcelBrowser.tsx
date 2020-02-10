@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Content, Text, Icon, Item, Input, Picker, Button, View, Container, Header } from 'native-base';
+import { Content, Text, Icon, Item, Picker, Button, View } from 'native-base';
 import { Parcel } from '../../models/Parcel';
 import ParcelIcon from '../views/Parcel/ParcelIcon';
 import ParcelsList from '../views/Parcel/ParcelsList';
-import ParcelNotifyActions from '../views/Parcel/ParcelNotifyActions';
+import ParcelsActions from '../views/Parcel/ParcelsActions';
 import * as dateUtil from '../../utils/DateUtil';
 import * as emailService from '../../services/EmailService';
 import db from '../../database/Db';
@@ -61,10 +61,10 @@ const ParcelBrowser: NavigationStackScreenComponent<ParcelBrowserParams> = ({ na
     });
 
     const getName = ({ recipient, recipientRecordID }: Parcel) =>
-        recipient?.displayName ? recipient?.displayName : `(not found) (${recipientRecordID})`;
+        recipient ? recipient?.displayName : `(not found) (${recipientRecordID})`;
     const getCheckInDate = (parcel: Parcel) => dateUtil.getDateString(parcel.checkInDate);
 
-    const notifyActions = (parcels: Parcel[]) => <ParcelNotifyActions parcels={parcels} onNotify={handleNotify} />;
+    const notifyActions = (parcels: Parcel[]) => <ParcelsActions parcels={parcels} onNotify={handleNotify} />;
 
     return (
         <View padder style={{ flex: 1 }}>
