@@ -1,9 +1,10 @@
 import React from 'react';
-import { View, Picker, Item, Text } from 'native-base';
+import { View } from 'native-base';
 import { Parcel } from '../../../models/Parcel';
 import { TextField } from 'react-native-material-textfield';
 import ParcelOperator from '../../../utils/ParcelOperator';
 import { Operator } from '../../../models/Operator';
+import { Dropdown } from 'react-native-material-dropdown';
 
 export interface ParcelViewProps {
     parcel: Parcel;
@@ -17,38 +18,10 @@ const ParcelView: React.SFC<ParcelViewProps> = ({ parcel, checkIn, onChangeCheck
     const recipientPlaceholder = !recipient ? '(not found)' : undefined;
 
     const consigmentNo = ParcelOperator.getConsignmentNo(parcel);
-    const consignmentNoField = checkIn ? (
-        <TextField label="Consignment No" placeholder={barcode} defaultValue={consigmentNo} editable={false} />
-    ) : (
-        <TextField label="Consignment No" value={consigmentNo ? consigmentNo : barcode} editable={false} />
-    );
 
     return (
         <View>
             <TextField label="Parcel No" value={barcode} editable={false} />
-            <Text style={{ color: '#9c9c9c', fontSize: 12 }}>Operator</Text>
-            <Item picker>
-                <Picker
-                    mode="dropdown"
-                    selectedValue={parcel.operator}
-                    onValueChange={onChangeOperator}
-                    enabled={!!checkIn}
-                >
-                    <Picker.Item
-                        label={checkIn ? 'Select Operator' : Operator.Other}
-                        value=""
-                        color={checkIn ? '#9c9c9c' : ''}
-                    />
-                    {Object.keys(Operator).map(o => (
-                        <Picker.Item key={o} label={o} value={o} />
-                    ))}
-                </Picker>
-            </Item>
-            {consignmentNoField}
-            {!checkIn && (
-                <TextField label="Checked In" value={parcel.checkInDate.toLocaleDateString()} editable={false} />
-            )}
-
             <TextField
                 label="Recipient Name"
                 value={recipient?.displayName}
@@ -64,8 +37,30 @@ const ParcelView: React.SFC<ParcelViewProps> = ({ parcel, checkIn, onChangeCheck
                 placeholder={recipientPlaceholder}
             />
             {parcel.shelfBarcode && <TextField label="Shelf No" value={parcel.shelfBarcode} editable={false} />}
-            {!checkIn && (
+            {checkIn ? (
                 <React.Fragment>
+                    <Dropdown
+                        label="Operator"
+                        value="Select Operator"
+                        data={Object.keys(Operator).map(o => ({ value: o }))}
+                        onChangeText={onChangeOperator}
+                    />
+                    <TextField
+                        label="Consignment No"
+                        placeholder={barcode}
+                        defaultValue={consigmentNo}
+                        editable={false}
+                    />
+                </React.Fragment>
+            ) : (
+                <React.Fragment>
+                    <TextField
+                        label="Operator"
+                        value={parcel.operator ? parcel.operator : Operator.Other}
+                        editable={false}
+                    />
+                    <TextField label="Consignment No" value={consigmentNo ? consigmentNo : barcode} editable={false} />
+                    <TextField label="Checked In" value={parcel.checkInDate.toLocaleDateString()} editable={false} />
                     {onChangeCheckoutPerson && (
                         <TextField
                             label="Notification sent"

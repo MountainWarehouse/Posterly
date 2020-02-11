@@ -8,6 +8,7 @@
         "lint": "eslint ."
     },
     "dependencies": {
+        "@types/react-native-material-dropdown": "^0.11.3",
         "@types/react-native-material-textfield": "^0.16.2",
         "native-base": "^2.13.8",
         "react": "16.9.0",
@@ -17,6 +18,7 @@
         "react-native-datawedge-intents": "^0.1.2",
         "react-native-default-preference": "^1.4.1",
         "react-native-gesture-handler": "^1.5.2",
+        "react-native-material-dropdown": "^0.11.1",
         "react-native-material-textfield": "^0.16.1",
         "react-native-popup-menu": "^0.15.6",
         "react-native-sqlite-storage": "^4.1.0",
