@@ -15,7 +15,13 @@ export interface ParcelViewProps {
 const ParcelView: React.SFC<ParcelViewProps> = ({ parcel, checkIn, onChangeCheckoutPerson, onChangeOperator }) => {
     const { barcode, recipient } = parcel;
     const recipientPlaceholder = !recipient ? '(not found)' : undefined;
-    const consignmentNo = ParcelOperator.getConsignmentNo(parcel);
+
+    const consigmentNo = ParcelOperator.getConsignmentNo(parcel);
+    const consignmentNoField = checkIn ? (
+        <TextField label="Consignment No" placeholder={barcode} defaultValue={consigmentNo} editable={false} />
+    ) : (
+        <TextField label="Consignment No" value={consigmentNo ? consigmentNo : barcode} editable={false} />
+    );
 
     return (
         <View>
@@ -38,13 +44,7 @@ const ParcelView: React.SFC<ParcelViewProps> = ({ parcel, checkIn, onChangeCheck
                     ))}
                 </Picker>
             </Item>
-            <TextField
-                label="Consignment No"
-                placeholder={barcode}
-                defaultValue={consignmentNo}
-                value={consignmentNo}
-                editable={false}
-            />
+            {consignmentNoField}
             {!checkIn && (
                 <TextField label="Checked In" value={parcel.checkInDate.toLocaleDateString()} editable={false} />
             )}
