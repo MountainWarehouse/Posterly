@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { ScrollView } from 'react-native';
 import { NavigationStackScreenComponent } from 'react-navigation-stack';
 import { Parcel } from '../../models/Parcel';
 import { View, Text, Card, CardItem, H3, Body, Button } from 'native-base';
@@ -17,7 +18,7 @@ const ParcelInfo: NavigationStackScreenComponent<ParcelInfoParams> = ({ navigati
     }
     const [showCheckedOutInfo, setShowCheckedOutInfo] = useState(true);
     return (
-        <View>
+        <ScrollView>
             {showCheckedOutInfo && (
                 <Card>
                     <CardItem header>
@@ -38,7 +39,7 @@ const ParcelInfo: NavigationStackScreenComponent<ParcelInfoParams> = ({ navigati
             <View padder>
                 <ParcelView parcel={parcel} />
             </View>
-        </View>
+        </ScrollView>
     );
 };
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import { ScrollView } from 'react-native';
 import { View, Text, Grid, Col, Button, Toast } from 'native-base';
 import ParcelView from '../views/Parcel/ParcelView';
 import { ParcelInfoParams } from './ParcelInfo';
@@ -23,10 +24,12 @@ const CheckOut: NavigationStackScreenComponent<ParcelInfoParams> = ({ navigation
     };
 
     return (
-        <View padder>
-            <ParcelView parcel={parcel} onChangeCheckoutPerson={handleChangeCheckOutPerson} />
-            <Text note>By pressing 'Check Out' you confirm that the person has collected the parcel.</Text>
-        </View>
+        <ScrollView>
+            <View padder>
+                <ParcelView parcel={parcel} onChangeCheckoutPerson={handleChangeCheckOutPerson} />
+                <Text note>By pressing 'Check Out' you confirm that the person has collected the parcel.</Text>
+            </View>
+        </ScrollView>
     );
 };
 
