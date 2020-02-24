@@ -11,6 +11,7 @@ export interface Parcel {
     checkOutPerson?: string;
     notificationCount: number;
     operator?: Operator;
+    consignmentNo?: string;
 }
 
 export const parcelSchema = {
@@ -24,6 +25,7 @@ export const parcelSchema = {
         checkOutDate: 'date?',
         checkOutPerson: 'string?',
         notificationCount: 'int',
-        operator: 'string?'
+        operator: 'string?',
+        consignmentNo: 'string?'
     }
 };

@@ -22,7 +22,8 @@ const Home: NavigationStackScreenComponent = ({ navigation }) => {
             barcode,
             checkInDate: new Date(),
             notificationCount: 0,
-            recipientRecordID: ''
+            recipientRecordID: '',
+            consignmentNo: barcode
         };
         const params: ParcelInfoParams = { parcel };
         return navigation.navigate(Screen.ContactSelection, params);

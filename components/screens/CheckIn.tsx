@@ -8,6 +8,7 @@ import Screen from '../../navigation/Screen';
 import db from '../../database/Db';
 import * as emailService from '../../services/EmailService';
 import { Operator } from '../../models/Operator';
+import { ScrollView } from 'react-native';
 
 const CheckIn: NavigationStackScreenComponent<ParcelInfoParams> = ({ navigation }) => {
     const parcel = navigation.getParam('parcel');
@@ -16,11 +17,23 @@ const CheckIn: NavigationStackScreenComponent<ParcelInfoParams> = ({ navigation 
         navigation.setParams({ parcel });
     };
 
+    const handleChangeConsignmentNo = (consignmentNo: string) => {
+        parcel.consignmentNo = consignmentNo;
+        navigation.setParams({ parcel });
+    };
+
     return (
-        <View padder>
-            <ParcelView parcel={parcel} checkIn onChangeOperator={handleChangeOperator} />
-            <Text note>When 'Save & Notify' is pressed the email for the parcel receiver will be generated.</Text>
-        </View>
+        <ScrollView>
+            <View padder>
+                <ParcelView
+                    parcel={parcel}
+                    checkIn
+                    onChangeOperator={handleChangeOperator}
+                    onChangeConsignmentNo={handleChangeConsignmentNo}
+                />
+                <Text note>When 'Save & Notify' is pressed the email for the parcel receiver will be generated.</Text>
+            </View>
+        </ScrollView>
     );
 };
 

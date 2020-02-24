@@ -19,7 +19,7 @@ const ParcelListItem: React.SFC<ParcelListItemProps> = ({ parcel, onSelect, onNo
                 </Left>
                 <Body>
                     <Text style={{ fontWeight: !isCheckedOut ? 'bold' : 'normal' }}>
-                        {parcel.operator ? ParcelOperator.getConsignmentNo(parcel) : parcel.barcode}
+                        {parcel.consignmentNo ? parcel.consignmentNo : parcel.barcode}
                     </Text>
                     {parcel.shelfBarcode && <Text note>Shelf: {parcel.shelfBarcode}</Text>}
                 </Body>
