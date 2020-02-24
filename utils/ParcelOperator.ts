@@ -7,7 +7,7 @@ const getConsignmentNo = ({ barcode, operator }: Parcel): string => {
         case Operator.FedEx:
             return barcode.length === 33 ? barcode.substr(22, 12) : unrecognized;
         case Operator.TNT:
-            return barcode.length === 28 ? barcode.substring(4, 9) : unrecognized;
+            return barcode.length === 28 ? barcode.substr(4, 9) : unrecognized;
         case Operator.Yodel:
             return barcode.length === 19 ? barcode.substr(1, 18) : unrecognized;
         case Operator.Hermes:
