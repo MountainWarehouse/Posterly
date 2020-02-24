@@ -2,13 +2,10 @@ import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
     button: {
-        marginVertical: 5,
-        borderRadius: 5
+        marginVertical: 5
     },
-    tip: {
-        fontStyle: 'italic',
-        color: 'grey',
-        fontSize: 14
+    margin: {
+        margin: 5
     }
 });
 
