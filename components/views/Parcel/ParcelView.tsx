@@ -2,7 +2,6 @@ import React from 'react';
 import { View } from 'native-base';
 import { Parcel } from '../../../models/Parcel';
 import { TextField } from 'react-native-material-textfield';
-import ParcelOperator from '../../../utils/ParcelOperator';
 import { Operator } from '../../../models/Operator';
 import { Dropdown } from 'react-native-material-dropdown';
 
@@ -11,13 +10,18 @@ export interface ParcelViewProps {
     checkIn?: boolean;
     onChangeCheckoutPerson?: (checkoutPerson: string) => void;
     onChangeOperator?: (operator: Operator) => void;
+    onChangeConsignmentNo?: (consignmentNo: string) => void;
 }
 
-const ParcelView: React.SFC<ParcelViewProps> = ({ parcel, checkIn, onChangeCheckoutPerson, onChangeOperator }) => {
+const ParcelView: React.SFC<ParcelViewProps> = ({
+    parcel,
+    checkIn,
+    onChangeCheckoutPerson,
+    onChangeOperator,
+    onChangeConsignmentNo
+}) => {
     const { barcode, recipient } = parcel;
     const recipientPlaceholder = !recipient ? '(not found)' : undefined;
-
-    const consigmentNo = ParcelOperator.getConsignmentNo(parcel);
 
     return (
         <View>
@@ -47,9 +51,8 @@ const ParcelView: React.SFC<ParcelViewProps> = ({ parcel, checkIn, onChangeCheck
                     />
                     <TextField
                         label="Consignment No"
-                        placeholder={barcode}
-                        defaultValue={consigmentNo}
-                        editable={false}
+                        value={parcel.consignmentNo}
+                        onChangeText={onChangeConsignmentNo}
                     />
                 </React.Fragment>
             ) : (
@@ -59,7 +62,11 @@ const ParcelView: React.SFC<ParcelViewProps> = ({ parcel, checkIn, onChangeCheck
                         value={parcel.operator ? parcel.operator : Operator.Other}
                         editable={false}
                     />
-                    <TextField label="Consignment No" value={consigmentNo ? consigmentNo : barcode} editable={false} />
+                    <TextField
+                        label="Consignment No"
+                        value={parcel.consignmentNo ? parcel.consignmentNo : parcel.barcode}
+                        editable={false}
+                    />
                     <TextField label="Checked In" value={parcel.checkInDate.toLocaleDateString()} editable={false} />
                     {onChangeCheckoutPerson && (
                         <TextField
